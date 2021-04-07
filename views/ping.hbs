@@ -1,0 +1,41 @@
+<html>
+  {{> head}}
+  <body class="dashboard">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-12">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      Ping
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div id="data">
+
+            </div>
+            <br>
+            <div class="text-center" id="pagination">
+
+            </div>
+          <br><br>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/ping.js"></script>
+  </body>
+</html>

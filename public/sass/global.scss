@@ -1,0 +1,75 @@
+body{
+  .navbar{
+
+  }
+  table{
+    font-size: 14px;
+  }
+  .text-nowrap{
+    vertical-align: middle;
+  }
+  label{
+    &.error{
+      margin-top: 10px;
+      font-size: 12px;
+      color: red;
+    }
+  }
+  .line-through{
+    text-decoration: line-through;
+  }
+  .nowrap{
+    white-space: nowrap;
+  }
+  .sidebar{
+    z-index: 1;
+    .list-group-item{
+      font-size: 14px;
+      border-bottom: none;
+      padding: 8px 20px;
+    }
+  }
+  .bg-gradient-primary{
+    background: rgb(15,115,172);
+    background: linear-gradient(135deg, rgba(15,115,172,1) 0%, rgba(14,104,177,1) 51%, rgba(6,106,193,1) 100%);
+  }
+  .bg-gradient-info{
+    background: rgb(0,255,249);
+    background: linear-gradient(135deg, rgba(0,255,249,1) 0%, rgba(0,255,232,1) 51%, rgba(0,235,255,1) 100%);
+  }
+  .bg-gradient-danger{
+    background: rgb(255,0,0);
+    background: linear-gradient(135deg, rgba(255,0,55,1) 0%, rgba(255,0,55,1) 51%, rgba(255,0,64,1) 100%);
+  }
+  .bg-gradient-warning{
+    background: rgb(255,163,0);
+    background: linear-gradient(135deg, rgba(255,163,0,1) 0%, rgba(255,198,0,1) 51%, rgba(255,172,0,1) 100%);
+  }
+  .breadcrumb-custom{
+    ul{
+      list-style-type: none;
+      padding: 0px;
+      margin: 0px;
+      li{
+        display: inline-block;
+        &:not(.active){
+          font-weight: bold;
+          &:after{
+            margin-left: 5px;
+            margin-right: 5px;
+            font: normal normal normal 14px/1 FontAwesome;
+            content: " \f105 ";
+          }
+        }
+        a{
+          color: rgba(14,104,177,1);
+          &:hover,&:focus{
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+}
+@import "_dashboard.scss";
+@import "_ping.scss";

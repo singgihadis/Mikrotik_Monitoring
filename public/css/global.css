@@ -1,0 +1,105 @@
+/* line 5, ../sass/global.scss */
+body table {
+  font-size: 14px;
+}
+/* line 8, ../sass/global.scss */
+body .text-nowrap {
+  vertical-align: middle;
+}
+/* line 12, ../sass/global.scss */
+body label.error {
+  margin-top: 10px;
+  font-size: 12px;
+  color: red;
+}
+/* line 18, ../sass/global.scss */
+body .line-through {
+  text-decoration: line-through;
+}
+/* line 21, ../sass/global.scss */
+body .nowrap {
+  white-space: nowrap;
+}
+/* line 24, ../sass/global.scss */
+body .sidebar {
+  z-index: 1;
+}
+/* line 26, ../sass/global.scss */
+body .sidebar .list-group-item {
+  font-size: 14px;
+  border-bottom: none;
+  padding: 8px 20px;
+}
+/* line 32, ../sass/global.scss */
+body .bg-gradient-primary {
+  background: #0f73ac;
+  background: linear-gradient(135deg, #0f73ac 0%, #0e68b1 51%, #066ac1 100%);
+}
+/* line 36, ../sass/global.scss */
+body .bg-gradient-info {
+  background: #00fff9;
+  background: linear-gradient(135deg, #00fff9 0%, #00ffe8 51%, #00ebff 100%);
+}
+/* line 40, ../sass/global.scss */
+body .bg-gradient-danger {
+  background: red;
+  background: linear-gradient(135deg, #ff0037 0%, #ff0037 51%, #ff0040 100%);
+}
+/* line 44, ../sass/global.scss */
+body .bg-gradient-warning {
+  background: #ffa300;
+  background: linear-gradient(135deg, #ffa300 0%, #ffc600 51%, #ffac00 100%);
+}
+/* line 49, ../sass/global.scss */
+body .breadcrumb-custom ul {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+/* line 53, ../sass/global.scss */
+body .breadcrumb-custom ul li {
+  display: inline-block;
+}
+/* line 55, ../sass/global.scss */
+body .breadcrumb-custom ul li:not(.active) {
+  font-weight: bold;
+}
+/* line 57, ../sass/global.scss */
+body .breadcrumb-custom ul li:not(.active):after {
+  margin-left: 5px;
+  margin-right: 5px;
+  font: normal normal normal 14px/1 FontAwesome;
+  content: " \f105 ";
+}
+/* line 64, ../sass/global.scss */
+body .breadcrumb-custom ul li a {
+  color: #0e68b1;
+}
+/* line 66, ../sass/global.scss */
+body .breadcrumb-custom ul li a:hover, body .breadcrumb-custom ul li a:focus {
+  text-decoration: none;
+}
+
+/* line 2, ../sass/_dashboard.scss */
+.dashboard .stat-card {
+  border-radius: 0px;
+}
+/* line 6, ../sass/_dashboard.scss */
+.dashboard .stat-card .card-body .gauge svg {
+  height: auto !important;
+}
+/* line 13, ../sass/_dashboard.scss */
+.dashboard .system-health .voltage {
+  padding: 2px 6px;
+  font-size: 14px;
+}
+/* line 17, ../sass/_dashboard.scss */
+.dashboard .system-health .temperature {
+  padding: 2px 6px;
+  font-size: 14px;
+}
+
+/* line 2, ../sass/_ping.scss */
+.ping .data-graphic {
+  width: 100%;
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  {{> head}}
+    <body>
+      <div class="container">
+        <br><br>
+        <div class="row">
+          <div class="col-md-4"></div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="text-center">
+                  <img src="/assets/img/logo.png" class="w-50" />
+                </div>
+                <br>
+                <div class="text-center">
+                  <h6><b>LOGIN</b></h6>
+                </div>
+                <br>
+                <form id="form_login">
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="host" name="host" placeholder="IP Address / Host" required />
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="port" name="port" placeholder="Port" value="8728" required />
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="user" name="user" placeholder="User" required />
+                  </div>
+                  <div class="form-group">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required />
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block">LOGIN</button>
+                </form>
+                <br>
+                <div class="text-center">
+                  @2020
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4"></div>
+        </div>
+      </div>
+    </body>
+    <script src="/assets/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="/assets/js/jquery.validate.js" type="text/javascript"></script>
+    <script src="/assets/js/loading.js" type="text/javascript"></script>
+    <script src="/assets/js/moment.min.js" type="text/javascript"></script>
+    <script src="/assets/js/toastr.js" type="text/javascript"></script>
+    <script src="/assets/js/public_function.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/assets/js/page/login.js"></script>
+  </body>
+</html>

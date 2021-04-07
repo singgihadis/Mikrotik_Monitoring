@@ -1,0 +1,197 @@
+<html>
+  {{> head}}
+  <body class="dashboard">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-6">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      Dashboard
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+                <div class="d-inline-block system-health">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text rounded-0 voltage bg-gradient-primary text-white" id="voltage">0 V</span>
+                      <span class="input-group-text temperature bg-gradient-warning text-white" id="temperature">&deg;C</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-xl-3 col-lg-3 col-md-6">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    CPU Load
+                  </div>
+                  <div class="card-body">
+                    <div id="cpu_load" class="gauge"></div>
+                    <br>
+                    <table class="table table-sm table-borderless m-0">
+                      <tbody>
+                        <tr>
+                          <td>CPU Count</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="cpu_count"></td>
+                        </tr>
+                        <tr>
+                          <td>CPU Frequency</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="cpu_frequency"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <br>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-6">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Memory
+                  </div>
+                  <div class="card-body">
+                    <div id="memory_used" class="gauge"></div>
+                    <br>
+                    <table class="table table-sm table-borderless m-0">
+                      <tbody>
+                        <tr>
+                          <td>Free</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="free_memory"></td>
+                        </tr>
+                        <tr>
+                          <td>Total</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="total_memory"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <br>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-6">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    HDD Space
+                  </div>
+                  <div class="card-body">
+                    <div id="hdd_used" class="gauge"></div>
+                    <br>
+                    <table class="table table-sm table-borderless m-0">
+                      <tbody>
+                        <tr>
+                          <td>Free Space</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="free_hdd"></td>
+                        </tr>
+                        <tr>
+                          <td>Total Space</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="total_hdd"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <br>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-6">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Sector Writes
+                  </div>
+                  <div class="card-body">
+                    <div id="bad_blocks" class="gauge"></div>
+                    <br>
+                    <table class="table table-sm table-borderless m-0">
+                      <tbody>
+                        <tr>
+                          <td>Since Reboot</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="sector_writes_since_rebort"></td>
+                        </tr>
+                        <tr>
+                          <td>Total</td>
+                          <td>&nbsp;:&nbsp;</td>
+                          <td id="total_sector_writes"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <br>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Traffic Monitoring
+                  </div>
+                  <div class="card-body">
+                    <div class="text-right">
+                      <div class="d-inline-block">
+                        <select id="interface" class="form-control">
+
+                        </select>
+                      </div>
+                    </div>
+                    <br>
+                    <canvas id="interface_chart"></canvas>
+                  </div>
+                </div>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Client Monitoring
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Host</th>
+                            <th>Timeout</th>
+                            <th>Interval</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody id="netwatch">
+
+                        </tbody>
+                      </table>
+                      </div>
+                    </div>
+                  </div>
+                  <br>
+                </div>
+              </div>
+              <br><br>
+            </div>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/dashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+.dashboard{
+  .stat-card{
+    border-radius: 0px;
+    .card-body{
+      .gauge{
+        svg{
+          height: auto !important;
+        }
+      }
+    }
+  }
+  .system-health{
+    .voltage{
+      padding: 2px 6px;
+      font-size: 14px;
+    }
+    .temperature{
+      padding: 2px 6px;
+      font-size: 14px;
+    }
+  }
+}
