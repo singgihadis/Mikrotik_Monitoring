@@ -19,4 +19,30 @@
       font-size: 14px;
     }
   }
+  #lokasi-error{
+    margin: 0px;
+  }
+  .cuaca{
+    .lokasi{
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .tgl{
+      font-size: 13px;
+    }
+    .suhu{
+      margin-top: 5px;
+      font-weight: bold;
+      font-size: 25px;
+    }
+    .daftar-cuaca{
+      margin-top: 4px;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+    .bmkg{
+      margin-top: 5px;
+      font-size: 10px;
+    }
+  }
 }

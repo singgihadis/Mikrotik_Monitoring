@@ -43,6 +43,7 @@ require('./routes/routes')(app);
 require('./routes/ajax_login')(app);
 require('./routes/ajax_dashboard')(app);
 require('./routes/ajax_monitoring')(app);
+require('./routes/ajax_ping')(app);
 require('./routes/ajax_umum')(app);
 
 //server listening

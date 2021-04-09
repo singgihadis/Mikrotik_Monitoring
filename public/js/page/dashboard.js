@@ -1,14 +1,52 @@
 var cpu_gauge_chart = null;
 var memory_gauge_chart = null;
 var hdd_gauge_chart = null;
-var bad_blocks_gauge_chart = null;
 var interface_chart = null;
 var interface_timeout = null;
+var data_lokasi = [];
 $(document).ready(function(){
   system_resources();
   system_health();
   interface_combobox();
   netwatch();
+  master_lokasi();
+  $("#form_lokasi").validate({
+    messages: {
+        lokasi: "Lokasi wajib dipilih"
+    },
+    errorPlacement: function(error, element) {
+      error.insertAfter(element.parent());
+    },
+    submitHandler:function(){
+      $("#form_lokasi").loading();
+      var master_kota_id = $("#lokasi").val();
+      $.ajax({
+        type:'post',
+        url:'/ajax/master_kota_id_simpan.html',
+        data:{master_kota_id:master_kota_id},
+        success:function(resp){
+          $("#form_lokasi").loading("stop");
+          var res = JSON.parse(resp);
+          var html = "";
+          if(res.is_error){
+            if(res.must_login){
+              window.location = "/login.html";
+            }else{
+              toastr["error"](res.msg);
+            }
+          }else{
+            toastr["success"]("Berhasil menyimpan");
+            $("#cur_master_kota_id").val(master_kota_id);
+            $("#modal_lokasi").modal("hide");
+            build_cuaca();
+          }
+        },error:function(){
+          $("#form_lokasi").loading("stop");
+          toastr["error"]("Silahkan periksa koneksi internet anda");
+        }
+      });
+    }
+  })
 });
 function system_resources(){
   $.ajax({
@@ -29,7 +67,6 @@ function system_resources(){
         cpu(data);
         memory(data);
         hdd(data);
-        bad_blocks(data);
         setTimeout(function(){
           system_resources();
         },1000);
@@ -38,6 +75,144 @@ function system_resources(){
       toastr["error"]("Silahkan periksa koneksi internet anda");
     }
   });
+}
+function master_lokasi(){
+  var cur_master_kota_id = $("#cur_master_kota_id").val();
+  if(cur_master_kota_id == "" || cur_master_kota_id == "0"){
+    $("#modal_lokasi").modal({
+      backdrop: 'static',
+      keyboard: false
+    });
+  }
+  $.ajax({
+    type:'post',
+    url:'/ajax/master_lokasi.html',
+    data:{},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        var data = res.data;
+        data_lokasi = data;
+        var html = "";
+        html += "<option value=''>Pilih Kota / Kabupaten</option>";
+        $.each(data,function(k,v){
+          html += "<option value='" + v['id'] + "'>" + v['nama_kota_kab'] + " - " + v['nama_provinsi'] + "</option>";
+        });
+        $("#lokasi").html(html);
+        $("#lokasi").select2({
+          width:'100%'
+        });
+        build_cuaca();
+      }
+    },error:function(){
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function modal_lokasi() {
+  $("#modal_lokasi").modal({
+
+  });
+  var cur_master_kota_id = $("#cur_master_kota_id").val();
+  $("#lokasi").val(cur_master_kota_id).trigger("change");
+  build_cuaca();
+}
+function build_cuaca(){
+  var cur_master_kota_id = $("#cur_master_kota_id").val();
+  var bmkg_id = "";
+  var nama_lokasi = "";
+  var data = {};
+  $.each(data_lokasi,function(k,v){
+    if(v['id'] == cur_master_kota_id){
+      data = v;
+      nama_lokasi = TitleCase(v['nama_kota_kab']) + " - " + TitleCase(v['nama_provinsi']);
+      bmkg_id = v['bmkg_id'];
+    }
+  });
+  $("#nama_lokasi").html(nama_lokasi);
+  if(!$.isEmptyObject(data)){
+    $.ajax({
+      type:'get',
+      url:data['bmkg_url'],
+      cache: false,
+      dataType: "xml",
+      data:{},
+      success:function(xml){
+        $(xml).find('data').find('forecast').find('area').each(function(){
+          var area = $(this);
+          if(area.attr('id') == bmkg_id){
+            var parameter_id = area.find("parameter");
+            var weather = null;
+            var temperature = null;
+            $(parameter_id).each(function(){;
+              if($(this).attr("id") == "weather"){
+                  weather = $(this).find("timerange");
+              }else if($(this).attr("id") == "t"){
+                  temperature = $(this).find("timerange");
+              }
+            });
+            var sekarang = moment();
+            var tgl = sekarang.format("YYYYMMDD");
+            // $("#tgl").html("<span class='fa fa-calendar'></span> " + sekarang.format("DD") + " " + IndexToMonth(parseInt(sekarang.format("M")) - 1) + " " + sekarang.format("YYYY"));
+            var jam = "";
+            var jam_sekarang = parseInt(sekarang.format("H"));
+            if(jam_sekarang <= 24){
+              jam = "1800";
+            }else if(jam_sekarang <= 18){
+              jam = "1200";
+            }else if(jam_sekarang <= 12){
+              jam = "0000";
+            }
+            var daftar_cuaca = "";
+            var waktu =tgl + jam;
+            var html = "";
+            var suhu = "";
+            var cuaca = "";
+            $(weather).each(function(){
+              var temperature_value = "";
+              $(temperature).each(function(){
+                var value = $(this).find("value")[0];
+                var value2 = $(this).find("value")[1];
+                if($(value).attr("unit") == "C"){
+                  temperature_value = $(value).text();
+                  return false;
+                }else if($(value2).attr("unit") == "C"){
+                  temperature_value = $(value2).text();
+                  return false;
+                }
+              });
+              if(waktu == $(this).attr("datetime")){
+                suhu = temperature_value + " &deg;C";
+                cuaca = $(this).find("value").text();
+              }
+              var jam_only = $(this).attr("datetime").substr(8,4);
+              if(tgl == $(this).attr("datetime").substr(0,8)){
+                daftar_cuaca += "<tr>";
+                daftar_cuaca += "<td class='pl-0 pb-2'>" + jam_only.substr(0,2) + ":" + jam_only.substr(2,2) + "</td>";
+                daftar_cuaca += "<td class='px-0'>:</td>";
+                daftar_cuaca += "<td class='pr-0'>" + temperature_value + " &deg;C" + " / " + ParseBMKGCuaca($(this).find("value").text()) + "</td>";
+                daftar_cuaca += "</tr>";
+              }
+            });
+            $("#daftar_cuaca").html(daftar_cuaca);
+            $("#bmkg_ket").show();
+            setTimeout(function(){
+              build_cuaca();
+            },360000);
+          }
+        });
+      },error:function(){
+
+      }
+    });
+  }
 }
 function cpu(data){
   $("#cpu_count").html(data['cpuCount']);
@@ -124,30 +299,6 @@ function hdd(data){
     });
   }
 }
-function bad_blocks(data){
-  var bad_blocks = data['badBlocks'];
-  var sector_writes_since_rebort = data['writeSectSinceReboot'];
-  var total_sector_writes = data['writeSectTotal'];
-  $("#sector_writes_since_rebort").html(FormatAngka(sector_writes_since_rebort));
-  $("#total_sector_writes").html(FormatAngka(total_sector_writes));
-  if(bad_blocks_gauge_chart != null){
-    bad_blocks_gauge_chart.refresh(bad_blocks);
-  }else{
-    bad_blocks_gauge_chart = new JustGage({
-      id: "bad_blocks",
-      value: bad_blocks,
-      min: 0,
-      max: 100,
-      decimals: 0,
-      gaugeWidthScale: 0.6,
-      symbol:" %",
-      relativeGaugeSize: true,
-      decimals:1,
-      label:"Bad Blocks",
-      levelColors:["#000000"]
-    });
-  }
-}
 function system_health(){
   $.ajax({
     type:'post',
@@ -164,7 +315,11 @@ function system_health(){
         }
       }else{
         var data = res.data;
-        $("#voltage").html(data['voltage'] + " V");
+        if(data.hasOwnProperty("voltage")){
+          $("#voltage").html(data['voltage'] + " V");
+        }else{
+          $("#voltage").hide();
+        }
         $("#temperature").html(data['temperature'] + " &deg;C");
         setTimeout(function(){
           system_health();

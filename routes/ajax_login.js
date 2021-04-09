@@ -42,6 +42,7 @@ module.exports = function(app){
                   req.session.port = port;
                   req.session.user = user;
                   req.session.password = password;
+                  req.session.master_kota_id = "";
                   req.session.save(function(err) {
                     var data = {is_error:false,msg:"Berhasil terhubung"};
                     res.send(JSON.stringify(data));
@@ -64,6 +65,7 @@ module.exports = function(app){
               req.session.port = port;
               req.session.user = user;
               req.session.password = password;
+              req.session.master_kota_id = results[0]['master_kota_id'];
               req.session.save(function(err) {
                 var data = {is_error:false,msg:"Berhasil terhubung"};
                 res.send(JSON.stringify(data));

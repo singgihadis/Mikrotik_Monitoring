@@ -98,6 +98,36 @@ body .breadcrumb-custom ul li a:hover, body .breadcrumb-custom ul li a:focus {
   padding: 2px 6px;
   font-size: 14px;
 }
+/* line 22, ../sass/_dashboard.scss */
+.dashboard #lokasi-error {
+  margin: 0px;
+}
+/* line 26, ../sass/_dashboard.scss */
+.dashboard .cuaca .lokasi {
+  font-size: 14px;
+  font-weight: bold;
+}
+/* line 30, ../sass/_dashboard.scss */
+.dashboard .cuaca .tgl {
+  font-size: 13px;
+}
+/* line 33, ../sass/_dashboard.scss */
+.dashboard .cuaca .suhu {
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: 25px;
+}
+/* line 38, ../sass/_dashboard.scss */
+.dashboard .cuaca .daftar-cuaca {
+  margin-top: 4px;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+/* line 43, ../sass/_dashboard.scss */
+.dashboard .cuaca .bmkg {
+  margin-top: 5px;
+  font-size: 10px;
+}
 
 /* line 2, ../sass/_ping.scss */
 .ping .data-graphic {

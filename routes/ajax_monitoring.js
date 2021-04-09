@@ -64,6 +64,7 @@ module.exports = function(app){
         if(keyword != ""){
           arr_query.push("concat(client_ip,nama) like '%" + keyword + "%");
         }
+        arr_query.push("server_id=" + req.session.server_id);
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
@@ -83,46 +84,6 @@ module.exports = function(app){
             res.end();
           }
         });
-      });
-    }else{
-      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
-      res.send(JSON.stringify(data));
-      res.end();
-    }
-  });
-  app.post(['/ajax/ping.html'],(req, res) => {
-    if(req.session.is_login){
-      var client_ip = "";
-      if(req.body.client_ip != undefined){
-        client_ip = req.body.client_ip;
-      }
-      var high_value = "";
-      if(req.body.high_value != undefined){
-        high_value = req.body.high_value;
-      }
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password
-      });
-      api.connect().then((client) => {
-        var torch = client.menu("/ping").where({address:client_ip}).stream((err, data, stream) => {
-            if (err) return err; // got an error while trying to stream
-            var data = {is_error:false,data:data};
-            torch.stop();
-            api.close();
-            res.send(JSON.stringify(data));
-            res.end();
-        });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
-        res.send(JSON.stringify(data));
-        res.end();
       });
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};

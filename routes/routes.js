@@ -12,9 +12,11 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var master_kota_id = req.session.master_kota_id;
       res.render("dashboard",{
         title:"Dashboard",
-        menu:"dashboard"
+        menu:"dashboard",
+        master_kota_id:master_kota_id
       });
     }
   });

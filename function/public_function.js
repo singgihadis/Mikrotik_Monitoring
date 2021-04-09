@@ -4,7 +4,7 @@ var moment = require('moment');
 module.exports = {
   Ping: function(){
     pool.getConnection(function(err, connection) {
-      var sql_data = "select a.*,b.host,b.port,b.user,b.password,c.hasil,c.filled from monitoring a inner join server b on a.server_id=b.id left join ping_data c on a.id=c.monitoring_id where a.is_run=1";
+      var sql_data = "select a.*,b.host,b.port,b.user,b.password,c.hasil,c.filled from monitoring a inner join server b on a.server_id=b.id left join ping_data c on a.id=c.monitoring_id and c.tgl=CURDATE() where a.is_run=1";
       var query_data = connection.query(sql_data, function (err, results, fields) {
         if(results.length == 0){
           connection.release();
@@ -18,7 +18,7 @@ module.exports = {
           });
           if(arr_data_insert.length > 0){
             var sql_insert = "insert into ping_data(monitoring_id,tgl,hasil) values " + arr_data_insert.join(",");
-            var query_data = connection.query(sql_insert, function (err, results2, fields) {
+            var query_data = connection.query(sql_insert, function (err, results3, fields) {
               if (!err){
                 connection.release();
                 module.exports.Ping_Proses(0,results.length,results);
@@ -52,7 +52,7 @@ module.exports = {
       var torch = client.menu("/ping").where({address:client_ip}).stream((err, data, stream) => {
           if (err) return err; // got an error while trying to stream
           var hasil_arr = [];
-          if(item['filled'] != null && item['hasil'] != null){
+          if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
             hasil_arr = JSON.parse(item['hasil']);
           }
           var sekarang = moment().unix();
@@ -68,7 +68,7 @@ module.exports = {
           torch.stop();
           api.close();
           pool.getConnection(function(err, connection) {
-            var sql_update = "update ping_data set hasil=? where monitoring_id=?";
+            var sql_update = "update ping_data set hasil=?,filled=1 where monitoring_id=? and tgl=CURDATE()";
             var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {
               connection.release();
               index++;
@@ -83,7 +83,14 @@ module.exports = {
           });
       });
     }).catch((err) => {
-      module.exports.Ping();
+      index++;
+      if(index == jml){
+        setTimeout(function(){
+          module.exports.Ping();
+        },60000);
+      }else{
+        module.exports.Ping_Proses(index,results.length,results);
+      }
     });
   }
 }

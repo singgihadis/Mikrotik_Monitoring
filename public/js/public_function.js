@@ -217,3 +217,42 @@ function UptimeFix(inputan){
     return "";
   }
 }
+function TitleCase(str){
+  str = str.toLowerCase();
+  return str.replace(/(?:^|\s)\w/g, function(match) {
+      return match.toUpperCase();
+  });
+}
+function ParseBMKGCuaca(x){
+  var hasil = "";
+  if(x == "0" || x == "100"){
+    hasil = "Cerah";
+  }else if(x == "1" || x == "101"){
+    hasil = "Cerah Berawan";
+  }else if(x == "2" || x == "102"){
+    hasil = "Cerah Berawan";
+  }else if(x == "3" || x == "103"){
+    hasil = "Berawan";
+  }else if(x == "4" || x == "104"){
+    hasil = "Berawan Tebal";
+  }else if(x == "5"){
+    hasil = "Udara Kabur";
+  }else if(x == "10"){
+    hasil = "Asap";
+  }else if(x == "45"){
+    hasil = "Kabut";
+  }else if(x == "60"){
+    hasil = "Hujan Ringan";
+  }else if(x == "61"){
+    hasil = "Hujan Sedang";
+  }else if(x == "63"){
+    hasil = "Hujan Lebat";
+  }else if(x == "80"){
+    hasil = "Hujan Lokal";
+  }else if(x == "95"){
+    hasil = "Hujan Petir";
+  }else if(x == "97"){
+    hasil = "Hujan Petir";
+  }
+  return hasil;
+}

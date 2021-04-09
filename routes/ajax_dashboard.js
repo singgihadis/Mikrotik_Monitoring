@@ -36,6 +36,36 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/master_kota_id_simpan.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var master_kota_id = "";
+        if(req.body.master_kota_id != undefined){
+          master_kota_id = req.body.master_kota_id;
+        }
+        var server_id = req.session.server_id;
+        var sql = "update server set master_kota_id=? where id=?";
+        var query = connection.query(sql,[master_kota_id,server_id], function (err, results, fields) {
+          if (!err){
+            connection.release();
+            req.session.master_kota_id = master_kota_id;
+            var data = {is_error:false,msg:"Berhasil menyimpan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:true,msg:"Gagal menyimpan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
   app.post(['/ajax/system_health.html'],(req, res) => {
     if(req.session.is_login){
       var host = req.session.host;
