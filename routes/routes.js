@@ -54,6 +54,17 @@ module.exports = function(app){
       });
     }
   });
+  app.get(['/ppp.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      res.render("ppp",{
+        title:"PPP",
+        menu:"user_manager",
+        sub_menu:"ppp"
+      });
+    }
+  });
   app.get(['/logout.html'],(req, res) => {
     req.session.destroy(function(err) {
       res.redirect("/login.html");

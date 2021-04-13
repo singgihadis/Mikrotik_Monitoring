@@ -14,7 +14,7 @@
                       <a href="/">Home</a>
                     </li>
                     <li class="active">
-                      DNS
+                      PPP
                     </li>
                   </ul>
                 </div>
@@ -22,10 +22,40 @@
             </div>
             <br>
             <div class="row">
+              <div class="col-md-12 mb-2 text-right">
+                <div class="widget widget-primary">
+                  <div class="widget-wrapper">
+                    <div class="widget-style">&nbsp;</div>
+                    <div class="widget-content">
+                      <div class="text">Total</div>
+                      <div class="count" id="total">0</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="widget widget-success">
+                  <div class="widget-wrapper">
+                    <div class="widget-style">&nbsp;</div>
+                    <div class="widget-content">
+                      <div class="text">Koneksi Aktif</div>
+                      <div class="count" id="total_aktif">0</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="widget widget-danger">
+                  <div class="widget-wrapper">
+                    <div class="widget-style">&nbsp;</div>
+                    <div class="widget-content">
+                      <div class="text">Koneksi Tidak Aktif</div>
+                      <div class="count" id="total_tidak_aktif">0</div>
+                    </div>
+                  </div>
+                </div>
+                <br>
+              </div>
               <div class="col-md-12">
                 <div class="card stat-card">
                   <div class="card-header bg-gradient-primary text-white">
-                    DNS Cache
+                    PPP Secret
                     <div id="loader_insert_data" class="mt-1 d-inline-block float-right">
                       <span class="fa fa-spin fa-spinner d-table-cell align-middle"></span> <small class="pl-1 d-table-cell align-middle">Memproses data</small>
                     </div>
@@ -34,13 +64,20 @@
                     <div class="row">
                       <div class="col-md-6">
                         <form id="form_data" class="text-left">
-                          <div class="d-inline-block">
+                          <div class="d-inline-block mr-2">
                             <div class="input-group mb-3">
                               <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Keyword">
                               <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span></button>
                               </div>
                             </div>
+                          </div>
+                          <div class="d-inline-block">
+                            <select id="is_active" name="is_active" class="form-control">
+                              <option value="">Semua Koneksi</option>
+                              <option value="1">Aktif</option>
+                              <option value="0">Tidak Aktif</option>
+                            </select>
                           </div>
                         </form>
                       </div>
@@ -53,13 +90,15 @@
                           <tr>
                             <th>No</th>
                             <th>Name</th>
-                            <th>Type</th>
-                            <th>Data</th>
-                            <th>TTL</th>
+                            <th>Password</th>
+                            <th>Profile</th>
+                            <th>Local Address</th>
+                            <th>Remote Address</th>
+                            <th>Active</th>
                           </tr>
                         </thead>
                         <tbody id="listdata">
-                          <tr><td colspan="5">Memuat Data ....</td></tr>
+                          <tr><td colspan="7">Memuat Data ....</td></tr>
                         </tbody>
                       </table>
                     </div>
@@ -83,6 +122,6 @@
     </div>
     <!-- /#wrapper -->
     {{> foot}}
-    <script type="text/javascript" src="/assets/js/page/dns.js"></script>
+    <script type="text/javascript" src="/assets/js/page/ppp.js"></script>
   </body>
 </html>

@@ -92,6 +92,57 @@ body{
       }
     }
   }
+  .widget{
+    display: inline-block;
+    border: 1px solid lightgrey;
+    position: relative;
+    margin-left: 5px;
+    &.widget-danger{
+      .widget-style{
+        background-color: red;
+      }
+      .count{
+        color: red;
+      }
+    }
+    &.widget-primary{
+      .widget-style{
+        background-color: rgba(15,115,172,1);
+      }
+      .count{
+        color: rgba(15,115,172,1);
+      }
+    }
+    &.widget-success{
+      .widget-style{
+        background-color: green;
+      }
+      .count{
+        color:green;
+      }
+    }
+    .widget-wrapper{
+      display: table;
+      .widget-style{
+        display: table-cell;
+        width: 10px;
+      }
+      .widget-content{
+        display: table-cell;
+        padding: 5px 10px;
+        min-width: 100px;
+      }
+      .text{
+        font-size: 12px;
+        font-weight: bold;
+        color: #535252;
+      }
+      .count{
+        font-weight: bold;
+      }
+    }
+
+  }
 }
 @import "_dashboard.scss";
 @import "_ping.scss";

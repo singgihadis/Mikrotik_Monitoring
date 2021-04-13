@@ -93,6 +93,62 @@ body .breadcrumb-custom ul li a {
 body .breadcrumb-custom ul li a:hover, body .breadcrumb-custom ul li a:focus {
   text-decoration: none;
 }
+/* line 95, ../sass/global.scss */
+body .widget {
+  display: inline-block;
+  border: 1px solid lightgrey;
+  position: relative;
+  margin-left: 5px;
+}
+/* line 101, ../sass/global.scss */
+body .widget.widget-danger .widget-style {
+  background-color: red;
+}
+/* line 104, ../sass/global.scss */
+body .widget.widget-danger .count {
+  color: red;
+}
+/* line 109, ../sass/global.scss */
+body .widget.widget-primary .widget-style {
+  background-color: #0f73ac;
+}
+/* line 112, ../sass/global.scss */
+body .widget.widget-primary .count {
+  color: #0f73ac;
+}
+/* line 117, ../sass/global.scss */
+body .widget.widget-success .widget-style {
+  background-color: green;
+}
+/* line 120, ../sass/global.scss */
+body .widget.widget-success .count {
+  color: green;
+}
+/* line 124, ../sass/global.scss */
+body .widget .widget-wrapper {
+  display: table;
+}
+/* line 126, ../sass/global.scss */
+body .widget .widget-wrapper .widget-style {
+  display: table-cell;
+  width: 10px;
+}
+/* line 130, ../sass/global.scss */
+body .widget .widget-wrapper .widget-content {
+  display: table-cell;
+  padding: 5px 10px;
+  min-width: 100px;
+}
+/* line 135, ../sass/global.scss */
+body .widget .widget-wrapper .text {
+  font-size: 12px;
+  font-weight: bold;
+  color: #535252;
+}
+/* line 140, ../sass/global.scss */
+body .widget .widget-wrapper .count {
+  font-weight: bold;
+}
 
 /* line 2, ../sass/_dashboard.scss */
 .dashboard .stat-card {

@@ -4,7 +4,6 @@ var moment = require('moment');
 module.exports = {
   Simpan: function(index,server_id,jml,result,callback){
     pool.getConnection(function(err, connection) {
-      console.log(index);
       if(jml != index){
         var item = result[index];
         var sql_insert = "insert ignore into dns(server_id,name,type,data,ttl) values(?,?,?,?,?)";
@@ -20,6 +19,7 @@ module.exports = {
           }
         });
       }else{
+        connection.release();
         callback();
       }
     });

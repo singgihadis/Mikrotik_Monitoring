@@ -15,7 +15,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("concat(name,type,data) like '%" + keyword + "%");
+          arr_query.push("concat(name,type,data) like '%" + keyword + "%'");
         }
         arr_query.push("server_id=" + req.session.server_id);
         var filter_query = "";
@@ -23,18 +23,29 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 10) - 10;
-        var sql_data = "select * from dns " + filter_query + " limit " + limit + ",11";
-        var query_data = connection.query(sql_data, function (err, results, fields) {
-          if(results.length == 0){
+        var sql_data_total = "select count(id) as total from dns " + filter_query;
+        var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
+          if(results_total.length == 0){
             connection.release();
             var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
             res.send(JSON.stringify(data));
             res.end();
           }else{
-            connection.release();
-            var data = {is_error:false,data:results};
-            res.send(JSON.stringify(data));
-            res.end();
+            var total = results_total[0]['total'];
+            var sql_data = "select * from dns " + filter_query + " limit " + limit + ",11";
+            var query_data = connection.query(sql_data, function (err, results, fields) {
+              if(results.length == 0){
+                connection.release();
+                var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }else{
+                connection.release();
+                var data = {is_error:false,data:results,total:total};
+                res.send(JSON.stringify(data));
+                res.end();
+              }
+            });
           }
         });
       });
