@@ -25,8 +25,30 @@ body{
     z-index: 1;
     .list-group-item{
       font-size: 14px;
+      border-top: none;
       border-bottom: none;
       padding: 8px 20px;
+      &.menu-item{
+        span{
+          &:before{
+            content: "\f0d7";
+          }
+        }
+        &.collapsed{
+          span{
+            &:before{
+              content:"\f0da";
+            }
+          }
+        }
+      }
+    }
+    .sub-menu{
+      width: calc(100% - 6px) !important;
+      margin-left: 6px;
+      .sub-item{
+
+      }
     }
   }
   .bg-gradient-primary{
@@ -73,3 +95,4 @@ body{
 }
 @import "_dashboard.scss";
 @import "_ping.scss";
+@import "_dns.scss";

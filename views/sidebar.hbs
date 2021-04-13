@@ -1,8 +1,21 @@
 <div class="bg-white border-right sidebar" id="sidebar-wrapper">
   <div class="sidebar-heading"><img src="/assets/img/logo.png" style="width:100%;" /></div>
   <div class="list-group list-group-flush">
-    <a href="/dashboard.html" class="list-group-item list-group-item-action bg-white {{#ifEquals menu "dashboard"}}font-weight-bolder{{/ifEquals}}">Dashboard</a>
-    <a href="/monitoring.html" class="list-group-item list-group-item-action bg-white {{#ifEquals menu "monitoring"}}font-weight-bolder{{/ifEquals}}">Monitoring</a>
-    <a href="/ping.html" class="list-group-item list-group-item-action bg-white {{#ifEquals menu "ping"}}font-weight-bolder{{/ifEquals}}">Ping</a>
+      <a href="#monitoring" data-toggle="collapse" class="list-group-item menu-item list-group-item-action bg-white {{#ifNotEquals menu "monitoring"}}collapsed{{/ifNotEquals}}">
+        Monitoring <span class="fa float-right mt-1"></span>
+      </a>
+      <div id="monitoring" class="list-group sub-menu collapse {{#ifEquals menu "monitoring"}}show{{/ifEquals}}">
+        <a href="/traffic.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "traffic"}}font-weight-bolder{{/ifEquals}}">Traffic</a>
+        <a href="/host.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "host"}}font-weight-bolder{{/ifEquals}}">Host</a>
+        <a href="/ping.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "ping"}}font-weight-bolder{{/ifEquals}}">Ping</a>
+        <a href="/dns.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "dns"}}font-weight-bolder{{/ifEquals}}">DNS</a>
+      </div>
+      <a href="#user_manager" data-toggle="collapse" class="list-group-item menu-item list-group-item-action bg-white {{#ifNotEquals menu "user_manager"}}collapsed{{/ifNotEquals}}">
+        User Manager <span class="fa float-right mt-1"></span>
+      </a>
+      <div id="user_manager" class="list-group sub-menu collapse {{#ifEquals menu "user_manager"}}show{{/ifEquals}}">
+        <a href="/hotspot.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "hotspot"}}font-weight-bolder{{/ifEquals}}">Hotspot</a>
+        <a href="/ppp.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "ppp"}}font-weight-bolder{{/ifEquals}}">PPP</a>
+      </div>
   </div>
 </div>

@@ -1,32 +1,34 @@
 module.exports = function(app){
   app.get(['/','/login.html'],(req, res) => {
     if(req.session.is_login){
-      res.redirect("/dashboard.html");
+      res.redirect("/traffic.html");
     }else{
       res.render("login",{
         title:"Login"
       });
     }
   });
-  app.get(['/dashboard.html'],(req, res) => {
+  app.get(['/traffic.html'],(req, res) => {
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
       var master_kota_id = req.session.master_kota_id;
       res.render("dashboard",{
-        title:"Dashboard",
-        menu:"dashboard",
+        title:"Traffic",
+        menu:"monitoring",
+        sub_menu:"traffic",
         master_kota_id:master_kota_id
       });
     }
   });
-  app.get(['/monitoring.html'],(req, res) => {
+  app.get(['/host.html'],(req, res) => {
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
       res.render("monitoring",{
-        title:"Monitoring",
-        menu:"monitoring"
+        title:"Host",
+        menu:"monitoring",
+        sub_menu:"host"
       });
     }
   });
@@ -36,7 +38,19 @@ module.exports = function(app){
     }else{
       res.render("ping",{
         title:"Ping",
-        menu:"ping"
+        menu:"monitoring",
+        sub_menu:"ping"
+      });
+    }
+  });
+  app.get(['/dns.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      res.render("dns",{
+        title:"DNS",
+        menu:"monitoring",
+        sub_menu:"dns"
       });
     }
   });

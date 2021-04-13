@@ -17,7 +17,7 @@ $(document).ready(function(){
             $("#form_login").loading("stop");
             toastr["error"](res.msg);
           }else{
-            window.location = "/dashboard.html";
+            window.location = "/traffic.html";
           }
         },error:function(){
           $("#form_login").loading("stop");

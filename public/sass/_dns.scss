@@ -1,0 +1,16 @@
+.dns{
+  .pagination{
+    .page-item{
+      .page-link{
+        color: rgb(60,60,60);
+      }
+      &.active{
+        .page-link{
+          color: white;
+          background: rgb(15,115,172);
+          background: linear-gradient(135deg, rgba(15,115,172,1) 0%, rgba(14,104,177,1) 51%, rgba(6,106,193,1) 100%);
+        }
+      }
+    }
+  }
+}

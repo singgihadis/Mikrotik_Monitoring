@@ -1,4 +1,8 @@
 $(document).ready(function(){
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
   system_identity();
   global_system_resources();
 });

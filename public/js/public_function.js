@@ -93,12 +93,6 @@ function IsEmpty(isi){
     return false;
   }
 }
-$(document).ready(function(){
-    $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-    });
-});
 function toTitleCase(str) {
     if(str == null){
       str = "";
@@ -254,5 +248,37 @@ function ParseBMKGCuaca(x){
   }else if(x == "97"){
     hasil = "Hujan Petir";
   }
+  return hasil;
+}
+function ParseDNSCacheTime(x){
+  var d = x.match(/\d+d/g);
+  var h = x.match(/\d+h/g);
+  var m = x.match(/\d+m/g);
+  var s = x.match(/\d+s/g);
+  var day = "";
+  var arr_time = [];
+  var hour = "00";
+  var minute = "00";
+  var second = "00";
+  if(d != null){
+    day = d.toString();
+  }
+  if(h != null){
+    hour = TwoDigitNumber(h.toString().replace("h",""));
+  }
+  if(m != null){
+    minute = TwoDigitNumber(m.toString().replace("m",""));
+  }
+  if(s != null){
+    second = TwoDigitNumber(s.toString().replace("s",""));
+  }
+  arr_time.push(hour);
+  arr_time.push(minute);
+  arr_time.push(second);
+  var time = arr_time.join(":");
+  if(time != ""){
+    day = day + " ";
+  }
+  var hasil = day  + time;
   return hasil;
 }
