@@ -65,7 +65,7 @@ function load_data(with_loading){
         });
         $("#listdata").html(html);
         html_pagination(res.data.length);
-        $("#info_page").html(first + " - " + (first + 9) + " dari " + FormatAngka(res.total));
+        $("#info_page").html(first + " - " + (no - 1) + " dari " + FormatAngka(res.total));
         total_aktif();
       }
     },error:function(){

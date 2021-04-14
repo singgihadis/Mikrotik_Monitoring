@@ -237,27 +237,42 @@ function cpu(data){
 }
 function memory(data){
   var free_memory = data['freeMemory'];
+  var byte_total_memory = data['totalMemory'];
   var total_memory = data['totalMemory'];
   var memory_used = total_memory - free_memory;
-  var satuan_memory_used = ByteToDigitalStorageUnit(memory_used)['label'];
-  var satuan_total_memory = ByteToDigitalStorageUnit(total_memory)['label'];
-  var satuan_free_memory = ByteToDigitalStorageUnit(free_memory)['label'];
-  total_memory = ByteToDigitalStorageUnit(total_memory)['value'];
-  memory_used = ByteToDigitalStorageUnit(memory_used)['value'];
-  free_memory = ByteToDigitalStorageUnit(free_memory)['value'];
+  var satuan_memory_used = ByteToDigitalStorageUnit_Computer(memory_used)['label'];
+  var satuan_total_memory = ByteToDigitalStorageUnit_Computer(total_memory)['label'];
+  var satuan_free_memory = ByteToDigitalStorageUnit_Computer(free_memory)['label'];
+  total_memory = ByteToDigitalStorageUnit_Computer(total_memory)['value'];
+  memory_used = ByteToDigitalStorageUnit_Computer(memory_used)['value'];
+  free_memory = ByteToDigitalStorageUnit_Computer(free_memory)['value'];
   $("#total_memory").html(total_memory.toFixed(1) + " " + satuan_total_memory);
   $("#free_memory").html(free_memory.toFixed(1) + " " + satuan_free_memory);
+
+  var max_gauge_total_memory = 0;
+  if(satuan_memory_used == "KiB"){
+    max_gauge_total_memory = ByteToKIB(byte_total_memory);
+  }else if(satuan_memory_used == "MiB"){
+    max_gauge_total_memory = ByteToMIB(byte_total_memory);
+  }else if(satuan_memory_used == "GiB"){
+    max_gauge_total_memory = ByteToGIB(byte_total_memory);
+  }else if(satuan_memory_used == "TiB"){
+    max_gauge_total_memory = ByteToTIB(byte_total_memory);
+  }else if(satuan_memory_used == "PiB"){
+    max_gauge_total_memory = ByteToPIB(byte_total_memory);
+  }
+
   if(memory_gauge_chart != null){
     memory_gauge_chart.update({
       symbol:" " + satuan_memory_used,
     });
-    memory_gauge_chart.refresh(memory_used,total_memory,0);
+    memory_gauge_chart.refresh(memory_used,max_gauge_total_memory,0);
   }else{
     memory_gauge_chart = new JustGage({
       id: "memory_used",
       value: memory_used,
       min: 0,
-      max: total_memory,
+      max: max_gauge_total_memory,
       decimals: 0,
       gaugeWidthScale: 0.6,
       symbol:" " + satuan_memory_used,
@@ -270,6 +285,7 @@ function memory(data){
 function hdd(data){
   var free_hdd = data['freeHddSpace'];
   var total_hdd = data['totalHddSpace'];
+  var byte_total_hdd = data['totalHddSpace'];
   var hdd_used = total_hdd - free_hdd;
   var satuan_hdd_used = ByteToDigitalStorageUnit_Computer(hdd_used)['label'];
   var satuan_total_hdd = ByteToDigitalStorageUnit_Computer(total_hdd)['label'];
@@ -279,17 +295,31 @@ function hdd(data){
   free_hdd = ByteToDigitalStorageUnit_Computer(free_hdd)['value'];
   $("#total_hdd").html(total_hdd.toFixed(1) + " " + satuan_total_hdd);
   $("#free_hdd").html(free_hdd.toFixed(1) + " " + satuan_free_hdd);
+
+  var max_gauge_total_hdd = 0;
+  if(satuan_hdd_used == "KiB"){
+    max_gauge_total_hdd = ByteToKIB(byte_total_hdd);
+  }else if(satuan_hdd_used == "MiB"){
+    max_gauge_total_hdd = ByteToMIB(byte_total_hdd);
+  }else if(satuan_hdd_used == "GiB"){
+    max_gauge_total_hdd = ByteToGIB(byte_total_hdd);
+  }else if(satuan_hdd_used == "TiB"){
+    max_gauge_total_hdd = ByteToTIB(byte_total_hdd);
+  }else if(satuan_hdd_used == "PiB"){
+    max_gauge_total_hdd = ByteToPIB(byte_total_hdd);
+  }
+
   if(hdd_gauge_chart != null){
     hdd_gauge_chart.update({
       symbol:" " + satuan_hdd_used,
     });
-    hdd_gauge_chart.refresh(hdd_used,total_hdd,0);
+    hdd_gauge_chart.refresh(hdd_used,max_gauge_total_hdd,0);
   }else{
     hdd_gauge_chart = new JustGage({
       id: "hdd_used",
       value: hdd_used,
       min: 0,
-      max: total_hdd,
+      max: max_gauge_total_hdd,
       decimals: 0,
       gaugeWidthScale: 0.6,
       symbol:" " + satuan_hdd_used,

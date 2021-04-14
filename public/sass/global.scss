@@ -143,6 +143,20 @@ body{
     }
 
   }
+  .nav-tabs{
+    .nav-item{
+      .nav-link{
+        border-top-left-radius: 1px;
+        border-top-right-radius: 1px;
+      }
+    }
+  }
+  .tab-content{
+    border-left: 1px solid lightgrey;
+    border-right: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
+    padding: 10px;
+  }
 }
 @import "_dashboard.scss";
 @import "_ping.scss";

@@ -149,6 +149,18 @@ body .widget .widget-wrapper .text {
 body .widget .widget-wrapper .count {
   font-weight: bold;
 }
+/* line 148, ../sass/global.scss */
+body .nav-tabs .nav-item .nav-link {
+  border-top-left-radius: 1px;
+  border-top-right-radius: 1px;
+}
+/* line 154, ../sass/global.scss */
+body .tab-content {
+  border-left: 1px solid lightgrey;
+  border-right: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+  padding: 10px;
+}
 
 /* line 2, ../sass/_dashboard.scss */
 .dashboard .stat-card {

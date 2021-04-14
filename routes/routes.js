@@ -54,6 +54,17 @@ module.exports = function(app){
       });
     }
   });
+  app.get(['/hotspot.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      res.render("hotspot",{
+        title:"Hotspot",
+        menu:"user_manager",
+        sub_menu:"hotspot"
+      });
+    }
+  });
   app.get(['/ppp.html'],(req, res) => {
     if(!req.session.is_login){
       res.redirect("/login.html");
@@ -62,6 +73,39 @@ module.exports = function(app){
         title:"PPP",
         menu:"user_manager",
         sub_menu:"ppp"
+      });
+    }
+  });
+  app.get(['/member.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      res.render("member",{
+        title:"member",
+        menu:"user_manager",
+        sub_menu:"member"
+      });
+    }
+  });
+  app.get(['/pembayaran.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      res.render("pembayaran",{
+        title:"pembayaran",
+        menu:"user_manager",
+        sub_menu:"pembayaran"
+      });
+    }
+  });
+  app.get(['/pembayaran/bayar.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      res.render("bayar",{
+        title:"Bayar",
+        menu:"user_manager",
+        sub_menu:"bayar"
       });
     }
   });

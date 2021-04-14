@@ -46,6 +46,9 @@ require('./routes/ajax_monitoring')(app);
 require('./routes/ajax_ping')(app);
 require('./routes/ajax_dns')(app);
 require('./routes/ajax_ppp')(app);
+require('./routes/ajax_hotspot')(app);
+require('./routes/ajax_member')(app);
+require('./routes/ajax_pembayaran')(app);
 require('./routes/ajax_umum')(app);
 
 //server listening

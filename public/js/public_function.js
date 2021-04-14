@@ -56,6 +56,26 @@ function ByteToDigitalStorageUnit_Computer(x){
   }
   return {label:label,value:value};
 }
+function ByteToKIB(x) {
+  var hasil = x / 1024;
+  return hasil;
+}
+function ByteToMIB(x) {
+  var hasil = x / 1024 / 1024;
+  return hasil;
+}
+function ByteToGIB(x) {
+  var hasil = x / 1024 / 1024 / 1024;
+  return hasil;
+}
+function ByteToTIB(x) {
+  var hasil = x / 1024 / 1024 / 1024 / 1024;
+  return hasil;
+}
+function ByteToPIB(x) {
+  var hasil = x / 1024 / 1024 / 1024 / 1024 / 1024;
+  return hasil;
+}
 function ByteToDigitalStorageUnit(x){
   var label = "B";
   var value = parseFloat(x);
