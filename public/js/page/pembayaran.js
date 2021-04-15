@@ -7,6 +7,7 @@ $(document).ready(function(){
       load_data();
     }
   });
+  total_tagihan();
   build_tahun();
   load_data();
 });
@@ -52,7 +53,7 @@ function load_data(){
             var arr_bulan = bulan.split(",");
             html += "<tr>";
             html += "<td>" +  no + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "'>" + v['nama'] + "</a></td>";
             for(var a=0;a<12;a++){
               var is_bayar = "<span class='fa fa-times-circle text-danger'></span>";
               if(arr_bulan.indexOf((a + 1).toString()) != -1){
@@ -75,12 +76,47 @@ function load_data(){
     }
   });
 }
+function total_tagihan(){
+  $.ajax({
+    type:'post',
+    url:'/ajax/total_tagihan.html',
+    data:{},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      var total_tagihan = 0;
+      var total_dibayar = 0;
+      var total_belum_dibayar = 0;
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          
+        }
+      }else{
+        total_tagihan = res['total'];
+        total_dibayar = res['total_dibayar'];
+        total_belum_dibayar = res['total_belum_dibayar'];
+      }
+      $("#total").html("Rp. " + FormatAngka(total_tagihan));
+      $("#total_dibayar").html("Rp. " + FormatAngka(total_dibayar));
+      $("#total_belum_dibayar").html("Rp. " + FormatAngka(total_belum_dibayar));
+    },error:function(){
+
+    }
+  });
+}
 function modal_detail(itu){
-  var id = $(itu).attr("data-id");
+  var name = $(itu).attr("data-name");
+  var password = $(itu).attr("data-password");
+  var profile = $(itu).attr("data-profile");
   var nama = $(itu).attr("data-nama");
   var alamat = $(itu).attr("data-alamat");
   var no_wa = $(itu).attr("data-no-wa");
   var nominal_pembayaran = $(itu).attr("data-nominal-pembayaran");
+  $("#name").html(name);
+  $("#password").html(password);
+  $("#profile").html(profile);
   $("#nama").html(nama);
   $("#alamat").html(alamat);
   $("#no_wa").html(no_wa);

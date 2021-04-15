@@ -31,7 +31,6 @@ app.use(bodyParser.json({ limit: "5mb" }));
 app.use(bodyParser.urlencoded({ extended: false, limit: "5mb" }));
 //set folder public sebagai static folder untuk static file
 app.use('/assets',express.static(__dirname + '/public'));
-app.use("/firebase-messaging-sw.js", express.static(__dirname + '/firebase-messaging-sw.js'));
 app.use(session({
     // store: new RedisStore({ client: redisClient }),
     secret: 'secret',

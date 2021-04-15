@@ -119,4 +119,47 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/total_member.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var arr_query = [];
+        arr_query.push("b.server_id=" + req.session.server_id);
+        var filter_query = "";
+        if(arr_query.length > 0){
+          filter_query = " where " + arr_query.join(" and ");
+        }
+        var sql_data_total = "select count(b.id) as total from member a right join ppp_secret b on a.ppp_secret_id=b.id " + filter_query;
+        var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
+          if(results_total.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            var total = results_total[0]['total'];
+            var sql_data_dibayar = "select count(a.id) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id " + filter_query;
+            var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
+              if(results_dibayar.length == 0){
+                connection.release();
+                var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }else{
+                var total_ppp_secret = results_dibayar[0]['total'];
+                var total_belum_update = total - total_ppp_secret;
+                connection.release();
+                var data = {is_error:false,data:[],total:total,total_belum_update:total_belum_update};
+                res.send(JSON.stringify(data));
+                res.end();
+              }
+            });
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
 }

@@ -105,7 +105,7 @@ module.exports = function(app){
       res.render("bayar",{
         title:"Bayar",
         menu:"user_manager",
-        sub_menu:"bayar"
+        sub_menu:"pembayaran"
       });
     }
   });

@@ -6,6 +6,7 @@ $(document).ready(function(){
       load_data();
     }
   });
+  total_member();
   load_data();
   $("#form_member").validate({
     submitHandler:function(){
@@ -92,6 +93,34 @@ function load_data(){
       $("#listdata").loading("stop");
       $("#info_page").html("0 - 0 dari 0");
       $("#listdata").html("<tr><td colspan='9'>Silahkan periksa koneksi internet anda</td></tr>");
+    }
+  });
+}
+
+function total_member(){
+  $.ajax({
+    type:'post',
+    url:'/ajax/total_member.html',
+    data:{},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      var total = 0;
+      var total_belum_update = 0;
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+
+        }
+      }else{
+        total = res['total'];
+        total_belum_update = res['total_belum_update'];
+      }
+      $("#total").html("Rp. " + FormatAngka(total));
+      $("#total_belum_update").html("Rp. " + FormatAngka(total_belum_update));
+    },error:function(){
+
     }
   });
 }

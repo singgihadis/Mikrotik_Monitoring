@@ -23,12 +23,12 @@
                 </div>
               </div>
             </div>
+            <br>
             <div class="row mt-2">
               <div class="col-md-12">
                 <div class="card stat-card">
                   <div class="card-header bg-gradient-primary text-white">
-                    Pembayaran
-                    <a href="/pembayaran/bayar.html" class="btn btn-light float-right"><span class="fa fa-edit"></span></a>
+                    Bayar
                   </div>
                   <div class="card-body">
                     <div class="row">
@@ -142,6 +142,18 @@
           </div>
           <div class="modal-body" style="font-size:14px;">
             <dl>
+              <dt>Name</dt>
+              <dd id="name"></dd>
+            </dl>
+            <dl>
+              <dt>Password</dt>
+              <dd id="password"></dd>
+            </dl>
+            <dl>
+              <dt>Profile</dt>
+              <dd id="profile"></dd>
+            </dl>
+            <dl>
               <dt>Nama</dt>
               <dd id="nama"></dd>
             </dl>
@@ -164,19 +176,20 @@
         </div>
       </div>
     </div>
-    <div class="modal" id="modal_konfirmasi">
+    <div class="modal" id="modal_bayar">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Data Member</h5>
+            <h5 class="modal-title">Pembayaran</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body" style="font-size:14px;">
-            <form id="form_member">
+            <form id="form_bayar">
               <input type="hidden" id="bulan" name="bulan" />
               <input type="hidden" id="id" name="id" />
+              <input type="hidden" id="is_bayar" name="0" />
               <div class="form-group">
                 <label class="control-label">Password</label>
                 <input id="password" name="password" type="text" class="form-control" placeholder="Masukkan password untuk mengubah status" />

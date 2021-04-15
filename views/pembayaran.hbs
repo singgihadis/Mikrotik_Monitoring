@@ -7,7 +7,7 @@
         {{> navbar}}
         <div class="container-fluid">
             <div class="row mt-4">
-              <div class="col-sm-6">
+              <div class="col-sm-5">
                 <div class="breadcrumb-custom">
                   <ul>
                     <li>
@@ -19,13 +19,13 @@
                   </ul>
                 </div>
               </div>
-              <div class="col-sm-6 text-right">
+              <div class="col-sm-7 text-right">
                 <div class="widget widget-primary">
                   <div class="widget-wrapper">
                     <div class="widget-style">&nbsp;</div>
                     <div class="widget-content">
-                      <div class="text">Total Tagihan</div>
-                      <div class="count" id="total">0</div>
+                      <div class="text">Total Tagihan<br><small><b>(Bulan Ini)</b></small></div>
+                      <div class="count" id="total">Rp. 0</div>
                     </div>
                   </div>
                 </div>
@@ -33,8 +33,8 @@
                   <div class="widget-wrapper">
                     <div class="widget-style">&nbsp;</div>
                     <div class="widget-content">
-                      <div class="text">Tagihan Dibayar</div>
-                      <div class="count" id="total_dibayar">0</div>
+                      <div class="text">Tagihan Dibayar<br><small><b>(Bulan Ini)</b></small></div>
+                      <div class="count" id="total_dibayar">Rp. 0</div>
                     </div>
                   </div>
                 </div>
@@ -42,8 +42,8 @@
                   <div class="widget-wrapper">
                     <div class="widget-style">&nbsp;</div>
                     <div class="widget-content">
-                      <div class="text">Tagihan Belum Dibayar</div>
-                      <div class="count" id="total_belum_dibayar">0</div>
+                      <div class="text">Tagihan Belum Dibayar<br><small><b>(Bulan Ini)</b></small></div>
+                      <div class="count" id="total_belum_dibayar">Rp. 0</div>
                     </div>
                   </div>
                 </div>
@@ -157,6 +157,18 @@
             </button>
           </div>
           <div class="modal-body" style="font-size:14px;">
+            <dl>
+              <dt>Name</dt>
+              <dd id="name"></dd>
+            </dl>
+            <dl>
+              <dt>Password</dt>
+              <dd id="password"></dd>
+            </dl>
+            <dl>
+              <dt>Profile</dt>
+              <dd id="profile"></dd>
+            </dl>
             <dl>
               <dt>Nama</dt>
               <dd id="nama"></dd>
