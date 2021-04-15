@@ -1,0 +1,129 @@
+<html>
+  {{> head}}
+  <body class="dashboard">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-8">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li>
+                      <a href="/member.html">Member</a>
+                    </li>
+                    <li class="active">
+                      Traffic
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-4 text-right">
+                <a href="/" class="btn btn-light"><span class="fa fa-file-pdf-o"></span> Cetak</a>
+              </div>
+            </div>
+            <br>
+            <input type="hidden" id="id" name="id" value="{{id}}" />
+            <input type="hidden" id="member_id" name="member_id" value="" />
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <h6 class="ml-1"><b>PPP</b></h6>
+                        <table class="table table-sm table-borderless">
+                          <tr>
+                            <td>Name</td>
+                            <td> : </td>
+                            <td id="name"></td>
+                          </tr>
+                          <tr>
+                            <td>Password</td>
+                            <td> : </td>
+                            <td id="password"></td>
+                          </tr>
+                          <tr>
+                            <td>Profile</td>
+                            <td> : </td>
+                            <td id="profile"></td>
+                          </tr>
+                        </table>
+                      </div>
+                      <div class="col-md-8">
+                        <h6 class="ml-1"><b>Member</b></h6>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                              <tr>
+                                <td>Nama</td>
+                                <td> : </td>
+                                <td id="nama"></td>
+                              </tr>
+                              <tr>
+                                <td>Alamat</td>
+                                <td> : </td>
+                                <td id="alamat"></td>
+                              </tr>
+                              <tr>
+                                <td>No Whatsapp</td>
+                                <td> : </td>
+                                <td id="no_wa"></td>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                              <tr>
+                                <td>Nominal Pembayaran</td>
+                                <td> : </td>
+                                <td id="nominal_pembayaran"></td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br>
+              </div>
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="text-right">
+                      <form class="form_tgl">
+                        <div class="form-group d-inline-block">
+                          <div class="input-group input-group-sm">
+                            <div class="input-group-prepend"><span class="input-group-text bg-primary text-white"><i class="fa fa-calendar"></i></span></div>
+                            <input type="text" name="tgl" id="tgl" class="daterange form-control" placeholder="Tgl" />
+                            <div class="input-group-append "><button class="btn btn-danger clear" type="button">Clear</button></div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                    <div id="data">
+                      <canvas id="chart" height="100"></canvas>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+          <br><br>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/member_traffic.js"></script>
+  </body>
+</html>

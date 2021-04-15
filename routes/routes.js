@@ -3,8 +3,11 @@ module.exports = function(app){
     if(req.session.is_login){
       res.redirect("/traffic.html");
     }else{
+      var website_config = req.website_config;
       res.render("login",{
-        title:"Login"
+        title:"Login - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo']
       });
     }
   });
@@ -12,9 +15,12 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       var master_kota_id = req.session.master_kota_id;
       res.render("dashboard",{
-        title:"Traffic",
+        title:"Traffic - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"monitoring",
         sub_menu:"traffic",
         master_kota_id:master_kota_id
@@ -25,8 +31,11 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("monitoring",{
-        title:"Host",
+        title:"Host - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"monitoring",
         sub_menu:"host"
       });
@@ -36,8 +45,11 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("ping",{
-        title:"Ping",
+        title:"Ping - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"monitoring",
         sub_menu:"ping"
       });
@@ -47,8 +59,11 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("dns",{
-        title:"DNS",
+        title:"DNS - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"monitoring",
         sub_menu:"dns"
       });
@@ -58,8 +73,11 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("hotspot",{
-        title:"Hotspot",
+        title:"Hotspot - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"user_manager",
         sub_menu:"hotspot"
       });
@@ -69,8 +87,11 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("ppp",{
-        title:"PPP",
+        title:"PPP - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"user_manager",
         sub_menu:"ppp"
       });
@@ -80,10 +101,29 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("member",{
-        title:"member",
+        title:"Member - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"user_manager",
         sub_menu:"member"
+      });
+    }
+  });
+  app.get(['/member/traffic/:id.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      var website_config = req.website_config;
+      var id = req.params.id;
+      res.render("member_traffic",{
+        title:"Member Traffic - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"user_manager",
+        sub_menu:"member",
+        id:id
       });
     }
   });
@@ -91,8 +131,11 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("pembayaran",{
-        title:"pembayaran",
+        title:"Pembayaran - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"user_manager",
         sub_menu:"pembayaran"
       });
@@ -102,10 +145,26 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
       res.render("bayar",{
-        title:"Bayar",
+        title:"Bayar - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
         menu:"user_manager",
         sub_menu:"pembayaran"
+      });
+    }
+  });
+  app.get(['/pengaturan.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      var website_config = req.website_config;
+      res.render("pengaturan",{
+        title:"Pengaturan - " + website_config['title'],
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"pengaturan"
       });
     }
   });

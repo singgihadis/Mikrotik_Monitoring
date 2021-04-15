@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 // let RedisStore = require('connect-redis')(session);
 const hbs = require('hbs');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const app = express();
 hbs.registerPartials(__dirname + '/views');
@@ -38,6 +39,20 @@ app.use(session({
     saveUninitialized: true,
     cookie: { maxAge: 86400000 }
 }));
+app.use(function(req,res,next) {
+  fs.readFile( __dirname + '/config.json', function (err, data) {
+    if (err) {
+      throw err;
+    }
+    var config = JSON.parse(data.toString());
+    req.website_config = {
+      title : config['title'],
+      favicon : config['favicon'],
+      logo : config['logo']
+    };
+    return next();
+  });
+});
 require('./routes/routes')(app);
 require('./routes/ajax_login')(app);
 require('./routes/ajax_dashboard')(app);
@@ -48,11 +63,14 @@ require('./routes/ajax_ppp')(app);
 require('./routes/ajax_hotspot')(app);
 require('./routes/ajax_member')(app);
 require('./routes/ajax_pembayaran')(app);
+require('./routes/ajax_pengaturan')(app);
 require('./routes/ajax_umum')(app);
 
 //server listening
 var server = app.listen(3002, () => {
-  var public_function = require("./function/public_function.js");
-  public_function.Ping();
+  var ping_function = require("./function/ping_function.js");
+  ping_function.Ping();
+  var member_function = require("./function/member_function.js");
+  member_function.Traffic();
   console.log('Server is running at port 3002');
 });

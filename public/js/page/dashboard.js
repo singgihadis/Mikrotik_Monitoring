@@ -240,12 +240,12 @@ function memory(data){
   var byte_total_memory = data['totalMemory'];
   var total_memory = data['totalMemory'];
   var memory_used = total_memory - free_memory;
-  var satuan_memory_used = ByteToDigitalStorageUnit_Computer(memory_used)['label'];
-  var satuan_total_memory = ByteToDigitalStorageUnit_Computer(total_memory)['label'];
-  var satuan_free_memory = ByteToDigitalStorageUnit_Computer(free_memory)['label'];
-  total_memory = ByteToDigitalStorageUnit_Computer(total_memory)['value'];
-  memory_used = ByteToDigitalStorageUnit_Computer(memory_used)['value'];
-  free_memory = ByteToDigitalStorageUnit_Computer(free_memory)['value'];
+  var satuan_memory_used = BitToDigitalStorageUnit_Computer(memory_used)['label'];
+  var satuan_total_memory = BitToDigitalStorageUnit_Computer(total_memory)['label'];
+  var satuan_free_memory = BitToDigitalStorageUnit_Computer(free_memory)['label'];
+  total_memory = BitToDigitalStorageUnit_Computer(total_memory)['value'];
+  memory_used = BitToDigitalStorageUnit_Computer(memory_used)['value'];
+  free_memory = BitToDigitalStorageUnit_Computer(free_memory)['value'];
   $("#total_memory").html(total_memory.toFixed(1) + " " + satuan_total_memory);
   $("#free_memory").html(free_memory.toFixed(1) + " " + satuan_free_memory);
 
@@ -287,12 +287,12 @@ function hdd(data){
   var total_hdd = data['totalHddSpace'];
   var byte_total_hdd = data['totalHddSpace'];
   var hdd_used = total_hdd - free_hdd;
-  var satuan_hdd_used = ByteToDigitalStorageUnit_Computer(hdd_used)['label'];
-  var satuan_total_hdd = ByteToDigitalStorageUnit_Computer(total_hdd)['label'];
-  var satuan_free_hdd = ByteToDigitalStorageUnit_Computer(free_hdd)['label'];
-  total_hdd = ByteToDigitalStorageUnit_Computer(total_hdd)['value'];
-  hdd_used = ByteToDigitalStorageUnit_Computer(hdd_used)['value'];
-  free_hdd = ByteToDigitalStorageUnit_Computer(free_hdd)['value'];
+  var satuan_hdd_used = BitToDigitalStorageUnit_Computer(hdd_used)['label'];
+  var satuan_total_hdd = BitToDigitalStorageUnit_Computer(total_hdd)['label'];
+  var satuan_free_hdd = BitToDigitalStorageUnit_Computer(free_hdd)['label'];
+  total_hdd = BitToDigitalStorageUnit_Computer(total_hdd)['value'];
+  hdd_used = BitToDigitalStorageUnit_Computer(hdd_used)['value'];
+  free_hdd = BitToDigitalStorageUnit_Computer(free_hdd)['value'];
   $("#total_hdd").html(total_hdd.toFixed(1) + " " + satuan_total_hdd);
   $("#free_hdd").html(free_hdd.toFixed(1) + " " + satuan_free_hdd);
 
@@ -467,7 +467,7 @@ function func_interface_chart(data){
                         beginAtZero: true,
                         maxTicksLimit:5,
                         callback: function(label, index, labels) {
-                            var label_formatted = ByteToDigitalStorageUnit(label);
+                            var label_formatted = BitToDigitalStorageUnit(label);
                             return label_formatted['value'].toFixed(2) + " " + label_formatted['label'].toLowerCase() + "ps";
                         }
                     }
@@ -477,7 +477,7 @@ function func_interface_chart(data){
               mode:'x-axis',
               callbacks: {
                   label: function (tooltipItem, data) {
-                      var label_formatted = ByteToDigitalStorageUnit(data.datasets[tooltipItem['datasetIndex']].data[tooltipItem.index]);
+                      var label_formatted = BitToDigitalStorageUnit(data.datasets[tooltipItem['datasetIndex']].data[tooltipItem.index]);
                       return data.datasets[tooltipItem['datasetIndex']]['label'] + " : " + label_formatted['value'].toFixed(2) + " " + label_formatted['label'].toLowerCase() + "ps";
                   }
               }

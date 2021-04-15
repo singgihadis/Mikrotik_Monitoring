@@ -31,7 +31,7 @@ jQuery.extend(jQuery.validator.messages, {
     min: jQuery.validator.format("Please enter a value greater than or equal to {0}.")
 });
 
-function ByteToDigitalStorageUnit_Computer(x){
+function BitToDigitalStorageUnit_Computer(x){
   var label = "B";
   var value = parseFloat(x);
   if(x >= 1024){
@@ -49,6 +49,32 @@ function ByteToDigitalStorageUnit_Computer(x){
           if(value >= 1024){
             label = "PiB";
             value = value / 1024;
+          }
+        }
+      }
+    }
+  }
+  return {label:label,value:value};
+}
+function BitToDigitalStorageUnit(x){
+  var label = "B";
+  var value = parseFloat(x);
+  value = value / 8;
+  if(x >= 1000){
+    label = "KB";
+    value = x / 1000;
+    if(value >= 1000){
+      label = "MB";
+      value = value / 1000;
+      if(value >= 1000){
+        label = "GB";
+        value = value / 1000;
+        if(value >= 1000){
+          label = "TB";
+          value = value / 1000;
+          if(value >= 1000){
+            label = "PB";
+            value = value / 1000;
           }
         }
       }

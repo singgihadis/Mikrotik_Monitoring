@@ -1,0 +1,257 @@
+var chart_timeout = null;
+var chart_graph = null;
+$(document).ready(function(){
+  $("#tgl").val("");
+  load_data();
+});
+function load_data(){
+  $("#data").loading();
+  var id = $("#id").val();
+  $.ajax({
+    type:'post',
+    url:'/ajax/member_get.html',
+    data:{id:id},
+    success:function(resp){
+      $("#data").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          $("#listdata").html("<div class='alert alert-warning'>" + res.msg + "</div>");
+        }
+      }else{
+        var data = res.data[0];
+        var name = data['name'];
+        $("#member_id").val(data['member_id']);
+        $("#name").html(data['name']);
+        $("#password").html(data['password']);
+        $("#profile").html(data['profile']);
+        $("#nama").html(data['nama']);
+        $("#alamat").html(data['alamat']);
+        $("#no_wa").html(data['no_wa']);
+        $("#nominal_pembayaran").html(data['nominal_pembayaran']);
+        $(".daterange").daterangepicker({
+          autoUpdateInput: false,
+          opens: 'left'
+        }, function (start, end, label) {
+
+        });
+        $(".clear").click(function(){
+          $(this).parent().parent().find("input").val("");
+          chart_graph.destroy();
+          chart_graph = null;
+          chart_data(name);
+        });
+        $('.daterange').on('apply.daterangepicker', function(ev, picker) {
+          $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+          chart_database(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'),name);
+        });
+        chart_data(name);
+      }
+    },error:function(){
+      $("#data").loading("stop");
+      $("#data").html("<div class='alert alert-warning'>Silahkan periksa koneksi internet anda</div>");
+    }
+  });
+}
+function chart_database(tgl_start,tgl_end){
+  var member_id = $("#member_id").val();
+  $.ajax({
+    type:'post',
+    url:'/ajax/member_traffic_data.html',
+    data:{tgl_start:tgl_start,tgl_end:tgl_end,member_id:member_id},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        var data = res.data;
+        chart_graph.destroy();
+        chart_graph = null;
+        if(chart_timeout != undefined){
+          clearTimeout(chart_timeout);
+        }
+        chart2(data);
+      }
+    },error:function(){
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function chart_data(name){
+  $.ajax({
+    type:'post',
+    url:'/ajax/ppp_interface_monitor.html',
+    data:{name:name},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        var data = res.data;
+        chart(data);
+        chart_timeout = setTimeout(function(){
+          chart_data(name);
+        },5000);
+      }
+    },error:function(){
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function chart(data){
+  var m = moment();
+  var sekarang = m.format("HH:mm:ss");
+  var tx_value = data[0]['txBitsPerSecond'];
+  var rx_value = data[0]['rxBitsPerSecond'];
+
+
+  var ctx = document.getElementById('chart').getContext('2d');
+  if(chart_graph != null){
+    if(chart_graph.data.datasets[0].data.length >= 10){
+      chart_graph.data.labels.shift();
+      chart_graph.data.datasets[0].data.shift();
+      chart_graph.data.datasets[1].data.shift();
+    }
+
+    chart_graph.data.labels.push(sekarang);
+    chart_graph.data.datasets[0].data.push(tx_value);
+    chart_graph.data.datasets[1].data.push(rx_value);
+    chart_graph.update();
+  }else{
+    chart_graph = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [sekarang],
+            datasets: [{
+                label: 'Tx',
+                data: [tx_value],
+                backgroundColor: 'rgba(100,150,255,0.5)',
+  					    borderColor: 'rgba(100,150,255,1)'
+            },{
+                label: 'Rx',
+                data: [rx_value],
+                backgroundColor: 'rgba(255,110,100,0.5)',
+  					    borderColor: 'rgba(255,110,100,1)'
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                      beginAtZero: true,
+                      maxTicksLimit:5,
+                      callback: function(label, index, labels) {
+                          var label_formatted = BitToDigitalStorageUnit(label);
+                          return label_formatted['value'].toFixed(2) + " " + label_formatted['label'].toLowerCase() + "ps";
+                      }
+                    }
+                }]
+            },
+            tooltips: {
+              mode:'x-axis',
+              callbacks: {
+                  label: function (tooltipItem, data) {
+                      var label_formatted = BitToDigitalStorageUnit(data.datasets[tooltipItem['datasetIndex']].data[tooltipItem.index]);
+                      return data.datasets[tooltipItem['datasetIndex']]['label'] + " : " + label_formatted['value'].toFixed(2) + " " + label_formatted['label'].toLowerCase() + "ps";
+                  }
+              }
+            }
+        }
+    });
+  }
+}
+function chart2(data){
+  var datas = [];
+  $.each(data,function(k,v){
+    var json_hasil = [];
+    var hasil = v['hasil'];
+    if(hasil != ""){
+      json_hasil = JSON.parse(hasil);
+    }
+    datas = datas.concat(json_hasil);
+  });
+  var labels = [];
+  var tx_values = [];
+  var rx_values = [];
+  $.each(datas,function(k,v){
+    var timestamp = v['s'];
+    labels.push(moment.unix(timestamp).format("DD-MM-YYYY (HH:mm)"));
+    var tx = "0";
+    if(v['tx'] != ""){
+      tx = v['tx'];
+    }
+    var rx = "0";
+    if(v['rx'] != ""){
+      rx = v['rx'];
+    }
+    tx_values.push(parseInt(tx));
+    rx_values.push(parseInt(rx));
+  });
+  var ctx = document.getElementById('chart').getContext('2d');
+  chart_graph = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: labels,
+          datasets: [{
+              label: 'Tx',
+              data: tx_values,
+              backgroundColor: 'rgba(100,150,255,0.5)',
+              borderColor: 'rgba(100,150,255,1)'
+          },{
+              label: 'Rx',
+              data: rx_values,
+              backgroundColor: 'rgba(255,110,100,0.5)',
+              borderColor: 'rgba(255,110,100,1)'
+          }]
+      },
+      options: {
+        elements: {
+                  point:{
+                      radius: 0
+                  }
+              },
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true,
+                      maxTicksLimit:3,
+                      callback: function(label, index, labels) {
+                        var label_formatted = BitToDigitalStorageUnit(label);
+                        return label_formatted['value'].toFixed(2) + " " + label_formatted['label'].toLowerCase() + "ps";
+                      }
+                  }
+              }],
+              xAxes: [{
+                  ticks: {
+                      beginAtZero: true,
+                      maxTicksLimit:4,
+                      maxRotation: 0,
+                      minRotation: 0
+                  }
+              }]
+          },
+          tooltips: {
+            mode:'x-axis',
+            callbacks: {
+                label: function (tooltipItem, data) {
+                  var label_formatted = BitToDigitalStorageUnit(data.datasets[tooltipItem['datasetIndex']].data[tooltipItem.index]);
+                  return data.datasets[tooltipItem['datasetIndex']]['label'] + " : " + label_formatted['value'].toFixed(2) + " " + label_formatted['label'].toLowerCase() + "ps";
+                }
+            }
+          }
+      }
+  });
+}
