@@ -149,12 +149,20 @@ body .widget .widget-wrapper .text {
 body .widget .widget-wrapper .count {
   font-weight: bold;
 }
-/* line 148, ../sass/global.scss */
+/* line 146, ../sass/global.scss */
+body .widget.widget-lg .text {
+  font-size: 13px;
+}
+/* line 149, ../sass/global.scss */
+body .widget.widget-lg .count {
+  font-size: 18px;
+}
+/* line 156, ../sass/global.scss */
 body .nav-tabs .nav-item .nav-link {
   border-top-left-radius: 1px;
   border-top-right-radius: 1px;
 }
-/* line 154, ../sass/global.scss */
+/* line 162, ../sass/global.scss */
 body .tab-content {
   border-left: 1px solid lightgrey;
   border-right: 1px solid lightgrey;

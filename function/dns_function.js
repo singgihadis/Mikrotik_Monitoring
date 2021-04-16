@@ -6,8 +6,17 @@ module.exports = {
     pool.getConnection(function(err, connection) {
       if(jml != index){
         var item = result[index];
+          console.log(item);
+        var type = "";
+        var data = "";
+        if(item.hasOwnProperty("type")){
+          type = item['type'];
+        }
+        if(item.hasOwnProperty("data")){
+          data = item['data'];
+        }
         var sql_insert = "insert ignore into dns(server_id,name,type,data,ttl) values(?,?,?,?,?)";
-        var query_data = connection.query(sql_insert,[server_id,item['name'],item['type'],item['data'],item['ttl']], function (err, results3, fields) {
+        var query_data = connection.query(sql_insert,[server_id,item['name'],type,data,item['ttl']], function (err, results3, fields) {
           if (!err){
             connection.release();
             index++;

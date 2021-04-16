@@ -31,7 +31,7 @@ function load_data(){
         $("#nama").html(data['nama']);
         $("#alamat").html(data['alamat']);
         $("#no_wa").html(data['no_wa']);
-        $("#nominal_pembayaran").html(data['nominal_pembayaran']);
+        $("#nominal_pembayaran").html("Rp. " + FormatAngka(data['nominal_pembayaran']));
         $(".daterange").daterangepicker({
           autoUpdateInput: false,
           opens: 'left'

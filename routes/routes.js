@@ -4,11 +4,7 @@ module.exports = function(app){
       res.redirect("/traffic.html");
     }else{
       var website_config = req.website_config;
-      res.render("login",{
-        title:"Login - " + website_config['title'],
-        favicon:website_config['favicon'],
-        logo:website_config['logo']
-      });
+      res.render("login");
     }
   });
   app.get(['/traffic.html'],(req, res) => {

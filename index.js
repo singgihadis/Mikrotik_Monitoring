@@ -40,18 +40,27 @@ app.use(session({
     cookie: { maxAge: 86400000 }
 }));
 app.use(function(req,res,next) {
-  fs.readFile( __dirname + '/config.json', function (err, data) {
-    if (err) {
-      throw err;
-    }
-    var config = JSON.parse(data.toString());
-    req.website_config = {
-      title : config['title'],
-      favicon : config['favicon'],
-      logo : config['logo']
-    };
-    return next();
-  });
+  if(req.session.is_login){
+    var pengaturan_function = require("./function/pengaturan_function.js");
+    pengaturan_function.GetData(req.session.server_id,function(data){
+      if(data == null){
+        req.website_config = {
+          title : "",
+          favicon : "",
+          logo : ""
+        };
+      }else{
+        req.website_config = {
+          title : data[0]['title'],
+          favicon : data[0]['favicon'],
+          logo : data[0]['logo']
+        };
+      }
+      next();
+    });
+  }else{
+    next();
+  }
 });
 require('./routes/routes')(app);
 require('./routes/ajax_login')(app);
