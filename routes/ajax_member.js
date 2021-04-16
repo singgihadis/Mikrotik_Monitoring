@@ -249,7 +249,7 @@ module.exports = function(app){
         if(req.body.member_id != undefined){
           member_id = req.body.member_id;
         }
-        var sql_data = "SELECT d.* FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id INNER JOIN member_traffic_data d ON a.id = d.member_id and d.tgl=CURDATE() where d.tgl >= ? and d.tgl <= ? and d.id=? and b.server_id=?";
+        var sql_data = "SELECT d.* FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id INNER JOIN member_traffic_data d ON a.id = d.member_id where d.tgl >= ? and d.tgl <= ? and a.id=? and b.server_id=?";
         var query_data = connection.query(sql_data,[tgl_start,tgl_end,member_id,req.session.server_id], function (err, results, fields) {
           if(results.length == 0){
             connection.release();

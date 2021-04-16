@@ -15,8 +15,14 @@ module.exports = function(app){
     }else{
       var website_config = req.website_config;
       var master_kota_id = req.session.master_kota_id;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Traffic - " + website_config['title'];
+      }else{
+        title = "Traffic";
+      }
       res.render("dashboard",{
-        title:"Traffic - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"monitoring",
@@ -30,8 +36,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Host - " + website_config['title'];
+      }else{
+        title = "Host";
+      }
       res.render("monitoring",{
-        title:"Host - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"monitoring",
@@ -44,8 +56,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Ping - " + website_config['title'];
+      }else{
+        title = "Ping";
+      }
       res.render("ping",{
-        title:"Ping - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"monitoring",
@@ -58,8 +76,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "DNS - " + website_config['title'];
+      }else{
+        title = "DNS";
+      }
       res.render("dns",{
-        title:"DNS - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"monitoring",
@@ -106,8 +130,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Hotspot - " + website_config['title'];
+      }else{
+        title = "Hotspot";
+      }
       res.render("hotspot",{
-        title:"Hotspot - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"user_manager",
@@ -120,8 +150,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "PPP - " + website_config['title'];
+      }else{
+        title = "PPP";
+      }
       res.render("ppp",{
-        title:"PPP - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"user_manager",
@@ -134,8 +170,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Member - " + website_config['title'];
+      }else{
+        title = "Member";
+      }
       res.render("member",{
-        title:"Member - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"user_manager",
@@ -149,8 +191,14 @@ module.exports = function(app){
     }else{
       var website_config = req.website_config;
       var id = req.params.id;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Member Traffic - " + website_config['title'];
+      }else{
+        title = "Member Traffic";
+      }
       res.render("member_traffic",{
-        title:"Member Traffic - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"user_manager",
@@ -164,8 +212,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Pembayaran - " + website_config['title'];
+      }else{
+        title = "Pembayaran";
+      }
       res.render("pembayaran",{
-        title:"Pembayaran - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"user_manager",
@@ -178,8 +232,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Bayar - " + website_config['title'];
+      }else{
+        title = "Bayar";
+      }
       res.render("bayar",{
-        title:"Bayar - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"user_manager",
@@ -192,8 +252,14 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Pengaturan - " + website_config['title'];
+      }else{
+        title = "Pengaturan";
+      }
       res.render("pengaturan",{
-        title:"Pengaturan - " + website_config['title'],
+        title:title,
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"pengaturan"
