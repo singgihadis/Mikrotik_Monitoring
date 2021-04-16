@@ -6,7 +6,8 @@ const formidable = require('formidable');
 var uniqid = require('uniqid');
 module.exports = {
   Simpan_Gambar: function(old_file,file,callback){
-    var dirname = __dirname.toString().split("\\");
+    // var dirname = __dirname.toString().split("\\");
+    var dirname = __dirname.toString().split("/");
     dirname.pop();
     dirname = dirname.join("/");
     if(file != null){
@@ -15,7 +16,6 @@ module.exports = {
         var nama_file = uniqid() + ".png";
         var newpath = dirname + "/public/img/router/" + nama_file;
         fs.copyFile(oldpath, newpath, function (err) {
-          if (err) throw err;
           callback("/assets/img/router/" + nama_file);
         });
       });

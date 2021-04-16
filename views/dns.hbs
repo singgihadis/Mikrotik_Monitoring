@@ -33,15 +33,16 @@
                   <div class="card-body">
                     <div class="row">
                       <div class="col-md-6">
-                        <form id="form_data" class="text-left">
+                        <form id="form_data" class="text-left mb-3">
                           <div class="d-inline-block">
-                            <div class="input-group mb-3">
+                            <div class="input-group">
                               <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Keyword">
                               <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span></button>
                               </div>
                             </div>
                           </div>
+                          <button onclick="export_txt()" id="btn_export_txt" class="btn btn-light d-inline-block mb-1" type="button"><span class="fa fa-file-text-o"></span> Export</button>
                         </form>
                       </div>
                       <div class="col-md-6 text-right">

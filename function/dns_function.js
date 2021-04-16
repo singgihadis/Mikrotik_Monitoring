@@ -6,7 +6,6 @@ module.exports = {
     pool.getConnection(function(err, connection) {
       if(jml != index){
         var item = result[index];
-          console.log(item);
         var type = "";
         var data = "";
         if(item.hasOwnProperty("type")){

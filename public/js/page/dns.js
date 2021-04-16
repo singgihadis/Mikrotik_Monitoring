@@ -149,3 +149,7 @@ function trigger_pagination(){
     load_data(true);
   });
 }
+function export_txt(){
+  var keyword = $("#keyword").val();
+  window.open("/dns/export.txt?k=" + keyword,"_blank");
+}
