@@ -1,5 +1,6 @@
 const pool = require('../db');
 const fs = require('fs');
+var pdf = require("pdf-creator-node");
 module.exports = function(app){
   app.get(['/','/login.html'],(req, res) => {
     if(req.session.is_login){
@@ -263,6 +264,71 @@ module.exports = function(app){
         favicon:website_config['favicon'],
         logo:website_config['logo'],
         menu:"pengaturan"
+      });
+    }
+  });
+  app.get(['/member/cetak/invoice/:id.pdf'],(req, res) => {
+        var options = {
+           format: "A4",
+           orientation: "portrait",
+           border: "0mm",
+           // header: {
+           //     height: "45mm",
+           //     contents: '<div style="text-align: center;">Author: Shyam Hajare</div>'
+           // },
+           // footer: {
+           //     height: "28mm",
+           //     contents: {
+           //         first: 'Cover page',
+           //         2: 'Second page', // Any page number is working. 1-based index
+           //         default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+           //         last: 'Last Page'
+           //     }
+           // }
+       };
+       var users = [{name: "Shyam",age: "26",},{name: "Navjot",age: "26",},{name: "Vitthal",age: "26"}];
+var html = __dirname + '/../invoice.html';
+      fs.readFile(html, 'utf8', function(err, data) {
+          if (err) throw err;
+          var document = {
+            html: data,
+            data: {
+              users: users,
+            },
+            path: "./output.pdf",
+            type: "stream",
+          };
+          pdf.create(document, options).then((stream) => {
+            res.writeHead(200, {
+              'Content-Type': 'application/pdf',
+              'Content-disposition':'inline; filename=coba.pdf'});
+            // res.writeHead(200, {
+            //   'Content-Type': 'application/force-download',
+            //   'Content-disposition':'attachment; filename=coba.pdf'});
+            stream.pipe(res);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      });
+
+  });
+  app.get(['/user.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      var website_config = req.website_config;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "User - " + website_config['title'];
+      }else{
+        title = "User";
+      }
+      res.render("user",{
+        title:title,
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"user"
       });
     }
   });

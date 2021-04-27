@@ -1,0 +1,118 @@
+<html>
+  {{> head}}
+  <body class="dashboard">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-6">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      User
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+                <a href="javascript:void(0);" onclick="modal_tambah();" class="btn btn-primary"><span class="fa fa-plus"></span> Tambah</a>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Data User
+                  </div>
+                  <div class="card-body">
+                    <form id="form_search" class="text-left">
+                      <div class="d-inline-block">
+                        <div class="input-group mb-3">
+                          <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Nama User">
+                          <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span></button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="listdata">
+
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="text-center" id="pagination">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row" id="listdata_graphic">
+
+            </div>
+          <br><br>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
+      <div class="modal" id="modal_form">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modal_form_title"></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form id="form_data">
+              <div class="modal-body">
+                <input type="hidden" id="id" name="id" />
+                <div class="form-group" id="div_nama">
+                  <label class="control-label">
+                    Nama
+                  </label>
+                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama User" required />
+                </div>
+                <div class="form-group" id="div_email">
+                  <label class="control-label">
+                    Email
+                  </label>
+                  <input type="email" id="email" name="email" class="form-control" placeholder="Email User" required />
+                </div>
+                <div class="form-group" id="div_password">
+                  <label class="control-label">
+                    Password
+                  </label>
+                  <input type="password" id="password" name="password" class="form-control" placeholder="Password User" required />
+                  <input type="hidden" id="hidden_password" name="hidden_password" />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/user.js"></script>
+  </body>
+</html>

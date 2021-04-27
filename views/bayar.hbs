@@ -190,10 +190,44 @@
               <input type="hidden" id="bulan" name="bulan" />
               <input type="hidden" id="id" name="id" />
               <input type="hidden" id="is_bayar" name="0" />
-              <div class="form-group">
-                <label class="control-label">Password</label>
-                <input id="password" name="password" type="text" class="form-control" placeholder="Masukkan password untuk mengubah status" />
-              </div>
+              <table class="table table-borderless w-100">
+                <tr>
+                  <td>Nama CLient</td>
+                  <td>:</td>
+                  <td id="nama_bayar"></td>
+                </tr>
+                <tr>
+                  <td>Profile</td>
+                  <td>:</td>
+                  <td id="profile_bayar"></td>
+                </tr>
+                <tr>
+                  <td>Nominal Bayar</td>
+                  <td>:</td>
+                  <td id="nominal_bayar"></td>
+                </tr>
+                <tr>
+                  <td>Metode Bayar</td>
+                  <td>:</td>
+                  <td>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="cr_transfer" name="cr_transfer" class="custom-control-input" checked>
+                      <label class="custom-control-label" for="cr_transfer">Transfer</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="cr_cash" name="cr_cash" class="custom-control-input">
+                      <label class="custom-control-label" for="cr_cash">Cash</label>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Password</td>
+                  <td>:</td>
+                  <td>
+                    <input id="password" name="password" type="text" class="form-control" placeholder="Masukkan password akun anda" />
+                  </td>
+                </tr>
+              </table>
               <div class="text-right">
                 <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>

@@ -102,12 +102,12 @@ function load_data(){
               var html_switch = "";
               if(arr_bulan.indexOf((a + 1).toString()) != -1){
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' id='customSwitch" + k + " " + a + "' checked>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' id='customSwitch" + k + " " + a + "' checked>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
               }else{
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' id='customSwitch" + k + " " + a + "'>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' id='customSwitch" + k + " " + a + "'>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
               }
@@ -123,8 +123,14 @@ function load_data(){
         $("#info_page").html(first + " - " + (no - 1) + " dari " + FormatAngka(res.total));
 
         $(".cbk-bayar").click(function(){
+          var nama = $(this).attr("data-nama");
+          var profile = $(this).attr("data-profile");
+          var nominal = $(this).attr("data-nominal-pembayaran");
           var bulan = $(this).attr("data-bulan");
           var id = $(this).attr("data-id");
+          $("#nama_bayar").html(nama);
+          $("#profile_bayar").html(profile);
+          $("#nominal_bayar").html("Rp. " + FormatAngka(nominal));
           $("#bulan").val(bulan);
           $("#id").val(id);
           var is_bayar = "0";

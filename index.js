@@ -32,6 +32,7 @@ app.use(bodyParser.json({ limit: "5mb" }));
 app.use(bodyParser.urlencoded({ extended: false, limit: "5mb" }));
 //set folder public sebagai static folder untuk static file
 app.use('/assets',express.static(__dirname + '/public'));
+app.use('/assets',express.static(__dirname + '/public'));
 app.use(session({
     // store: new RedisStore({ client: redisClient }),
     secret: 'secret',
@@ -73,6 +74,7 @@ require('./routes/ajax_hotspot')(app);
 require('./routes/ajax_member')(app);
 require('./routes/ajax_pembayaran')(app);
 require('./routes/ajax_pengaturan')(app);
+require('./routes/ajax_user')(app);
 require('./routes/ajax_umum')(app);
 
 //server listening
