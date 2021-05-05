@@ -12,12 +12,16 @@ module.exports = function(app){
         if(req.body.nama != undefined){
           nama = req.body.nama;
         }
-        var email = "";
-        if(req.body.email != undefined){
-          email = req.body.email;
+        var user = "";
+        if(req.body.user != undefined){
+          user = req.body.user;
         }
-        var sql_insert = "update user set nama=?,email=? where id=?";
-        var query_insert = connection.query(sql_insert,[nama,email,id], function (err, results, fields) {
+        var level = "";
+        if(req.body.level != undefined){
+          level = req.body.level;
+        }
+        var sql_insert = "update user set nama=?,user=?,level=? where id=?";
+        var query_insert = connection.query(sql_insert,[nama,user,level,id], function (err, results, fields) {
           if (!err){
             connection.release();
             var data = {is_error:false,msg:"Berhasil mengubah"};
@@ -105,17 +109,21 @@ module.exports = function(app){
         if(req.body.nama != undefined){
           nama = req.body.nama;
         }
-        var email = "";
-        if(req.body.email != undefined){
-          email = req.body.email;
+        var user = "";
+        if(req.body.user != undefined){
+          user = req.body.user;
+        }
+        var level = "";
+        if(req.body.level != undefined){
+          level = req.body.level;
         }
         var password = "";
         if(req.body.password != undefined){
           password = req.body.password;
           password = crypto.createHash('sha1').update(password).digest("hex");
         }
-        var sql_insert = "insert into user(nama,email,password) values(?,?,?)";
-        var query_insert = connection.query(sql_insert,[nama,email,password], function (err, results, fields) {
+        var sql_insert = "insert into user(nama,user,level,password) values(?,?,?,?)";
+        var query_insert = connection.query(sql_insert,[nama,user,level,password], function (err, results, fields) {
           if (!err){
             connection.release();
             var data = {is_error:false,msg:"Berhasil menambahkan"};

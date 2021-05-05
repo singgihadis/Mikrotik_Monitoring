@@ -147,7 +147,7 @@
             </dl>
             <dl>
               <dt>Password</dt>
-              <dd id="password"></dd>
+              <dd id="password_detail"></dd>
             </dl>
             <dl>
               <dt>Profile</dt>
@@ -211,20 +211,30 @@
                   <td>:</td>
                   <td>
                     <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" id="cr_transfer" name="cr_transfer" class="custom-control-input" checked>
+                      <input type="radio" id="cr_transfer" name="cr_metode_bayar" class="custom-control-input" checked>
                       <label class="custom-control-label" for="cr_transfer">Transfer</label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" id="cr_cash" name="cr_cash" class="custom-control-input">
+                      <input type="radio" id="cr_cash" name="cr_metode_bayar" class="custom-control-input">
                       <label class="custom-control-label" for="cr_cash">Cash</label>
                     </div>
+                  </td>
+                </tr>
+                <tr id="div_bank">
+                  <td>Bank</td>
+                  <td>:</td>
+                  <td>
+                    <select class="form-control" id="bank" name="bank">
+
+                    </select>
                   </td>
                 </tr>
                 <tr>
                   <td>Password</td>
                   <td>:</td>
                   <td>
-                    <input id="password" name="password" type="text" class="form-control" placeholder="Masukkan password akun anda" />
+                    <input id="password" name="password" type="password" class="form-control" placeholder="Masukkan password akun anda" required />
+                    <input type="hidden" id="hidden_password" name="hidden_password" />
                   </td>
                 </tr>
               </table>

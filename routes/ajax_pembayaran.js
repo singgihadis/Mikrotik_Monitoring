@@ -1,6 +1,7 @@
 const RouterOSClient = require('routeros-client').RouterOSClient;
 var ppp_function = require("../function/ppp_function.js");
 const pool = require('../db');
+const crypto = require('crypto');
 module.exports = function(app){
   app.post(['/ajax/pembayaran.html'],(req, res) => {
     if(req.session.is_login){
@@ -78,11 +79,56 @@ module.exports = function(app){
         if(req.body.is_bayar != undefined){
           is_bayar = req.body.is_bayar;
         }
-        if(is_bayar == "1"){
-          var sql_cek = "select * from pembayaran where member_id=? and bulan=? and tahun=?";
-          var query_cek = connection.query(sql_cek,[id,bulan,tahun], function (err, results, fields) {
-            if(results.length == 0){
-              var sql = "insert into pembayaran(member_id,bulan,tahun) values(?,?,?)";
+        var metode_bayar = "0";
+        if(req.body.metode_bayar != undefined){
+          metode_bayar = req.body.metode_bayar;
+        }
+        var bank_id = "0";
+        if(req.body.bank_id != undefined){
+          if(metode_bayar == "1" || metode_bayar == "2"){
+            bank_id = req.body.bank_id;
+          }
+        }
+        var password = "";
+        if(req.body.password != undefined){
+          password = req.body.password;
+          password = crypto.createHash('sha1').update(password).digest("hex");
+        }
+        var sql_cek_pwd = "select * from user where id=? and password=?";
+        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,password], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,msg:"Password user salah"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            if(is_bayar == "1"){
+              var sql_cek = "select * from pembayaran where member_id=? and bulan=? and tahun=?";
+              var query_cek = connection.query(sql_cek,[id,bulan,tahun], function (err, results, fields) {
+                if(results.length == 0){
+                  var sql = "insert into pembayaran(member_id,bulan,tahun,metode_bayar,bank_id) values(?,?,?,?,?)";
+                  var query = connection.query(sql,[id,bulan,tahun,metode_bayar,bank_id], function (err, results, fields) {
+                    if (!err){
+                      connection.release();
+                      var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    }else{
+                      connection.release();
+                      var data = {is_error:true,msg:"Gagal melakukan pembayaran"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    }
+                  });
+                }else{
+                  connection.release();
+                  var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }
+              });
+            }else{
+              var sql = "delete from pembayaran where member_id=? and bulan=? and tahun=?";
               var query = connection.query(sql,[id,bulan,tahun], function (err, results, fields) {
                 if (!err){
                   connection.release();
@@ -96,29 +142,9 @@ module.exports = function(app){
                   res.end();
                 }
               });
-            }else{
-              connection.release();
-              var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
-              res.send(JSON.stringify(data));
-              res.end();
             }
-          });
-        }else{
-          var sql = "delete from pembayaran where member_id=? and bulan=? and tahun=?";
-          var query = connection.query(sql,[id,bulan,tahun], function (err, results, fields) {
-            if (!err){
-              connection.release();
-              var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
-              res.send(JSON.stringify(data));
-              res.end();
-            }else{
-              connection.release();
-              var data = {is_error:true,msg:"Gagal melakukan pmebayaran"};
-              res.send(JSON.stringify(data));
-              res.end();
-            }
-          });
-        }
+          }
+        });
       });
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};

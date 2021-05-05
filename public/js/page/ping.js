@@ -77,6 +77,7 @@ function load_data(){
 }
 function ping_build_card(no,v){
   var nama = v['nama'];
+  var id = v['id'];
   var client_ip = v['client_ip'];
   var high_value = v['normal_value'];
   var unik = client_ip.replace(/\./g,"");
@@ -93,7 +94,7 @@ function ping_build_card(no,v){
   html_graph_card += "									<i class='fa fa-calendar'></i>";
   html_graph_card += "								</span>";
   html_graph_card += "							</div>";
-  html_graph_card += "							<input type='text' data-clientip='" + client_ip + "' data-unik='" + unik + "' data-highvalue='" + high_value + "' name='tgl' id='tgl' class='daterange form-control' placeholder='Tgl' />";
+  html_graph_card += "							<input type='text' data-id='" + id + "' data-clientip='" + client_ip + "' data-unik='" + unik + "' data-highvalue='" + high_value + "' name='tgl' id='tgl' class='daterange form-control' placeholder='Tgl' />";
   html_graph_card += "							<div class='input-group-append '>";
   html_graph_card += "								<button class='btn btn-danger clear' data-clientip='" + client_ip + "' data-unik='" + unik + "' data-highvalue='" + high_value + "' type='button'>Clear</button>";
   html_graph_card += "							</div>";
@@ -109,7 +110,9 @@ function ping_build_card(no,v){
   $("#listdata_graphic" + page + "_" + no).append(html_graph_card);
   $(".daterange").daterangepicker({
     autoUpdateInput: false,
-    opens: 'left'
+    opens: 'left',
+    timePicker: true,
+    timePicker24Hour: true
   }, function (start, end, label) {
 
   });
@@ -123,18 +126,19 @@ function ping_build_card(no,v){
     ping_chart_data(client_ip,high_value,unik);
   });
   $('.daterange').on('apply.daterangepicker', function(ev, picker) {
-    $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+    $(this).val(picker.startDate.format('DD/MM/YYYY HH:mm') + ':00 - ' + picker.endDate.format('DD/MM/YYYY HH:mm') + ":00");
     var unik = $(this).attr("data-unik");
     var highvalue = $(this).attr("data-highvalue");
-    ping_chart_database(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'),high_value,unik);
+    var id = $(this).attr("data-id");
+    ping_chart_database(id,picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'),picker.startDate.format('YYYY-MM-DD HH:mm') + ":00",picker.endDate.format('YYYY-MM-DD HH:mm') + ":00",high_value,unik);
   });
   ping_chart_data(client_ip,high_value,unik);
 }
-function ping_chart_database(tgl_start,tgl_end,high_value,unik){
+function ping_chart_database(id,tgl_start,tgl_end,tgl_start_complete,tgl_end_complete,high_value,unik){
   $.ajax({
     type:'post',
     url:'/ajax/ping_data.html',
-    data:{tgl_start:tgl_start,tgl_end:tgl_end},
+    data:{id:id,tgl_start:tgl_start,tgl_end:tgl_end},
     success:function(resp){
       var res = JSON.parse(resp);
       var html = "";
@@ -151,7 +155,7 @@ function ping_chart_database(tgl_start,tgl_end,high_value,unik){
         if(ping_chart_timeout[unik] != undefined){
           clearTimeout(ping_chart_timeout[unik]);
         }
-        ping_chart2(data,unik,high_value);
+        ping_chart2(data,tgl_start_complete,tgl_end_complete,unik,high_value);
       }
     },error:function(){
       toastr["error"]("Silahkan periksa koneksi internet anda");
@@ -266,7 +270,7 @@ function ping_chart(data,unik){
     });
   }
 }
-function ping_chart2(data,unik,high_value){
+function ping_chart2(data,tgl_start_complete,tgl_end_complete,unik,high_value){
   var datas = [];
   $.each(data,function(k,v){
     var json_hasil = [];
@@ -282,20 +286,26 @@ function ping_chart2(data,unik,high_value){
   var borderColors = [];
   $.each(datas,function(k,v){
     var timestamp = v['s'];
-    labels.push(moment.unix(timestamp).format("DD-MM-YYYY (HH:mm)"));
-    var time = "0ms";
-    if(v['t'] != ""){
-      time = v['t'];
+    var time_timestamp = timestamp;
+    var time_tgl_start_complete = moment(tgl_start_complete,"YYYY-MM-DD HH:mm:ss").unix();
+    var time_tgl_end_complete = moment(tgl_end_complete,"YYYY-MM-DD HH:mm:ss").unix();
+    if(time_timestamp >= time_tgl_start_complete && time_timestamp <= time_tgl_end_complete){
+      labels.push(moment.unix(timestamp).format("DD-MM-YYYY (HH:mm)"));
+      var time = "0ms";
+      if(v['t'] != ""){
+        time = v['t'];
+      }
+      var ping_value = parseInt(time.replace("ms",""));
+      ping_values.push(ping_value);
+      if(ping_value > high_value || ping_value <= 0){
+        backgroundColors.push("rgba(255,100,100,0.5)");
+        borderColors.push("rgba(255,100,100,1)");
+      }else{
+        backgroundColors.push("rgba(100,150,255,0.5");
+        borderColors.push("rgba(100,150,255,1)");
+      }
     }
-    var ping_value = parseInt(time.replace("ms",""));
-    ping_values.push(ping_value);
-    if(ping_value > high_value || ping_value <= 0){
-      backgroundColors.push("rgba(255,100,100,0.5)");
-      borderColors.push("rgba(255,100,100,1)");
-    }else{
-      backgroundColors.push("rgba(100,150,255,0.5");
-      borderColors.push("rgba(100,150,255,1)");
-    }
+
   });
 
   var ctx = document.getElementById('chart_' + unik).getContext('2d');

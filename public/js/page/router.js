@@ -1,6 +1,4 @@
 var page = 1;
-var is_edit = false;
-var is_edit_password = false;
 $(document).ready(function(){
   $("#form_search").validate({
     submitHandler:function(){
@@ -9,21 +7,11 @@ $(document).ready(function(){
     }
   });
   load_data();
-  $("#password").keyup(function(){
-    $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
-  });
-  $("#password").blur(function(){
-    $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
-  });
-  $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
   $("#form_data").validate({
     submitHandler:function(){
-      if(is_edit){
-        if(is_edit_password){
-          edit_password();
-        }else{
-          edit();
-        }
+      var id = $("#id").val();
+      if(id != ""){
+        edit();
       }else{
         tambah();
       }
@@ -31,48 +19,18 @@ $(document).ready(function(){
     }
   });
 });
-function tambah(){
-  $("#form_data").loading();
-  var nama = $("#nama").val();
-  var user = $("#user").val();
-  var level = $("#level").val();
-  var password = $("#hidden_password").val();
-  $.ajax({
-    type:'post',
-    url:'/ajax/user_tambah.html',
-    data:{nama:nama,user:user,level:level,password:password},
-    success:function(resp){
-      $("#form_data").loading("stop");
-      var res = JSON.parse(resp);
-      var html = "";
-      if(res.is_error){
-        if(res.must_login){
-          window.location = "/login.html";
-        }else{
-          toastr["error"](res.msg);
-        }
-      }else{
-        $("#modal_form").modal("hide");
-        toastr["success"]("Berhasil menambahkan");
-        page = 1;
-        load_data();
-      }
-    },error:function(){
-      $("#form_data").loading("stop");
-      toastr["error"]("Silahkan periksa koneksi internet anda");
-    }
-  });
-}
 function edit(){
   $("#form_data").loading();
   var id = $("#id").val();
   var nama = $("#nama").val();
+  var host = $("#host").val();
+  var port = $("#port").val();
   var user = $("#user").val();
-  var level = $("#level").val();
+  var password = $("#password").val();
   $.ajax({
     type:'post',
-    url:'/ajax/user_edit.html',
-    data:{id:id,nama:nama,user:user,level:level},
+    url:'/ajax/router_edit.html',
+    data:{id:id,nama:nama,host:host,port:port,user:user,password:password},
     success:function(resp){
       $("#form_data").loading("stop");
       var res = JSON.parse(resp);
@@ -94,14 +52,17 @@ function edit(){
     }
   });
 }
-function edit_password(){
+function tambah(){
   $("#form_data").loading();
-  var id = $("#id").val();
-  var password = $("#hidden_password").val();
+  var nama = $("#nama").val();
+  var host = $("#host").val();
+  var port = $("#port").val();
+  var user = $("#user").val();
+  var password = $("#password").val();
   $.ajax({
     type:'post',
-    url:'/ajax/user_edit_password.html',
-    data:{id:id,password:password},
+    url:'/ajax/router_tambah.html',
+    data:{host:host,nama:nama,port:port,user:user,password:password},
     success:function(resp){
       $("#form_data").loading("stop");
       var res = JSON.parse(resp);
@@ -114,7 +75,8 @@ function edit_password(){
         }
       }else{
         $("#modal_form").modal("hide");
-        toastr["success"]("Berhasil mengubah");
+        toastr["success"]("Berhasil menambah");
+        load_data();
       }
     },error:function(){
       $("#form_data").loading("stop");
@@ -122,92 +84,32 @@ function edit_password(){
     }
   });
 }
-function hapus(itu){
-  var id = $(itu).attr("data-id");
-  $.confirm({
-    title: 'Konfirmasi',
-    content: 'Apa anda yakin menghapus data tersebut ?',
-    buttons: {
-        cancel: {
-          text: 'Batal',
-          btnClass: 'btn-light',
-          action: function(){
-
-          }
-        },
-        confirm: {
-          text: 'Konfirmasi',
-          btnClass: 'btn-blue',
-          action: function(){
-            $(itu).parent().parent().loading();
-            $.ajax({
-              type:'post',
-              url:'/ajax/user_hapus.html',
-              data:{id:id},
-              success:function(resp){
-                $(itu).parent().parent().loading("stop");
-                var res = JSON.parse(resp);
-                var html = "";
-                if(res.is_error){
-                  if(res.must_login){
-                    window.location = "/login.html";
-                  }else{
-                    toastr["error"](res.msg);
-                  }
-                }else{
-                  toastr["success"]("Berhasil menghapus");
-                  load_data();
-                }
-              },error:function(){
-                $(itu).parent().parent().loading("stop");
-                toastr["error"]("Silahkan periksa koneksi internet anda");
-              }
-            });
-          }
-        }
-    }
-  });
-}
-function modal_tambah(){
-  is_edit = false;
-  $("#form_data").trigger("reset");
-  $("#modal_form_title").html("Tambah User");
-  $("#div_password").show();
-  $("#div_nama").show();
-  $("#div_user").show();
-  $("#div_level").show();
-  $("#modal_form").modal("show");
-}
 function modal_edit(itu){
   $("#form_data").trigger("reset");
-  is_edit = true;
-  is_edit_password = false;
   var id = $(itu).attr("data-id");
   var nama = $(itu).attr("data-nama");
+  var host = $(itu).attr("data-host");
+  var port = $(itu).attr("data-port");
   var user = $(itu).attr("data-user");
-  var level = $(itu).attr("data-level");
-  $("#modal_form_title").html("Edit User");
-  $("#div_password").hide();
-  $("#div_nama").show();
-  $("#div_user").show();
-  $("#div_level").show();
+  var password = $(itu).attr("data-password");
   $("#id").val(id);
   $("#nama").val(nama);
+  $("#host").val(host);
+  $("#port").val(port);
   $("#user").val(user);
-  $("#level").val(level);
+  $("#password").val(password);
+  $("#modal_form_title").html("Edit Data");
   $("#modal_form").modal("show");
 }
-function modal_password(itu){
-  is_edit = true;
-  is_edit_password = true;
-  var id = $(itu).attr("data-id");
-  $("#modal_form_title").html("Update Password");
-  $("#id").val(id);
-  $("#div_password").show();
-  $("#div_nama").hide();
-  $("#div_user").hide();
-  $("#div_level").hide();
+function modal_tambah(){
+  $("#form_data").trigger("reset");
+  $("#id").val("");
+  $("#nama").val("");
+  $("#host").val("");
+  $("#port").val("");
+  $("#user").val("");
   $("#password").val("");
+  $("#modal_form_title").html("Tambah Data");
   $("#modal_form").modal("show");
 }
 function load_data(){
@@ -216,7 +118,7 @@ function load_data(){
   var keyword = $("#keyword").val();
   $.ajax({
     type:'post',
-    url:'/ajax/user_data.html',
+    url:'/ajax/router_data.html',
     data:{keyword:keyword,page:page},
     success:function(resp){
       $("#listdata").loading("stop");
@@ -226,29 +128,23 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='4'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='7'>" + res.msg + "</td></tr>");
         }
       }else{
         var html = "";
         var no = page * 10 - 10;
         $.each(res.data,function(k,v){
-          if(k < 5){
+          if(k < 10){
             no++;
-            var level = "";
-            if(v['level'] == "1"){
-              level = "Umum";
-            }else{
-              level = "Admin";
-            }
             html += "<tr>";
             html += "<td>" + no + "</td>";
             html += "<td>" + v['nama'] + "</td>";
+            html += "<td>" + v['host'] + "</td>";
+            html += "<td>" + v['port'] + "</td>";
             html += "<td>" + v['user'] + "</td>";
-            html += "<td>" + level + "</td>";
+            html += "<td>" + v['password'] + "</td>";
             html += "<td>";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='modal_password(this);' class='btn btn-primary'><span class='fa fa-key'></span></a> ";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a>";
+            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-host='" + v['host'] + "' data-port='" + v['port'] + "' data-user='" + v['user'] + "' data-password='" + v['password'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
             html += "</td>";
             html += "</tr>";
           }
@@ -259,7 +155,7 @@ function load_data(){
       }
     },error:function(){
       $("#listdata").loading("stop");
-      $("#listdata").html("<tr><td colspan='4'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='7'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }
@@ -284,7 +180,7 @@ function html_pagination(jmldata){
     html_pagination += "    </li>";
   }
   html_pagination += "    <li class='page-item disabled'><a class='page-link text-body' href='javascript:void(0);'>" + page + "</a></li>";
-  if(jmldata > 5){
+  if(jmldata > 10){
     //Isnext true
     html_pagination += "    <li class='page-item'>";
     html_pagination += "      <a class='page-link text-body nextpage' data-page='" + (parseInt(page) + 1) + "' href='javascript:void(0);'>";

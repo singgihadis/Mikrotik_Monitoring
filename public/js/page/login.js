@@ -1,15 +1,21 @@
 $(document).ready(function(){
+  $("#password").keyup(function(){
+    $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
+  });
+  $("#password").blur(function(){
+    $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
+  });
+  $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
   $("#form_login").validate({
     submitHandler : function(){
+      $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
       $("#form_login").loading();
-      var host = $("#host").val();
-      var port = $("#port").val();
       var user = $("#user").val();
-      var password = $("#password").val();
+      var password = $("#hidden_password").val();
       $.ajax({
         type:'post',
         url:'/ajax/login.html',
-        data:{host:host,port:port,user:user,password:password},
+        data:{user:user,password:password},
         success:function(resp){
           var res = JSON.parse(resp);
           var html = "";
@@ -17,7 +23,7 @@ $(document).ready(function(){
             $("#form_login").loading("stop");
             toastr["error"](res.msg);
           }else{
-            window.location = "/traffic.html";
+            window.location = "/router.html";
           }
         },error:function(){
           $("#form_login").loading("stop");

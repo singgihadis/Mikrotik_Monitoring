@@ -3,33 +3,39 @@ const pool = require('../db');
 module.exports = function(app){
   app.post(['/ajax/system_resources.html'],(req, res) => {
     if(req.session.is_login){
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password
-      });
-      api.connect().then((client) => {
-        client.menu("/system resource").getOnly().then((result) => {
-            delete result['$$path'];
-            var data = {is_error:false,data:result};
-            api.close();
+      if(req.session.server_id){
+        var host = req.session.host;
+        var port = req.session.port;
+        var user = req.session.user;
+        var password = req.session.password;
+        const api = new RouterOSClient({
+            host: host,
+            port: port,
+            user: user,
+            password: password
+        });
+        api.connect().then((client) => {
+          client.menu("/system resource").getOnly().then((result) => {
+              delete result['$$path'];
+              var data = {is_error:false,data:result};
+              api.close();
+              res.send(JSON.stringify(data));
+              res.end();
+          }).catch((err) => {
+            var data = {is_error:true,msg:err.message};
             res.send(JSON.stringify(data));
             res.end();
+          });
         }).catch((err) => {
           var data = {is_error:true,msg:err.message};
           res.send(JSON.stringify(data));
           res.end();
         });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
+      }else{
+        var data = {is_error:true,msg:""};
         res.send(JSON.stringify(data));
         res.end();
-      });
+      }
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
       res.send(JSON.stringify(data));
@@ -43,9 +49,9 @@ module.exports = function(app){
         if(req.body.master_kota_id != undefined){
           master_kota_id = req.body.master_kota_id;
         }
-        var server_id = req.session.server_id;
-        var sql = "update server set master_kota_id=? where id=?";
-        var query = connection.query(sql,[master_kota_id,server_id], function (err, results, fields) {
+        var user_id = req.session.user_id;
+        var sql = "update pengaturan set master_kota_id=? where user_id=?";
+        var query = connection.query(sql,[master_kota_id,user_id], function (err, results, fields) {
           if (!err){
             connection.release();
             req.session.master_kota_id = master_kota_id;

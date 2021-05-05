@@ -451,8 +451,8 @@ function func_interface_chart(data){
             datasets: [{
                 label: 'Tx',
                 data: [tx_value],
-                backgroundColor: 'rgba(100,150,255,0.5)',
-  					    borderColor: 'rgba(100,150,255,1)'
+                backgroundColor: 'rgba(100,255,150,0.5)',
+  					    borderColor: 'rgba(100,255,150,1)'
             },{
                 label: 'Rx',
                 data: [rx_value],

@@ -34,7 +34,9 @@ function load_data(){
         $("#nominal_pembayaran").html("Rp. " + FormatAngka(data['nominal_pembayaran']));
         $(".daterange").daterangepicker({
           autoUpdateInput: false,
-          opens: 'left'
+          opens: 'left',
+          timePicker: true,
+          timePicker24Hour: true,
         }, function (start, end, label) {
 
         });
@@ -45,8 +47,8 @@ function load_data(){
           chart_data(name);
         });
         $('.daterange').on('apply.daterangepicker', function(ev, picker) {
-          $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-          chart_database(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'),name);
+          $(this).val(picker.startDate.format('DD/MM/YYYY HH:mm') + ':00 - ' + picker.endDate.format('DD/MM/YYYY HH:mm') + ":00");
+          chart_database(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'),picker.startDate.format('YYYY-MM-DD HH:mm') + ":00",picker.endDate.format('YYYY-MM-DD HH:mm') + ":00",name);
         });
         chart_data(name);
       }
@@ -56,7 +58,7 @@ function load_data(){
     }
   });
 }
-function chart_database(tgl_start,tgl_end){
+function chart_database(tgl_start,tgl_end,tgl_start_complete,tgl_end_complete){
   var member_id = $("#member_id").val();
   $.ajax({
     type:'post',
@@ -78,7 +80,7 @@ function chart_database(tgl_start,tgl_end){
         if(chart_timeout != undefined){
           clearTimeout(chart_timeout);
         }
-        chart2(data);
+        chart2(data,tgl_start_complete,tgl_end_complete);
       }
     },error:function(){
       toastr["error"]("Silahkan periksa koneksi internet anda");
@@ -138,8 +140,8 @@ function chart(data){
             datasets: [{
                 label: 'Tx',
                 data: [tx_value],
-                backgroundColor: 'rgba(100,150,255,0.5)',
-  					    borderColor: 'rgba(100,150,255,1)'
+                backgroundColor: 'rgba(100,255,150,0.5)',
+  					    borderColor: 'rgba(100,255,150,1)'
             },{
                 label: 'Rx',
                 data: [rx_value],
@@ -173,7 +175,7 @@ function chart(data){
     });
   }
 }
-function chart2(data){
+function chart2(data,tgl_start_complete,tgl_end_complete){
   var datas = [];
   $.each(data,function(k,v){
     var json_hasil = [];
@@ -188,17 +190,22 @@ function chart2(data){
   var rx_values = [];
   $.each(datas,function(k,v){
     var timestamp = v['s'];
-    labels.push(moment.unix(timestamp).format("DD-MM-YYYY (HH:mm)"));
-    var tx = "0";
-    if(v['tx'] != ""){
-      tx = v['tx'];
+    var time_timestamp = timestamp;
+    var time_tgl_start_complete = moment(tgl_start_complete,"YYYY-MM-DD HH:mm:ss").unix();
+    var time_tgl_end_complete = moment(tgl_end_complete,"YYYY-MM-DD HH:mm:ss").unix();
+    if(time_timestamp >= time_tgl_start_complete && time_timestamp <= time_tgl_end_complete){
+      labels.push(moment.unix(timestamp).format("DD-MM-YYYY (HH:mm)"));
+      var tx = "0";
+      if(v['tx'] != ""){
+        tx = v['tx'];
+      }
+      var rx = "0";
+      if(v['rx'] != ""){
+        rx = v['rx'];
+      }
+      tx_values.push(parseInt(tx));
+      rx_values.push(parseInt(rx));
     }
-    var rx = "0";
-    if(v['rx'] != ""){
-      rx = v['rx'];
-    }
-    tx_values.push(parseInt(tx));
-    rx_values.push(parseInt(rx));
   });
   var ctx = document.getElementById('chart').getContext('2d');
   chart_graph = new Chart(ctx, {
@@ -208,8 +215,8 @@ function chart2(data){
           datasets: [{
               label: 'Tx',
               data: tx_values,
-              backgroundColor: 'rgba(100,150,255,0.5)',
-              borderColor: 'rgba(100,150,255,1)'
+              backgroundColor: 'rgba(100,255,150,0.5)',
+              borderColor: 'rgba(100,255,150,1)'
           },{
               label: 'Rx',
               data: rx_values,

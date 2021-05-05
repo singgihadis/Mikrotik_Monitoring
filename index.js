@@ -43,7 +43,7 @@ app.use(session({
 app.use(function(req,res,next) {
   if(req.session.is_login){
     var pengaturan_function = require("./function/pengaturan_function.js");
-    pengaturan_function.GetData(req.session.server_id,function(data){
+    pengaturan_function.GetData(req.session.user_id,function(data){
       if(data == null){
         req.website_config = {
           title : "",
@@ -51,6 +51,7 @@ app.use(function(req,res,next) {
           logo : ""
         };
       }else{
+        req.session.master_kota_id = data[0]['master_kota_id'];
         req.website_config = {
           title : data[0]['title'],
           favicon : data[0]['favicon'],
@@ -74,6 +75,7 @@ require('./routes/ajax_hotspot')(app);
 require('./routes/ajax_member')(app);
 require('./routes/ajax_pembayaran')(app);
 require('./routes/ajax_pengaturan')(app);
+require('./routes/ajax_router')(app);
 require('./routes/ajax_user')(app);
 require('./routes/ajax_umum')(app);
 

@@ -12,10 +12,19 @@ $(document).ready(function(){
   load_data();
   $("#form_bayar").validate({
     submitHandler : function(){
+      $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
       var bulan = $("#bulan").val();
       var id = $("#id").val();
       var is_bayar = $("#is_bayar").val();
       var tahun = $("#tahun").val();
+      var metode_bayar = "";
+      if($("input[name='cr_metode_bayar']").attr("id") == "cr_transfer"){
+        metode_bayar = "1";
+      }else{
+        metode_bayar = "2";
+      }
+      var bank_id = $("#bank").val();
+      var password = $("#hidden_password").val();
       if(tahun == ""){
         toastr["error"]("Silahkan isikan tahun pada filter data terlebih dahulu");
       }else{
@@ -23,7 +32,7 @@ $(document).ready(function(){
         $.ajax({
           type:'post',
           url:'/ajax/pembayaran_bayar.html',
-          data:{id:id,bulan:bulan,tahun:tahun,is_bayar:is_bayar},
+          data:{id:id,bulan:bulan,tahun:tahun,is_bayar:is_bayar,metode_bayar:metode_bayar,bank_id:bank_id,password:password},
           success:function(resp){
             $("#form_bayar").loading("stop");
             var res = JSON.parse(resp);
@@ -52,9 +61,50 @@ $(document).ready(function(){
 
     }
   });
+  dropdown_bank();
+  $("input[name='cr_metode_bayar']").change(function(){
+    if($(this).attr("id") == "cr_transfer"){
+      $("#div_bank").show();
+    }else{
+      $("#div_bank").hide();
+    }
+  });
 });
-
-
+function dropdown_bank(){
+  $.ajax({
+    type:'post',
+    url:'/ajax/bank_data.html',
+    data:{keyword:"",page:"x"},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          $("#bank").html("<option value=''>" + res.msg + "</option>");
+          $("#bank").select2({
+            theme: "bootstrap"
+          });
+        }
+      }else{
+        var html = "";
+        $.each(res.data,function(k,v){
+          html += "<option value='" + v['id'] + "'>" + v['nama'] + " - " + v['no_rekening'] + "</option>";
+        });
+        $("#bank").html(html);
+        $("#bank").select2({
+          theme: "bootstrap"
+        });
+      }
+    },error:function(){
+      $("#bank").html("<option value=''>" + res.msg + "</option>");
+      $("#bank").select2({
+        theme: "bootstrap"
+      });
+    }
+  });
+}
 function build_tahun(){
   var html = "";
   var tahun_sekarang = parseInt(moment().format("YYYY"));
@@ -172,7 +222,7 @@ function modal_detail(itu){
   var no_wa = $(itu).attr("data-no-wa");
   var nominal_pembayaran = $(itu).attr("data-nominal-pembayaran");
   $("#name").html(name);
-  $("#password").html(password);
+  $("#password_detail").html(password);
   $("#profile").html(profile);
   $("#nama").html(nama);
   $("#alamat").html(alamat);
