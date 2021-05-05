@@ -22,10 +22,13 @@
       <div id="user_manager" class="list-group sub-menu collapse {{#ifEquals menu "user_manager"}}show{{/ifEquals}}">
         <a href="/hotspot.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "hotspot"}}font-weight-bolder{{/ifEquals}}">Hotspot</a>
         <a href="/ppp.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "ppp"}}font-weight-bolder{{/ifEquals}}">PPP</a>
-        <a href="/member.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "member"}}font-weight-bolder{{/ifEquals}}">Member</a>
-        <a href="/pembayaran.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "pembayaran"}}font-weight-bolder{{/ifEquals}}">Pembayaran</a>
       </div>
       {{/ifNotEquals}}
+  </div>
+  <hr>
+  <div class="list-group list-group-flush">
+      <a href="/pembayaran.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "pembayaran"}}font-weight-bolder{{/ifEquals}}">Pembayaran</a>
+      <a href="/member.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "member"}}font-weight-bolder{{/ifEquals}}">Member</a>
       <a href="/pengaturan.html" class="list-group-item menu-item list-group-item-action bg-white {{#ifEquals menu "pengaturan"}}font-weight-bolder{{/ifEquals}}">
         Pengaturan
       </a>

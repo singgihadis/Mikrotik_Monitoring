@@ -133,7 +133,7 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='14'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='15'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
@@ -147,6 +147,7 @@ function load_data(){
             var arr_bulan = bulan.split(",");
             html += "<tr>";
             html += "<td>" +  no + "</td>";
+            html += "<td>" +  v['nama_server'] + "</td>";
             html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "'>" + v['nama'] + "</a></td>";
             for(var a=0;a<12;a++){
               var html_switch = "";
@@ -209,7 +210,7 @@ function load_data(){
     },error:function(){
       $("#listdata").loading("stop");
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='14'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='15'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }

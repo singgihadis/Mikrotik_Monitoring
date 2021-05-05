@@ -1,6 +1,6 @@
 const pool = require('../db');
 const fs = require('fs');
-var pdf = require("html-pdf-node");
+var pdf = require("html-pdf");
 var public_function = require("../function/public_function.js");
 module.exports = function(app){
   app.get(['/','/login.html'],(req, res) => {
@@ -35,7 +35,8 @@ module.exports = function(app){
           sub_menu:"traffic",
           master_kota_id:master_kota_id,
           server_id:server_id,
-          level:level
+          level:level,
+          with_server:1
         });
       }else{
         window.location = "/router.html"
@@ -64,7 +65,8 @@ module.exports = function(app){
           menu:"monitoring",
           sub_menu:"host",
           server_id:server_id,
-          level:level
+          level:level,
+          with_server:1
         });
       }else{
         window.location = "/router.html"
@@ -94,7 +96,8 @@ module.exports = function(app){
           menu:"monitoring",
           sub_menu:"ping",
           server_id:server_id,
-          level:level
+          level:level,
+          with_server:1
         });
       }else{
         window.location = "/router.html"
@@ -124,7 +127,8 @@ module.exports = function(app){
           menu:"monitoring",
           sub_menu:"dns",
           server_id:server_id,
-          level:level
+          level:level,
+          with_server:1
         });
       }else{
         window.location = "/router.html"
@@ -191,7 +195,8 @@ module.exports = function(app){
           menu:"user_manager",
           sub_menu:"hotspot",
           server_id:server_id,
-          level:level
+          level:level,
+          with_server:1
         });
       }else{
         window.location = "/router.html"
@@ -221,7 +226,8 @@ module.exports = function(app){
           menu:"user_manager",
           sub_menu:"ppp",
           server_id:server_id,
-          level:level
+          level:level,
+          with_server:1
         });
       }else{
         window.location = "/router.html"
@@ -233,62 +239,58 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var website_config = req.website_config;
+      var level = req.session.level;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Member - " + website_config['title'];
+      }else{
+        title = "Member";
+      }
       var server_id = "";
       if(req.session.server_id){
         server_id = req.session.server_id;
-        var website_config = req.website_config;
-        var level = req.session.level;
-        var title = "";
-        if(website_config['title'] != ""){
-          title = "Member - " + website_config['title'];
-        }else{
-          title = "Member";
-        }
-        res.render("member",{
-          title:title,
-          favicon:website_config['favicon'],
-          logo:website_config['logo'],
-          menu:"user_manager",
-          sub_menu:"member",
-          server_id:server_id,
-          level:level
-        });
-      }else{
-        window.location = "/router.html"
       }
-
+      res.render("member",{
+        title:title,
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"member",
+        level:level,
+        server_id:server_id,
+        with_server:0
+      });
     }
   });
-  app.get(['/member/traffic/:id.html'],(req, res) => {
+  app.get(['/member/traffic/:id/:server_id.html'],(req, res) => {
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var server_id_unselected = req.params.server_id;
+      var website_config = req.website_config;
+      var id = req.params.id;
+      var level = req.session.level;
       var server_id = "";
       if(req.session.server_id){
         server_id = req.session.server_id;
-        var website_config = req.website_config;
-        var id = req.params.id;
-        var level = req.session.level;
-        var title = "";
-        if(website_config['title'] != ""){
-          title = "Member Traffic - " + website_config['title'];
-        }else{
-          title = "Member Traffic";
-        }
-        res.render("member_traffic",{
-          title:title,
-          favicon:website_config['favicon'],
-          logo:website_config['logo'],
-          menu:"user_manager",
-          sub_menu:"member",
-          id:id,
-          server_id:server_id,
-          level:level
-        });
-      }else{
-        window.location = "/router.html"
       }
-
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Member Traffic - " + website_config['title'];
+      }else{
+        title = "Member Traffic";
+      }
+      res.render("member_traffic",{
+        title:title,
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"member",
+        id:id,
+        server_id_unselected:server_id_unselected,
+        level:level,
+        server_id:server_id,
+        with_server:0
+      });
     }
   });
   app.get(['/pembayaran.html'],(req, res) => {
@@ -298,27 +300,24 @@ module.exports = function(app){
       var server_id = "";
       if(req.session.server_id){
         server_id = req.session.server_id;
-        var website_config = req.website_config;
-        var level = req.session.level;
-        var title = "";
-        if(website_config['title'] != ""){
-          title = "Pembayaran - " + website_config['title'];
-        }else{
-          title = "Pembayaran";
-        }
-        res.render("pembayaran",{
-          title:title,
-          favicon:website_config['favicon'],
-          logo:website_config['logo'],
-          menu:"user_manager",
-          sub_menu:"pembayaran",
-          server_id:server_id,
-          level:level
-        });
-      }else{
-        window.location = "/router.html"
       }
-
+      var website_config = req.website_config;
+      var level = req.session.level;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Pembayaran - " + website_config['title'];
+      }else{
+        title = "Pembayaran";
+      }
+      res.render("pembayaran",{
+        title:title,
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"pembayaran",
+        server_id:server_id,
+        level:level,
+        with_server:0
+      });
     }
   });
   app.get(['/pembayaran/bayar.html'],(req, res) => {
@@ -328,26 +327,24 @@ module.exports = function(app){
       var server_id = "";
       if(req.session.server_id){
         server_id = req.session.server_id;
-        var website_config = req.website_config;
-        var level = req.session.level;
-        var title = "";
-        if(website_config['title'] != ""){
-          title = "Bayar - " + website_config['title'];
-        }else{
-          title = "Bayar";
-        }
-        res.render("bayar",{
-          title:title,
-          favicon:website_config['favicon'],
-          logo:website_config['logo'],
-          menu:"user_manager",
-          sub_menu:"pembayaran",
-          server_id:server_id,
-          level:level
-        });
-      }else{
-        window.location = "/router.html"
       }
+      var website_config = req.website_config;
+      var level = req.session.level;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Bayar - " + website_config['title'];
+      }else{
+        title = "Bayar";
+      }
+      res.render("bayar",{
+        title:title,
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"pembayaran",
+        server_id:server_id,
+        level:level,
+        with_server:0
+      });
     }
   });
   app.get(['/pengaturan.html'],(req, res) => {
@@ -372,7 +369,8 @@ module.exports = function(app){
         logo:website_config['logo'],
         menu:"pengaturan",
         server_id:server_id,
-        level:level
+        level:level,
+        with_server:0
       });
     }
   });
@@ -380,28 +378,50 @@ module.exports = function(app){
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
-      if(req.session.server_id){
-        // pool.getConnection(function(err, connection) {
-        //   var sql_data = "select * from pengaturan where user_id=?";
-        //   var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_pengaturan, fields) {
-        //     connection.release();
-        //     if(results_pengaturan.length > 0){
-        //
-        //     }
-        //   });
-        // });
-        var html = __dirname + '/../invoice.html';
-        fs.readFile(html, 'utf8', function(err, data) {
-            if (err) throw err;
-            let options = { format: 'A4' };
-            let file = { content: data };
-            pdf.generatePdf(file, options).then(pdfBuffer => {
-
+      pool.getConnection(function(err, connection) {
+        var sql_data = "select * from pengaturan where user_id=?";
+        var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_pengaturan, fields) {
+          if(results_pengaturan.length > 0){
+            var sql_data = "select * from bank where user_id=?";
+            var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_bank, fields) {
+              var sql_member = "select a.*,b.nama,b.alamat,b.no_wa,b.nominal_pembayaran from ppp_secret a left join member b on a.id=b.ppp_secret_id where user_id=?";
+              var query_member = connection.query(sql_member,[req.session.user_id], function (err, results_member, fields) {
+                connection.release();
+                if(results_member.length > 0){
+                  var html = __dirname + '/../invoice.html';
+                  var logo = results_pengaturan[0]['logo'];
+                  var website = results_pengaturan[0]['website'];
+                  var email = results_pengaturan[0]['email'];
+                  var no_wa = results_pengaturan[0]['no_wa'];
+                  var nama_member = results_member[0]['nama'];
+                  var alamat_member = results_member[0]['alamat'];
+                  var nominal_pembayaran = results_member[0]['nominal_pembayaran'];
+                  if(results_bank.length > 0){
+                    var html_bank = "";
+                  }
+                  fs.readFile(html, 'utf8', function(err, data) {
+                      if (err) throw err;
+                      var options = { format: 'A6' };
+                      pdf.create(data,options).toStream(function(err, stream){
+                        res.setHeader('Content-disposition', 'inline; filename="invoice"');
+                        res.setHeader('Content-type', 'application/pdf');
+                        // res.setHeader('Content-Type', 'application/pdf');
+                        // res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf;');
+                        stream.pipe(res);
+                      });
+                  });
+                }else{
+                  connection.release();
+                  res.send("Data member tidak tersedia");
+                }
+              });
             });
+          }else{
+            connection.release();
+            res.send("Data pengaturan tidak tersedia");
+          }
         });
-      }else{
-        res.redirect("/router.html");
-      }
+      });
     }
   });
   app.get(['/router.html'],(req, res) => {
@@ -426,7 +446,8 @@ module.exports = function(app){
         logo:website_config['logo'],
         menu:"router",
         server_id:server_id,
-        level:level
+        level:level,
+        with_server:0
       });
     }
   });
@@ -452,7 +473,8 @@ module.exports = function(app){
         logo:website_config['logo'],
         menu:"user",
         server_id:server_id,
-        level:level
+        level:level,
+        with_server:0
       });
     }
   });

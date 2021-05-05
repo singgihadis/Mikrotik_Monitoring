@@ -60,10 +60,11 @@ function load_data(){
 }
 function chart_database(tgl_start,tgl_end,tgl_start_complete,tgl_end_complete){
   var member_id = $("#member_id").val();
+  var server_id = $("#server_id_unselected").val();
   $.ajax({
     type:'post',
     url:'/ajax/member_traffic_data.html',
-    data:{tgl_start:tgl_start,tgl_end:tgl_end,member_id:member_id},
+    data:{tgl_start:tgl_start,tgl_end:tgl_end,member_id:member_id,server_id:server_id},
     success:function(resp){
       var res = JSON.parse(resp);
       var html = "";
@@ -88,10 +89,11 @@ function chart_database(tgl_start,tgl_end,tgl_start_complete,tgl_end_complete){
   });
 }
 function chart_data(name){
+  var server_id = $("#server_id_unselected").val();
   $.ajax({
     type:'post',
     url:'/ajax/ppp_interface_monitor.html',
-    data:{name:name},
+    data:{name:name,server_id:server_id},
     success:function(resp){
       var res = JSON.parse(resp);
       var html = "";

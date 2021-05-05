@@ -15,7 +15,7 @@
     "formidable": "^1.2.2",
     "fs": "0.0.1-security",
     "hbs": "^4.1.1",
-    "html-pdf-node": "^1.0.7",
+    "html-pdf": "^3.0.0",
     "list": "^2.0.19",
     "mikronode": "^2.3.10",
     "moment": "^2.29.1",

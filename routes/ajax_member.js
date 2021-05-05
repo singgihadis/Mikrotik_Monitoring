@@ -17,13 +17,13 @@ module.exports = function(app){
         if(keyword != ""){
           arr_query.push("concat(a.name,a.password,a.profile,a.local_address,a.remote_address,a.nama) like '%" + keyword + "%'");
         }
-        arr_query.push("a.server_id=" + req.session.server_id);
+        arr_query.push("c.user_id=" + req.session.user_id);
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 10) - 10;
-        var sql_data_total = "select count(a.id) as total from ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id " + filter_query;
+        var sql_data_total = "select count(a.id) as total from ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -32,7 +32,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id " + filter_query + " limit " + limit + ",11";
+            var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,c.nama as nama_server,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + " limit " + limit + ",11";
             var query_data = connection.query(sql_data, function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -63,13 +63,13 @@ module.exports = function(app){
           id = req.body.id;
         }
         var arr_query = [];
-        arr_query.push("a.server_id=" + req.session.server_id);
+        arr_query.push("c.user_id=" + req.session.user_id);
         arr_query.push("a.id=" + id);
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.id as member_id FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id " + filter_query + "";
+        var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.id as member_id,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + "";
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();
@@ -158,12 +158,12 @@ module.exports = function(app){
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
         var arr_query = [];
-        arr_query.push("b.server_id=" + req.session.server_id);
+        arr_query.push("c.user_id=" + req.session.user_id);
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data_total = "select count(b.id) as total from member a right join ppp_secret b on a.ppp_secret_id=b.id " + filter_query;
+        var sql_data_total = "select count(b.id) as total from member a right join ppp_secret b on a.ppp_secret_id=b.id INNER JOIN `server` c ON b.server_id=c.id " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -172,7 +172,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data_dibayar = "select count(a.id) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id " + filter_query;
+            var sql_data_dibayar = "select count(a.id) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id INNER JOIN `server` c ON b.server_id=c.id " + filter_query;
             var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
               if(results_dibayar.length == 0){
                 connection.release();
@@ -203,30 +203,48 @@ module.exports = function(app){
       if(req.body.name != undefined){
         name = req.body.name;
       }
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password,
-          keepalive: true
-      });
-      api.connect().then((client) => {
-        var torch = client.menu("/interface monitor-traffic").where({interface:"<pppoe-" + name + ">"}).stream((err, data_traffic, stream) => {
-            if (err) return err; // got an error while trying to stream
-            var data = {is_error:false,data:data_traffic};
-            torch.stop();
-            api.close();
+      var server_id = "";
+      if(req.body.server_id != undefined){
+        server_id = req.body.server_id;
+      }
+      var user_id = req.session.user_id;
+      pool.getConnection(function(err, connection) {
+        var sql_data = "SELECT * from server where user_id=? and id=?";
+        var query_data = connection.query(sql_data,[req.session.user_id,server_id], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Router tidak ditemukan"};
             res.send(JSON.stringify(data));
             res.end();
+          }else{
+            connection.release();
+            var host = results[0]['host'];
+            var port = results[0]['port'];
+            var user = results[0]['user'];
+            var password = results[0]['password'];
+            const api = new RouterOSClient({
+                host: host,
+                port: port,
+                user: user,
+                password: password,
+                keepalive: true
+            });
+            api.connect().then((client) => {
+              var torch = client.menu("/interface monitor-traffic").where({interface:"<pppoe-" + name + ">"}).stream((err, data_traffic, stream) => {
+                  if (err) return err; // got an error while trying to stream
+                  var data = {is_error:false,data:data_traffic};
+                  torch.stop();
+                  api.close();
+                  res.send(JSON.stringify(data));
+                  res.end();
+              });
+            }).catch((err) => {
+              var data = {is_error:true,msg:err.message};
+              res.send(JSON.stringify(data));
+              res.end();
+            });
+          }
         });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
-        res.send(JSON.stringify(data));
-        res.end();
       });
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
@@ -249,9 +267,12 @@ module.exports = function(app){
         if(req.body.member_id != undefined){
           member_id = req.body.member_id;
         }
-        var sql_data = "SELECT d.* FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id INNER JOIN member_traffic_data d ON a.id = d.member_id where d.tgl >= ? and d.tgl <= ? and a.id=? and b.server_id=?";
-        var query_data = connection.query(sql_data,[tgl_start,tgl_end,member_id,req.session.server_id], function (err, results, fields) {
-  
+        var server_id = "";
+        if(req.body.server_id != undefined){
+          server_id = req.body.server_id;
+        }
+        var sql_data = "SELECT d.* FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id INNER JOIN member_traffic_data d ON a.id = d.member_id where d.tgl >= ? and d.tgl <= ? and a.id=? and c.user_id=? and c.id=?";
+        var query_data = connection.query(sql_data,[tgl_start,tgl_end,member_id,req.session.user_id,server_id], function (err, results, fields) {
           if(results.length == 0){
             connection.release();
             var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};

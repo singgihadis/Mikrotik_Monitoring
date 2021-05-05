@@ -22,13 +22,13 @@ module.exports = function(app){
         if(keyword != ""){
           arr_query.push("a.nama like '%" + keyword + "%'");
         }
-        arr_query.push("b.server_id=" + req.session.server_id);
+        arr_query.push("d.user_id=" + req.session.user_id);
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 10) - 10;
-        var sql_data_total = "SELECT count(a.id) as total FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id GROUP BY a.id";
+        var sql_data_total = "SELECT count(a.id) as total FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN server d on d.id=b.server_id GROUP BY a.id";
         var query_data_total = connection.query(sql_data_total,[tahun], function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -37,7 +37,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.*, IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun, b.name, b.password, b.profile FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? " + filter_query + " GROUP BY a.id limit " + limit + ",11";
+            var sql_data = "SELECT a.*, IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun, b.name, b.password, b.profile,d.nama as nama_server,d.host,d.port,d.user,d.password FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id limit " + limit + ",11";
             var query_data = connection.query(sql_data,[tahun], function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -156,12 +156,12 @@ module.exports = function(app){
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
         var arr_query = [];
-        arr_query.push("b.server_id=" + req.session.server_id);
+        arr_query.push("d.user_id=" + req.session.user_id);
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data_total = "select sum(a.nominal_pembayaran) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id " + filter_query;
+        var sql_data_total = "select sum(a.nominal_pembayaran) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server d on d.id=b.server_id " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -174,7 +174,7 @@ module.exports = function(app){
             if(arr_query.length > 0){
               filter_query = " where " + arr_query.join(" and ");
             }
-            var sql_data_dibayar = "SELECT sum(a.nominal_pembayaran) as total FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN pembayaran c ON a.id = c.member_id " + filter_query;
+            var sql_data_dibayar = "SELECT sum(a.nominal_pembayaran) as total FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN pembayaran c ON a.id = c.member_id inner join server d on d.id=b.server_id " + filter_query;
             var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
               if(results_dibayar.length == 0){
                 connection.release();

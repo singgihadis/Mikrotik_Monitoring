@@ -71,8 +71,8 @@ function load_data(){
           if(k < 10){
             html += "<tr>";
             html += "<td>" +  no + "</td>";
+            html += "<td>" + v['nama_server'] + "</td>";
             html += "<td>" + v['name'] + "</td>";
-            html += "<td>" + v['password'] + "</td>";
             html += "<td>" + v['profile'] + "</td>";
             html += "<td>" + v['nama'] + "</td>";
             html += "<td>" + v['alamat'] + "</td>";
@@ -80,7 +80,7 @@ function load_data(){
             html += "<td>Rp. " + FormatAngka(v['nominal_pembayaran']) + "</td>";
             html += "<td class='text-center'>";
             html += "<a onclick='modal_update(this)' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
-            html += " <a href='/member/traffic/" + v['id'] + ".html' class='btn btn-primary'><span class='fa fa-area-chart'></span></a>";
+            html += " <a href='/member/traffic/" + v['id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-area-chart'></span></a>";
             html += "</td>";
             html += "</tr>";
             no++;

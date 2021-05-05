@@ -3,8 +3,12 @@ $(document).ready(function(){
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");
   });
-  system_identity();
-  global_system_resources();
+  var with_server = $("#with_server").val();
+  if(with_server == "1"){
+    $("#slash_server").show();
+    system_identity();
+    global_system_resources();
+  }
   router_load();
 });
 function router_load(){
