@@ -9,6 +9,13 @@ $(document).ready(function(){
     system_identity();
     global_system_resources();
   }
+  $(window).scroll(function() {
+     if($(window).scrollTop() + $(window).height() == $(document).height()) {
+        $(".navbar").removeClass("fixed-top");
+     }else{
+      $(".navbar").addClass("fixed-top");
+     }
+  });
   router_load();
 });
 function router_load(){

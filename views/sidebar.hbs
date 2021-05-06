@@ -1,5 +1,5 @@
 <div class="bg-white border-right sidebar" id="sidebar-wrapper">
-  <div class="sidebar-heading"><img src="{{logo}}" style="width:100%;" /></div>
+  <div class="sidebar-heading">{{#ifNotEquals logo ""}}<img src="{{logo}}" style="width:100%;" />{{/ifNotEquals}}</div>
   <div class="px-3 py-1">
     <select class="form-control select2" id="select_router" style="display:none;">
 

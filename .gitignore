@@ -75,3 +75,4 @@ typings/
 # FuseBox cache
 .fusebox/
 .sass-cache
+public/pdf/1/54.pdf

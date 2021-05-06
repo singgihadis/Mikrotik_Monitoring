@@ -1,6 +1,10 @@
 const RouterOSClient = require('routeros-client').RouterOSClient;
+const fs = require('fs');
 var ppp_function = require("../function/ppp_function.js");
+var public_function = require("../function/public_function.js");
+var moment = require("moment");
 const pool = require('../db');
+var pdf = require("html-pdf");
 module.exports = function(app){
   app.post(['/ajax/member.html'],(req, res) => {
     if(req.session.is_login){
@@ -281,6 +285,97 @@ module.exports = function(app){
           }else{
             connection.release();
             var data = {is_error:false,data:results};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/member_cetak_invoice.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var id = "";
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+        var sql_data = "select * from pengaturan where user_id=?";
+        var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_pengaturan, fields) {
+          if(results_pengaturan.length > 0){
+            var sql_data = "select * from bank where user_id=?";
+            var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_bank, fields) {
+              var sql_member = "select a.*,b.nama,b.alamat,b.no_wa,b.nominal_pembayaran from ppp_secret a left join member b on a.id=b.ppp_secret_id where a.id=?";
+              var query_member = connection.query(sql_member,[id], function (err, results_member, fields) {
+                connection.release();
+                if(results_member.length > 0){
+                  var logo = results_pengaturan[0]['logo'];
+                  if(logo != ""){
+                    logo = "http://127.0.0.1:3002" + logo;
+                  }
+                  var website = results_pengaturan[0]['website'];
+                  var email = results_pengaturan[0]['email'];
+                  var no_wa = results_pengaturan[0]['no_wa'];
+                  var nama_member = results_member[0]['nama'];
+                  var alamat_member = results_member[0]['alamat'];
+                  var nominal_pembayaran = results_member[0]['nominal_pembayaran'];
+                  if(nominal_pembayaran != ""){
+                    nominal_pembayaran = "Rp. " + public_function.FormatAngka(nominal_pembayaran);
+                  }
+                  var no_invoice = moment().format('YYYYMMDD') + "0001";
+                  var tgl = moment().format("DD") + " " + public_function.NamaBulan(moment().format("M")) + " " + moment().format("YYYY");
+                  var bln_thn = public_function.NamaBulan(moment().format("M")) + " " + moment().format("YYYY");
+                  var html_bank = "";
+                  if(results_bank.length > 0){
+                    html_bank += "<h4 style='margin-bottom:10px;'>TRANSFER BANK</h4>";
+                    results_bank.forEach((item, i) => {
+                      html_bank += "<div style='margin-bottom:8px;'>" + item['nama'] + " - " + item['no_rekening'] + "</div>";
+                    });
+                  }
+                  var html = __dirname + '/../invoice.html';
+                  fs.readFile(html, 'utf8', function(err, data) {
+                      if (err) throw err;
+                      if (!fs.existsSync("./public/pdf/" + req.session.user_id)){
+                          fs.mkdirSync("./public/pdf/" + req.session.user_id);
+                      }
+                      data = data.replace(/{{logo}}/g,logo);
+                      data = data.replace(/{{html_bank}}/g,html_bank);
+                      data = data.replace(/{{website}}/g,website);
+                      data = data.replace(/{{no_wa}}/g,no_wa);
+                      data = data.replace(/{{email}}/g,email);
+                      data = data.replace(/{{nama_member}}/g,nama_member);
+                      data = data.replace(/{{alamat_member}}/g,alamat_member);
+                      data = data.replace(/{{nominal_pembayaran}}/g,nominal_pembayaran);
+                      data = data.replace(/{{no_invoice}}/g,no_invoice);
+                      data = data.replace(/{{tgl}}/g,tgl);
+                      data = data.replace(/{{bln_thn}}/g,bln_thn);
+                      var options = { format: 'A6' };
+                      pdf.create(data,options).toStream(function(err, stream){
+                        // res.setHeader('Content-disposition', 'inline; filename="invoice"');
+                        // res.setHeader('Content-type', 'application/pdf');
+                        // res.setHeader('Content-Type', 'application/pdf');
+                        // res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf;');
+                        // stream.pipe(res);
+                        stream.pipe(fs.createWriteStream('./public/pdf/' + req.session.user_id + "/" + id + '.pdf'));
+                        var data = {is_error:false,data:[],msg:"sukses",output:'http://127.0.0.1:3002/assets/pdf/' + req.session.user_id + "/" + id + '.pdf'};
+                        res.send(JSON.stringify(data));
+                        res.end();
+                      });
+                  });
+                }else{
+                  connection.release();
+                  var data = {is_error:true,data:[],msg:"Data member tidak tersedia"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }
+              });
+            });
+          }else{
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data pengaturan tidak tersedia"};
             res.send(JSON.stringify(data));
             res.end();
           }

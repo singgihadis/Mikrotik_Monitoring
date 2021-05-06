@@ -113,8 +113,8 @@ module.exports = function(app){
                     }
                   });
                 }else{
-                  var sql_insert = "insert into pengaturan(user_id,title,favicon,logo,website,email,no_wa) values(?,?,?,?,?,?,?)";
-                  var query_insert = connection.query(sql_insert,[req.session.user_id,title,favicon_file_name,logo_file_name,website,email,no_wa], function (err, results, fields) {
+                  var sql_insert = "insert into pengaturan(user_id,title,favicon,logo,website,email,no_wa,master_kota_id) values(?,?,?,?,?,?,?,?)";
+                  var query_insert = connection.query(sql_insert,[req.session.user_id,title,favicon_file_name,logo_file_name,website,email,no_wa,0], function (err, results, fields) {
                     if (err){
                       var data = {is_error:true,msg:"Gagal menyimpan"};
                       res.send(JSON.stringify(data));

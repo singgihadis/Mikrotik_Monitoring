@@ -6,8 +6,8 @@ const formidable = require('formidable');
 var uniqid = require('uniqid');
 module.exports = {
   Simpan_Gambar: function(old_file,file,callback){
-    // var dirname = __dirname.toString().split("\\"); // Local
-    var dirname = __dirname.toString().split("/"); //Online
+    var dirname = __dirname.toString().split("\\"); // Local
+    // var dirname = __dirname.toString().split("/"); //Online
     dirname.pop();
     dirname = dirname.join("/");
     if(file != null){

@@ -1,6 +1,6 @@
 const pool = require('../db');
 const fs = require('fs');
-var pdf = require("html-pdf");
+var moment = require("moment");
 var public_function = require("../function/public_function.js");
 module.exports = function(app){
   app.get(['/','/login.html'],(req, res) => {
@@ -371,56 +371,6 @@ module.exports = function(app){
         server_id:server_id,
         level:level,
         with_server:0
-      });
-    }
-  });
-  app.get(['/member/cetak/invoice/:id.pdf'],(req, res) => {
-    if(!req.session.is_login){
-      res.redirect("/login.html");
-    }else{
-      pool.getConnection(function(err, connection) {
-        var sql_data = "select * from pengaturan where user_id=?";
-        var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_pengaturan, fields) {
-          if(results_pengaturan.length > 0){
-            var sql_data = "select * from bank where user_id=?";
-            var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_bank, fields) {
-              var sql_member = "select a.*,b.nama,b.alamat,b.no_wa,b.nominal_pembayaran from ppp_secret a left join member b on a.id=b.ppp_secret_id where user_id=?";
-              var query_member = connection.query(sql_member,[req.session.user_id], function (err, results_member, fields) {
-                connection.release();
-                if(results_member.length > 0){
-                  var html = __dirname + '/../invoice.html';
-                  var logo = results_pengaturan[0]['logo'];
-                  var website = results_pengaturan[0]['website'];
-                  var email = results_pengaturan[0]['email'];
-                  var no_wa = results_pengaturan[0]['no_wa'];
-                  var nama_member = results_member[0]['nama'];
-                  var alamat_member = results_member[0]['alamat'];
-                  var nominal_pembayaran = results_member[0]['nominal_pembayaran'];
-                  if(results_bank.length > 0){
-                    var html_bank = "";
-                  }
-                  fs.readFile(html, 'utf8', function(err, data) {
-                      if (err) throw err;
-                      var options = { format: 'A6' };
-                      pdf.create(data,options).toStream(function(err, stream){
-                        res.setHeader('Content-disposition', 'inline; filename="invoice"');
-                        res.setHeader('Content-type', 'application/pdf');
-                        // res.setHeader('Content-Type', 'application/pdf');
-                        // res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf;');
-                        stream.pipe(res);
-                      });
-                  });
-                }else{
-                  connection.release();
-                  res.send("Data member tidak tersedia");
-                }
-              });
-            });
-          }else{
-            connection.release();
-            res.send("Data pengaturan tidak tersedia");
-          }
-        });
       });
     }
   });
