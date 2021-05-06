@@ -18,6 +18,37 @@ $(document).ready(function(){
       return false;
     }
   });
+  $("#form_alihkan").validate({
+    submitHandler:function(){
+      $("#form_alihkan").loading();
+      var id = $("#alihkan_id").val();
+      var user_id = $("#alihkan_user").val();
+      $.ajax({
+        type:'post',
+        url:'/ajax/router_alihkan.html',
+        data:{id:id,user_id:user_id},
+        success:function(resp){
+          $("#form_alihkan").loading("stop");
+          var res = JSON.parse(resp);
+          var html = "";
+          if(res.is_error){
+            if(res.must_login){
+              window.location = "/login.html";
+            }else{
+              toastr["error"](res.msg);
+            }
+          }else{
+            $("#modal_alihkan").modal("hide");
+            toastr["success"]("Berhasil mengalihkan");
+            load_data();
+          }
+        },error:function(){
+          $("#form_alihkan").loading("stop");
+          toastr["error"]("Silahkan periksa koneksi internet anda");
+        }
+      });
+    }
+  });
 });
 function edit(){
   $("#form_data").loading();
@@ -101,6 +132,53 @@ function modal_edit(itu){
   $("#modal_form_title").html("Edit Data");
   $("#modal_form").modal("show");
 }
+function modal_alihkan(itu){
+  $("#form_alihkan").trigger("reset");
+  var id = $(itu).attr("data-id");
+  var user_id = $(itu).attr("data-user-id");
+  $("#alihkan_id").val(id);
+  dropdown_user(user_id);
+  $("#modal_alihkan").modal("show");
+}
+function dropdown_user(user_id){
+  $.ajax({
+    type:'post',
+    url:'/ajax/user_data.html',
+    data:{keyword:"",page:"x"},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        var html = "";
+        $.each(res.data,function(k,v){
+          if(user_id == v['id']){
+            html += "<option value='" + v['id'] + "' selected='selected'>" + v['nama'] + "</option>";
+          }else{
+            html += "<option value='" + v['id'] + "'>" + v['nama'] + "</option>";
+          }
+        });
+        $("#alihkan_user").html(html);
+        $("#alihkan_user").select2({
+          theme: "bootstrap"
+        });
+      }
+    },error:function(){
+      var html = "";
+      html += "<option value=''>Periksa internet anda</option>";
+      $("#select_router").html(html);
+      $("#select_router").show();
+      $("#select_router").select2({
+        theme: "bootstrap"
+      });
+    }
+  });
+}
 function modal_tambah(){
   $("#form_data").trigger("reset");
   $("#id").val("");
@@ -113,13 +191,18 @@ function modal_tambah(){
   $("#modal_form").modal("show");
 }
 function load_data(){
+  if($("#level").val() == "1"){
+    $("#th_umum").show();
+  }else{
+    $("#th_admin").show();
+  }
   $("#pagination").html("");
   $("#listdata").loading();
   var keyword = $("#keyword").val();
   $.ajax({
     type:'post',
     url:'/ajax/router_data.html',
-    data:{keyword:keyword,page:page},
+    data:{keyword:keyword,page:page,is_pilih:"0"},
     success:function(resp){
       $("#listdata").loading("stop");
       var res = JSON.parse(resp);
@@ -138,13 +221,33 @@ function load_data(){
             no++;
             html += "<tr>";
             html += "<td>" + no + "</td>";
+            if($("#level").val() == "2"){
+              if(v['user_id'] == $("#user_id").val()){
+                html += "<td><b>" + v['nama_user'] + "</b></td>";
+              }else{
+                html += "<td>" + v['nama_user'] + "</td>";
+              }
+            }
             html += "<td>" + v['nama'] + "</td>";
             html += "<td>" + v['host'] + "</td>";
             html += "<td>" + v['port'] + "</td>";
-            html += "<td>" + v['user'] + "</td>";
-            html += "<td>" + v['password'] + "</td>";
             html += "<td>";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-host='" + v['host'] + "' data-port='" + v['port'] + "' data-user='" + v['user'] + "' data-password='" + v['password'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
+            if(v['user_id'] == $("#user_id").val()){
+              html += "" + v['user'] + "";
+            }
+            html += "</td>";
+            html += "<td>";
+            if(v['user_id'] == $("#user_id").val()){
+              html += "" + v['password'] + "";
+            }
+            html += "</td>";
+            html += "<td>";
+            if(v['user_id'] == $("#user_id").val()){
+              html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-host='" + v['host'] + "' data-port='" + v['port'] + "' data-user='" + v['user'] + "' data-password='" + v['password'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
+            }
+            if($("#level").val() == "2"){
+              html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama-user='" + v['nama_user'] + "' data-user-id='" + v['user_id'] + "' onclick='modal_alihkan(this);' class='btn btn-primary'><span class='fa fa-exchange'></span></a> ";
+            }
             html += "</td>";
             html += "</tr>";
           }

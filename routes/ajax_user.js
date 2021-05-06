@@ -163,7 +163,11 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 5) - 5;
-        var sql_data = "select * from user " + filter_query + " order by tgl_insert desc limit " + limit + ",6";
+        var query_limit = "";
+        if(page != "x"){
+          query_limit = " limit " + limit + ",6";
+        }
+        var sql_data = "select * from user " + filter_query + " order by tgl_insert desc" + query_limit;
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();

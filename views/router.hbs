@@ -5,6 +5,8 @@
       {{> sidebar}}
       <div id="page-content-wrapper">
         {{> navbar}}
+        <input type="hidden" id="user_id" name="user_id" value="{{user_id}}" />
+        <input type="hidden" id="level" name="level" value="{{level}}" />
         <div class="container-fluid">
             <div class="row mt-4">
               <div class="col-sm-6">
@@ -43,7 +45,22 @@
                     </form>
                     <div class="table-responsive">
                       <table class="table table-striped">
-                        <thead>
+                        <thead id="th_admin" style="display:none;">
+                          <tr>
+                            <th rowspan="2">No</th>
+                            <th rowspan="2">User</th>
+                            <th colspan="5" style="border-right:1px solid lightgrey;border-left:1px solid lightgrey;border-bottom:0px;text-align:center;">Router</th>
+                            <th rowspan="2">Aksi</th>
+                          </tr>
+                          <tr>
+                            <th style="border-left:1px solid lightgrey;">Nama</th>
+                            <th>Host</th>
+                            <th>Port</th>
+                            <th>User</th>
+                            <th style="border-right:1px solid lightgrey;">Password</th>
+                          </tr>
+                        </thead>
+                        <thead id="th_umum" style="display:none;">
                           <tr>
                             <th>No</th>
                             <th>Nama</th>
@@ -116,6 +133,32 @@
               <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal" id="modal_alihkan">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Alihkan Router Ke User Lain</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form id="form_alihkan">
+              <div class="modal-body">
+                <input type="hidden" id="alihkan_id" name="alihkan_id" />
+                <div class="form-group">
+                  <select id="alihkan_user" name="alihkan_user" class="form-control select2">
+
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Alihkan</button>
               </div>
             </form>
           </div>

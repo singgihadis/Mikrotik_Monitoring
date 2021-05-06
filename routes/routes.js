@@ -397,7 +397,8 @@ module.exports = function(app){
         menu:"router",
         server_id:server_id,
         level:level,
-        with_server:0
+        with_server:0,
+        user_id:req.session.user_id
       });
     }
   });

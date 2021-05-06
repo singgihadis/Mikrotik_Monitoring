@@ -22,7 +22,7 @@ function router_load(){
   $.ajax({
     type:'post',
     url:'/ajax/router_data.html',
-    data:{keyword:"",page:"x"},
+    data:{keyword:"",page:"x",is_pilih:"1"},
     success:function(resp){
       var res = JSON.parse(resp);
       var html = "";

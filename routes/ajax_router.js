@@ -29,31 +29,79 @@ module.exports = function(app){
         password = req.body.password;
       }
       pool.getConnection(function(err, connection) {
-        var sql_cek = "select * from server where host=? and user_id != ?";
-        var query_cek = connection.query(sql_cek,[host,req.session.user_id], function (err, results, fields) {
-          if(results.length == 0){
-            var sql_insert = "update server set nama=?,host=?,port=?,user=?,password=? where id=?";
-            var query_insert = connection.query(sql_insert,[nama,host,port,user,password,id], function (err, results, fields) {
-              if (!err){
-                connection.release();
-                var data = {is_error:false,msg:"Berhasil mengubah"};
-                res.send(JSON.stringify(data));
-                res.end();
+        var sql_cek_akses = "select * from server where id=? and user_id=?";
+        var query_cek_akses = connection.query(sql_cek_akses,[id,req.session.user_id], function (err, results, fields) {
+          if(results.length > 0){
+            var sql_cek = "select * from server where host=? and port=? and user_id != ?";
+            var query_cek = connection.query(sql_cek,[host,port,req.session.user_id], function (err, results, fields) {
+              if(results.length == 0){
+                var sql_insert = "update server set nama=?,host=?,port=?,user=?,password=? where id=?";
+                var query_insert = connection.query(sql_insert,[nama,host,port,user,password,id], function (err, results, fields) {
+                  if (!err){
+                    connection.release();
+                    var data = {is_error:false,msg:"Berhasil mengubah"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }else{
+                    connection.release();
+                    var data = {is_error:true,msg:"Tidak dapat mengubah data"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }
+                });
               }else{
                 connection.release();
-                var data = {is_error:true,msg:"Tidak dapat mengubah data"};
+                var data = {is_error:true,msg:"Router sudah digunakan user lain"};
                 res.send(JSON.stringify(data));
                 res.end();
               }
             });
           }else{
             connection.release();
-            var data = {is_error:true,msg:"Router sudah digunakan user lain"};
+            var data = {is_error:true,msg:"Anda tidak mempunyai akses"};
             res.send(JSON.stringify(data));
             res.end();
           }
         });
       });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/router_alihkan.html'],(req, res) => {
+    if(req.session.is_login){
+      if(req.session.level == "2"){
+        var id = "";
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+        var user_id = "";
+        if(req.body.user_id != undefined){
+          user_id = req.body.user_id;
+        }
+        pool.getConnection(function(err, connection) {
+          var sql_insert = "update server set user_id=? where id=?";
+          var query_insert = connection.query(sql_insert,[user_id,id], function (err, results, fields) {
+            if (!err){
+              connection.release();
+              var data = {is_error:false,msg:"Berhasil mengalihkan"};
+              res.send(JSON.stringify(data));
+              res.end();
+            }else{
+              connection.release();
+              var data = {is_error:true,msg:"Tidak dapat mengalihkan"};
+              res.send(JSON.stringify(data));
+              res.end();
+            }
+          });
+        });
+      }else{
+        var data = {is_error:true,msg:"Anda tidak mempunyai akses"};
+        res.send(JSON.stringify(data));
+        res.end();
+      }
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
       res.send(JSON.stringify(data));
@@ -91,8 +139,8 @@ module.exports = function(app){
       api.connect().then((client) => {
         api.close();
         pool.getConnection(function(err, connection) {
-          var sql_cek = "select * from server where host=? and user_id != ?";
-          var query_cek = connection.query(sql_cek,[host,req.session.user_id], function (err, results, fields) {
+          var sql_cek = "select * from server where host=? and port=? and user_id != ?";
+          var query_cek = connection.query(sql_cek,[host,port,req.session.user_id], function (err, results, fields) {
             if(results.length == 0){
               var sql_insert = "insert into server(nama,host,port,user,password) values(?,?,?,?,?)";
               var query_insert = connection.query(sql_insert,[nama,host,port,user,password], function (err, results, fields) {
@@ -145,11 +193,19 @@ module.exports = function(app){
         if(req.body.keyword != undefined){
           keyword = req.body.keyword;
         }
+        var is_pilih = "";
+        if(req.body.is_pilih != undefined){
+          is_pilih = req.body.is_pilih;
+        }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("concat(host,nama) like '%" + keyword + "%");
+          arr_query.push("concat(a.host,a.nama) like '%" + keyword + "%");
         }
-        arr_query.push("user_id ='" + req.session.user_id + "'");
+        if(req.session.level == "2" && is_pilih == "0"){
+          //Jika admin
+        }else{
+          arr_query.push("a.user_id ='" + req.session.user_id + "'");
+        }
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
@@ -162,7 +218,7 @@ module.exports = function(app){
           limit = (page * 10) - 10;
           query_limit = " limit " + limit + ",11";
         }
-        var sql_data = "select * from server " + filter_query + " order by tgl_insert desc " + query_limit;
+        var sql_data = "select a.*,b.nama as nama_user from server a left join user b on a.user_id=b.id " + filter_query + " order by a.tgl_insert desc " + query_limit;
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();
