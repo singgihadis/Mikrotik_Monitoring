@@ -20,7 +20,10 @@ function build_tahun(){
     viewMode: "years",
     minViewMode: "years",
     autoclose: true
-  });
+  }).on("changeYear", function(e) {
+    page = 1;
+    load_data();
+  });;
 }
 function load_data(){
   $("#pagination").html("");
