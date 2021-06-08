@@ -149,6 +149,9 @@ function toTitleCase(str) {
     });
 }
 function FormatAngka(str){
+  if(str == null || str == undefined){
+    str = "0";
+  }
   str = str.toString().replace(/\D/g,'');
   if(str != ""){
     str = parseInt(str);

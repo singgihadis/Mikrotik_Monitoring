@@ -142,8 +142,8 @@ module.exports = function(app){
           var sql_cek = "select * from server where host=? and port=? and user_id != ?";
           var query_cek = connection.query(sql_cek,[host,port,req.session.user_id], function (err, results, fields) {
             if(results.length == 0){
-              var sql_insert = "insert into server(nama,host,port,user,password) values(?,?,?,?,?)";
-              var query_insert = connection.query(sql_insert,[nama,host,port,user,password], function (err, results, fields) {
+              var sql_insert = "insert into server(nama,host,port,user,password,user_id) values(?,?,?,?,?,?)";
+              var query_insert = connection.query(sql_insert,[nama,host,port,user,password,req.session.user_id], function (err, results, fields) {
                 if (!err){
                   connection.release();
                   if(!req.session.server_id){

@@ -37,65 +37,80 @@ module.exports = {
   },
   Traffic_Proses: function(index,jml,results){
     var item = results[index];
-    var host = item['host'];
-    var port = item['port'];
-    var user = item['user'];
-    var password = item['password'];
-    var name = item['name'];
-    const api = new RouterOSClient({
-        host: host,
-        port: port,
-        user: user,
-        password: password
-    });
-    api.connect().then((client) => {
-      var torch = client.menu("/interface monitor-traffic").where({interface:"<pppoe-" + name + ">"}).stream((err, get_data, stream) => {
-          if (err) return err; // got an error while trying to stream
-          var data = get_data[0];
-          var hasil_arr = [];
-          if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
-            hasil_arr = JSON.parse(item['hasil']);
-          }
-          var sekarang = moment().unix();
-          var tx = "";
-          if(data.hasOwnProperty("txBitsPerSecond")){
-            tx = data['txBitsPerSecond'];
-          }
-          var rx = "";
-          if(data.hasOwnProperty("rxBitsPerSecond")){
-            rx = data['rxBitsPerSecond'];
-          }
-          hasil_arr.push({"s":sekarang,"tx":tx,"rx":rx});
-          var hasil = "";
-          if(hasil_arr.length > 0){
-            hasil = JSON.stringify(hasil_arr);
-          }
-          torch.stop();
-          api.close();
-          pool.getConnection(function(err, connection) {
-            var sql_update = "update member_traffic_data set hasil=?,filled=1 where member_id=? and tgl=CURDATE()";
-            var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {
-              connection.release();
-              index++;
-              if(index == jml){
-                setTimeout(function(){
-                  module.exports.Traffic();
-                },60000);
-              }else{
-                module.exports.Traffic_Proses(index,results.length,results);
-              }
-            });
-          });
+    if(item != undefined){
+      var host = item['host'];
+      var port = item['port'];
+      var user = item['user'];
+      var password = item['password'];
+      var name = item['name'];
+      const api = new RouterOSClient({
+          host: host,
+          port: port,
+          user: user,
+          password: password
       });
-    }).catch((err) => {
-      index++;
-      if(index == jml){
-        setTimeout(function(){
-          module.exports.Traffic();
-        },60000);
-      }else{
-        module.exports.Traffic_Proses(index,results.length,results);
-      }
-    });
+      api.connect().then((client) => {
+        var torch = client.menu("/interface monitor-traffic").where({interface:"<pppoe-" + name + ">"}).stream((err, get_data, stream) => {
+            if (err) return err; // got an error while trying to stream
+            var data = get_data[0];
+            if(data != undefined){
+              var hasil_arr = [];
+              if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
+                hasil_arr = JSON.parse(item['hasil']);
+              }
+              var sekarang = moment().unix();
+              var tx = "";
+              if(data.hasOwnProperty("txBitsPerSecond")){
+                tx = data['txBitsPerSecond'];
+              }
+              var rx = "";
+              if(data.hasOwnProperty("rxBitsPerSecond")){
+                rx = data['rxBitsPerSecond'];
+              }
+              hasil_arr.push({"s":sekarang,"tx":tx,"rx":rx});
+              var hasil = "";
+              if(hasil_arr.length > 0){
+                hasil = JSON.stringify(hasil_arr);
+              }
+              torch.stop();
+              api.close();
+              pool.getConnection(function(err, connection) {
+                var sql_update = "update member_traffic_data set hasil=?,filled=1 where member_id=? and tgl=CURDATE()";
+                var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {
+                  connection.release();
+                  index++;
+                  if(index == jml){
+                    setTimeout(function(){
+                      module.exports.Traffic();
+                    },60000);
+                  }else{
+                    module.exports.Traffic_Proses(index,results.length,results);
+                  }
+                });
+              });
+            }else{
+              torch.stop();
+              api.close();
+              setTimeout(function(){
+                module.exports.Traffic();
+              },60000);
+            }
+        });
+      }).catch((err) => {
+        index++;
+        if(index == jml){
+          setTimeout(function(){
+            module.exports.Traffic();
+          },60000);
+        }else{
+          module.exports.Traffic_Proses(index,results.length,results);
+        }
+      });
+    }else{
+      setTimeout(function(){
+        module.exports.Traffic();
+      },60000);
+    }
+
   }
 }

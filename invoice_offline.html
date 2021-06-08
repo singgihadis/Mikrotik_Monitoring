@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <title>Invoice</title>
+  </head>
+  <body style="font-family:arial;margin:0px;">
+    <div style="padding-left:30px;padding-right:30px;padding-top:30px;padding-bottom:10px;">
+      <table style="width:100%;">
+        <tr>
+          <td style="width:50%;">
+            <img src="{{logo}}" style="width:214px;height:80px;" />
+          </td>
+          <td style="width:50%;text-align:right">
+            <b style="font-size:50px;">INVOICE</b>
+          </td>
+        </tr>
+      </table>
+      <br><br>
+      <table style="width:100%;">
+        <tr>
+          <td style="width:60%;">
+            <div style="font-size:20px;">Kepada Yth.</div>
+            <div style="font-size:22px;"><b>{{nama_member}}</b></div>
+            <div style="font-size:20px;">{{alamat_member}}</div>
+          </td>
+          <td style="width:40%;text-align:right;vertical-align:top;">
+            <div style="font-size:20px;">No Invoice #{{no_invoice}}</div>
+            <div style="font-size:20px;">{{tgl}}</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br><br><br>
+    <table style="width:100%;border:0px;" cellspacing="0">
+      <tr style="background-color:rgb(230,20,20);color:white;">
+        <td style="padding-left:30px;padding-top:10px;padding-bottom:10px;padding-right:10px;font-size:18px;">
+          <b>ITEM</b>
+        </td>
+        <td style="padding-left:10px;padding-top:10px;padding-bottom:10px;padding-right:10px;font-size:18px;text-align:center;">
+          <b>BIAYA</b>
+        </td>
+        <td style="padding-left:10px;padding-top:10px;padding-bottom:10px;padding-right:10px;font-size:18px;text-align:center;">
+          <b>JML</b>
+        </td>
+        <td style="padding-left:10px;padding-top:10px;padding-bottom:10px;padding-right:30px;font-size:18px;text-align:center;">
+          <b>TOTAL</b>
+        </td>
+      </tr>
+      <tr style="background-color:rgb(230,230,230);color:black;">
+        <td style="padding-left:30px;padding-top:10px;padding-bottom:10px;padding-right:10px;font-size:18px;">
+          <b>INTERNET</b>
+          <br>
+          {{bln_thn}}
+        </td>
+        <td style="padding-left:10px;padding-top:10px;padding-bottom:10px;padding-right:10px;font-size:18px;text-align:center;">
+          {{nominal_pembayaran}}
+        </td>
+        <td style="padding-left:10px;padding-top:10px;padding-bottom:10px;padding-right:10px;font-size:18px;text-align:center;">
+          1
+        </td>
+        <td style="padding-left:10px;padding-top:10px;padding-bottom:10px;padding-right:30px;font-size:18px;text-align:center;">
+          {{nominal_pembayaran}}
+        </td>
+      </tr>
+      <tr style="background-color:rgb(230,20,20);line-height:2px;">
+        <td colspan="4">&nbsp;</td>
+      </tr>
+      <tr style="line-height:40px;">
+        <td colspan="4">&nbsp;</td>
+      </tr>
+      <tr>
+        <td rowspan="2" colspan="2" style="padding-left:30px;padding-top:0px;padding-right:5px;">
+		{{html_bank}}
+        </td>
+        <td style="padding-left:15px;padding-top:15px;padding-bottom:15px;padding-right:15px;font-size:19px;text-align:center;height:1px;background-color:rgb(230,20,20);color:white;">Total Tagihan</td>
+        <td style="padding-left:15px;padding-top:15px;padding-bottom:15px;padding-right:30px;font-size:19px;text-align:center;height:1px;background-color:rgb(230,20,20);color:white;"><b>{{nominal_pembayaran}}</b></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+    <br></br><br></br><br>
+    <table style="width:100%;">
+      <tr>
+        <td style="text-align:center;font-size:18px;"><b>TERIMAKASIH ATAS KEPERCAYAANYA</b></td>
+      </tr>
+    </table>
+    <br>
+    <table style="width:100%">
+      <tr>
+        <td style="text-align: center;">
+          <table style="display:inline-block;">
+            <tr>
+              <td style="vertical-align:middle;"><img src="http://127.0.0.1:3002/assets/img/website-icon.png" style="width:30px;" /></td>
+              <td style="vertical-align:middle;">{{website}}</td>
+            </tr>
+          </table>
+        </td>
+        <td style="text-align: center;">
+          <table style="display:inline-block;">
+            <tr>
+              <td style="vertical-align:middle;"><img src="http://127.0.0.1:3002/assets/img/wa-icon.png" style="width:30px;" /></td>
+              <td style="vertical-align:middle;">{{no_wa}}</td>
+            </tr>
+          </table>
+        </td>
+        <td style="text-align: center;">
+          <table style="display:inline-block;">
+            <tr>
+              <td style="vertical-align:middle;"><img src="http://127.0.0.1:3002/assets/img/email-icon.png" style="width:30px;" /></td>
+              <td style="vertical-align:middle;">{{email}}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <br>
+  </body>
+</html>

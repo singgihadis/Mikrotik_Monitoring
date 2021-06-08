@@ -37,60 +37,66 @@ module.exports = {
   },
   Ping_Proses: function(index,jml,results){
     var item = results[index];
-    var host = item['host'];
-    var port = item['port'];
-    var user = item['user'];
-    var password = item['password'];
-    var client_ip = item['client_ip'];
-    const api = new RouterOSClient({
-        host: host,
-        port: port,
-        user: user,
-        password: password
-    });
-    api.connect().then((client) => {
-      var torch = client.menu("/ping").where({address:client_ip}).stream((err, data, stream) => {
-          if (err) return err; // got an error while trying to stream
-          var hasil_arr = [];
-          if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
-            hasil_arr = JSON.parse(item['hasil']);
-          }
-          var sekarang = moment().unix();
-          var time = "";
-          if(data.hasOwnProperty("time")){
-            time = data['time'];
-          }
-          hasil_arr.push({"s":sekarang,"t":time});
-          var hasil = "";
-          if(hasil_arr.length > 0){
-            hasil = JSON.stringify(hasil_arr);
-          }
-          torch.stop();
-          api.close();
-          pool.getConnection(function(err, connection) {
-            var sql_update = "update ping_data set hasil=?,filled=1 where monitoring_id=? and tgl=CURDATE()";
-            var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {
-              connection.release();
-              index++;
-              if(index == jml){
-                setTimeout(function(){
-                  module.exports.Ping();
-                },60000);
-              }else{
-                module.exports.Ping_Proses(index,results.length,results);
-              }
-            });
-          });
+    if(item != undefined){
+      var host = item['host'];
+      var port = item['port'];
+      var user = item['user'];
+      var password = item['password'];
+      var client_ip = item['client_ip'];
+      const api = new RouterOSClient({
+          host: host,
+          port: port,
+          user: user,
+          password: password
       });
-    }).catch((err) => {
-      index++;
-      if(index == jml){
-        setTimeout(function(){
-          module.exports.Ping();
-        },60000);
-      }else{
-        module.exports.Ping_Proses(index,results.length,results);
-      }
-    });
+      api.connect().then((client) => {
+        var torch = client.menu("/ping").where({address:client_ip}).stream((err, data, stream) => {
+            if (err) return err; // got an error while trying to stream
+            var hasil_arr = [];
+            if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
+              hasil_arr = JSON.parse(item['hasil']);
+            }
+            var sekarang = moment().unix();
+            var time = "";
+            if(data.hasOwnProperty("time")){
+              time = data['time'];
+            }
+            hasil_arr.push({"s":sekarang,"t":time});
+            var hasil = "";
+            if(hasil_arr.length > 0){
+              hasil = JSON.stringify(hasil_arr);
+            }
+            torch.stop();
+            api.close();
+            pool.getConnection(function(err, connection) {
+              var sql_update = "update ping_data set hasil=?,filled=1 where monitoring_id=? and tgl=CURDATE()";
+              var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {
+                connection.release();
+                index++;
+                if(index == jml){
+                  setTimeout(function(){
+                    module.exports.Ping();
+                  },60000);
+                }else{
+                  module.exports.Ping_Proses(index,results.length,results);
+                }
+              });
+            });
+        });
+      }).catch((err) => {
+        index++;
+        if(index == jml){
+          setTimeout(function(){
+            module.exports.Ping();
+          },60000);
+        }else{
+          module.exports.Ping_Proses(index,results.length,results);
+        }
+      });
+    }else{
+      setTimeout(function(){
+        module.exports.Ping();
+      },60000);
+    }
   }
 }

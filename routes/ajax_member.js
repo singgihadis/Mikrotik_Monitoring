@@ -4,6 +4,7 @@ var ppp_function = require("../function/ppp_function.js");
 var public_function = require("../function/public_function.js");
 var moment = require("moment");
 const pool = require('../db');
+const config = require('../config');
 var pdf = require("html-pdf");
 module.exports = function(app){
   app.post(['/ajax/member.html'],(req, res) => {
@@ -19,7 +20,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("concat(a.name,a.password,a.profile,a.local_address,a.remote_address,a.nama) like '%" + keyword + "%'");
+          arr_query.push("concat(a.name,a.password,a.profile,a.local_address,a.remote_address,b.nama) like '%" + keyword + "%'");
         }
         arr_query.push("c.user_id=" + req.session.user_id);
         var filter_query = "";
@@ -73,7 +74,7 @@ module.exports = function(app){
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.id as member_id,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + "";
+        var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IF(d.id_ppp is null,0,1) as is_active,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.id as member_id,c.host,c.port,c.user FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id  left join ppp_active_connection d on a.`name`=d.`name` and a.remote_address=d.address " + filter_query + "";
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();
@@ -235,12 +236,20 @@ module.exports = function(app){
             });
             api.connect().then((client) => {
               var torch = client.menu("/interface monitor-traffic").where({interface:"<pppoe-" + name + ">"}).stream((err, data_traffic, stream) => {
-                  if (err) return err; // got an error while trying to stream
-                  var data = {is_error:false,data:data_traffic};
-                  torch.stop();
-                  api.close();
-                  res.send(JSON.stringify(data));
-                  res.end();
+                  if (err){
+                    var data = {is_error:true,data:[],msg:"Tidak bisa mengambil data interface monitor-traffic, silahkan upgrade versi ROS anda"};
+                    torch.stop();
+                    api.close();
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }else{
+                    var data = {is_error:false,data:data_traffic,msg:""};
+                    torch.stop();
+                    api.close();
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }
+
               });
             }).catch((err) => {
               var data = {is_error:true,msg:err.message};
@@ -314,13 +323,19 @@ module.exports = function(app){
                 if(results_member.length > 0){
                   var logo = results_pengaturan[0]['logo'];
                   if(logo != ""){
-                    logo = "http://127.0.0.1:3002" + logo;
+                    logo = config['main_url'] + logo;
                   }
                   var website = results_pengaturan[0]['website'];
                   var email = results_pengaturan[0]['email'];
                   var no_wa = results_pengaturan[0]['no_wa'];
                   var nama_member = results_member[0]['nama'];
+                  if(nama_member == null){
+                    nama_member = "-";
+                  }
                   var alamat_member = results_member[0]['alamat'];
+                  if(alamat_member == null){
+                    alamat_member = "-";
+                  }
                   var nominal_pembayaran = results_member[0]['nominal_pembayaran'];
                   if(nominal_pembayaran != ""){
                     nominal_pembayaran = "Rp. " + public_function.FormatAngka(nominal_pembayaran);
@@ -360,7 +375,7 @@ module.exports = function(app){
                         // res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf;');
                         // stream.pipe(res);
                         stream.pipe(fs.createWriteStream('./public/pdf/' + req.session.user_id + "/" + id + '.pdf'));
-                        var data = {is_error:false,data:[],msg:"sukses",output:'http://127.0.0.1:3002/assets/pdf/' + req.session.user_id + "/" + id + '.pdf'};
+                        var data = {is_error:false,data:[],msg:"sukses",output:config['main_url'] + '/assets/pdf/' + req.session.user_id + "/" + id + '.pdf'};
                         res.send(JSON.stringify(data));
                         res.end();
                       });

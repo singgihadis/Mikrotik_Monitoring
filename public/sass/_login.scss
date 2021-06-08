@@ -1,0 +1,36 @@
+.login{
+  height: 100%;
+  position: relative;
+  .row{
+    height: 100%;
+    .carousel-item{
+      .image{
+        display: block;
+        width: 100%;
+        height: 100vh;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        .layer {
+            // background-color: rgba(0, 0, 0, 0.6);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(180deg,rgba(20, 20, 20, 0.67) 0%,rgba(10, 10, 10, 0.49) 100%);
+        }
+      }
+    }
+    .login-form{
+      .judul{
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .copyright{
+        position: absolute;
+        bottom: 20px;
+      }
+    }
+  }
+}

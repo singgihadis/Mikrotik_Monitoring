@@ -68,6 +68,17 @@ function load_data(){
         $("#alamat").html(data['alamat']);
         $("#no_wa").html(data['no_wa']);
         $("#nominal_pembayaran").html("Rp. " + FormatAngka(data['nominal_pembayaran']));
+        if(data['is_active'] == "1"){
+          $("#widget_is_active").addClass("widget-success");
+          $("#widget_is_active").removeClass("widget-danger");
+          $("#is_active").html("ONLINE");
+          $("#widget_is_active").show();
+        }else{
+          $("#widget_is_active").addClass("widget-danger");
+          $("#widget_is_active").removeClass("widget-success");
+          $("#is_active").html("OFFLINE");
+          $("#widget_is_active").show();
+        }
         $(".daterange").daterangepicker({
           autoUpdateInput: false,
           opens: 'left',

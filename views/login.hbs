@@ -1,40 +1,64 @@
 <!DOCTYPE html>
 <html>
   {{> head_login}}
-    <body>
-      <div class="container">
-        <br><br>
-        <div class="row">
-          <div class="col-md-4"></div>
-          <div class="col-md-4">
-            <div class="card">
-              <div class="card-body">
-                <div class="text-center">
-                  <img src="/assets/img/logo.png" class="w-50" />
-                </div>
-                <br>
-                <div class="text-center">
-                  <h6><b>LOGIN</b></h6>
-                </div>
-                <br>
-                <form id="form_login">
-                  <div class="form-group">
-                    <input type="text" class="form-control" id="user" name="user" placeholder="User" required />
+    <body class="login">
+      <div style="opacity: 0;content: url('/assets/img/slide1.png?v=1') url('/assets/img/slide2.png?v=1.1') url('/assets/img/slide3.png?v=1');"></div>
+      <div class="">
+        <div class="row no-gutters min-vh-100">
+          <div class="col-md-8">
+            <div id="carouselLogin" class="carousel slide carousel-fade" data-ride="carousel">
+              <ol class="carousel-indicators">
+                <li data-target="#carouselLogin" data-slide-to="0" class="active"></li>
+                <li data-target="#carouselLogin" data-slide-to="1"></li>
+                <li data-target="#carouselLogin" data-slide-to="2"></li>
+              </ol>
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <div style="background-image:url('/assets/img/slide1.png?v=1');" class="image">
+                    <div class="layer"></div>
                   </div>
-                  <div class="form-group">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required />
-                    <input type="hidden" id="hidden_password" name="hidden_password" />
+                </div>
+                <div class="carousel-item">
+                  <div style="background-image:url('/assets/img/slide2.png?v=1.1');" class="image">
+                    <div class="layer"></div>
                   </div>
-                  <button type="submit" class="btn btn-primary btn-block">LOGIN</button>
-                </form>
-                <br>
-                <div class="text-center">
-                  @2020
+                </div>
+                <div class="carousel-item">
+                  <div style="background-image:url('/assets/img/slide3.png?v=1');" class="image">
+                    <div class="layer"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-md-4"></div>
+          <div class="col-md-4 border-left text-center">
+            <div class="px-5">
+              <br><br>
+                <br><br>
+              <div class="text-center">
+                <img src="/assets/img/logo.png" class="w-50" />
+              </div>
+              <br>
+              <div class="text-center">
+                <h5><b>LOGIN</b></h5>
+              </div>
+              <br>
+              <form id="form_login">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="user" name="user" placeholder="User" required />
+                </div>
+                <div class="form-group">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Password" required />
+                  <input type="hidden" id="hidden_password" name="hidden_password" />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">LOGIN</button>
+              </form>
+              <br>
+              <div class="text-center">
+                @2020
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </body>
