@@ -21,8 +21,11 @@ function build_tahun(){
     minViewMode: "years",
     autoclose: true
   }).on("changeYear", function(e) {
-    page = 1;
-    load_data();
+    $("#listdata").loading();
+    setTimeout(function(){
+      page = 1;
+      load_data();
+    },100);
   });;
 }
 function load_data(){

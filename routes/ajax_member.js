@@ -20,7 +20,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("concat(a.name,a.password,a.profile,a.local_address,a.remote_address,b.nama) like '%" + keyword + "%'");
+          arr_query.push("(concat(a.name,a.password,a.profile,a.local_address,a.remote_address) like '%" + keyword + "%' or b.nama like '%" + keyword + "%')");
         }
         arr_query.push("c.user_id=" + req.session.user_id);
         var filter_query = "";

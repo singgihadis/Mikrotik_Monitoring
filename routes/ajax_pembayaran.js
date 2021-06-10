@@ -37,7 +37,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.*, IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun, b.name, b.password, b.profile,d.nama as nama_server,d.host,d.port,d.user,d.password FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id limit " + limit + ",11";
+            var sql_data = "SELECT a.id,a.nama,a.alamat,a.no_wa,a.email,a.ppp_secret_id,a.tgl_insert,a.last_update,a.nominal_pembayaran as nominal_pembayaran,IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun, b.name, b.password, b.profile,c.nominal_pembayaran as nominal_pembayaran_dibayar,d.nama as nama_server,d.host,d.port,d.user,d.password FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id limit " + limit + ",11";
             var query_data = connection.query(sql_data,[tahun], function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -103,28 +103,39 @@ module.exports = function(app){
             res.end();
           }else{
             if(is_bayar == "1"){
-              var sql_cek = "select * from pembayaran where member_id=? and bulan=? and tahun=?";
-              var query_cek = connection.query(sql_cek,[id,bulan,tahun], function (err, results, fields) {
+              var sql_nominal = "select * from member where id=?";
+              var query_nominal = connection.query(sql_nominal,[id], function (err, results, fields) {
                 if(results.length == 0){
-                  var sql = "insert into pembayaran(member_id,bulan,tahun,metode_bayar,bank_id) values(?,?,?,?,?)";
-                  var query = connection.query(sql,[id,bulan,tahun,metode_bayar,bank_id], function (err, results, fields) {
-                    if (!err){
+                  connection.release();
+                  var data = {is_error:true,msg:"Data nominal pembayaran tidak tersedia"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }else{
+                  var nominal_pembayaran = results[0]['nominal_pembayaran'];
+                  var sql_cek = "select * from pembayaran where member_id=? and bulan=? and tahun=?";
+                  var query_cek = connection.query(sql_cek,[id,bulan,tahun], function (err, results, fields) {
+                    if(results.length == 0){
+                      var sql = "insert into pembayaran(member_id,bulan,tahun,metode_bayar,bank_id,nominal_pembayaran) values(?,?,?,?,?,?)";
+                      var query = connection.query(sql,[id,bulan,tahun,metode_bayar,bank_id,nominal_pembayaran], function (err, results, fields) {
+                        if (!err){
+                          connection.release();
+                          var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                          res.send(JSON.stringify(data));
+                          res.end();
+                        }else{
+                          connection.release();
+                          var data = {is_error:true,msg:"Gagal melakukan pembayaran"};
+                          res.send(JSON.stringify(data));
+                          res.end();
+                        }
+                      });
+                    }else{
                       connection.release();
                       var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
                       res.send(JSON.stringify(data));
                       res.end();
-                    }else{
-                      connection.release();
-                      var data = {is_error:true,msg:"Gagal melakukan pembayaran"};
-                      res.send(JSON.stringify(data));
-                      res.end();
                     }
                   });
-                }else{
-                  connection.release();
-                  var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
-                  res.send(JSON.stringify(data));
-                  res.end();
                 }
               });
             }else{
@@ -174,7 +185,7 @@ module.exports = function(app){
             if(arr_query.length > 0){
               filter_query = " where " + arr_query.join(" and ");
             }
-            var sql_data_dibayar = "SELECT sum(a.nominal_pembayaran) as total FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN pembayaran c ON a.id = c.member_id inner join server d on d.id=b.server_id " + filter_query;
+            var sql_data_dibayar = "SELECT sum(c.nominal_pembayaran) as total FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN pembayaran c ON a.id = c.member_id inner join server d on d.id=b.server_id " + filter_query;
             var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
               if(results_dibayar.length == 0){
                 connection.release();

@@ -114,6 +114,12 @@ function build_tahun(){
     viewMode: "years",
     minViewMode: "years",
     autoclose: true
+  }).on("changeYear", function(e) {
+    $("#listdata").loading();
+    setTimeout(function(){
+      page = 1;
+      load_data();
+    },100);
   });
 }
 function load_data(){
@@ -153,12 +159,12 @@ function load_data(){
               var html_switch = "";
               if(arr_bulan.indexOf((a + 1).toString()) != -1){
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' id='customSwitch" + k + " " + a + "' checked>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "' checked>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
               }else{
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' id='customSwitch" + k + " " + a + "'>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "'>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
               }
@@ -177,13 +183,14 @@ function load_data(){
           var nama = $(this).attr("data-nama");
           var profile = $(this).attr("data-profile");
           var nominal = $(this).attr("data-nominal-pembayaran");
+          var nominal_dibayar = $(this).attr("data-nominal-pembayaran-dibayar");
           var bulan = $(this).attr("data-bulan");
           var id = $(this).attr("data-id");
           $("#nama_bayar").html(nama);
           $("#profile_bayar").html(profile);
-          $("#nominal_bayar").html("Rp. " + FormatAngka(nominal));
           $("#bulan").val(bulan);
           $("#id").val(id);
+          $("#password").val("");
           var is_bayar = "0";
           if($(this).is(":checked")){
             is_bayar = "1";
@@ -193,6 +200,24 @@ function load_data(){
           $("#is_bayar").val(is_bayar);
           is_sukses = false;
           $('#modal_bayar').unbind();
+          var is_bayar = $("#is_bayar").val();
+          if(is_bayar == "1"){
+            $("#nominal_bayar").html("Rp. " + FormatAngka(nominal));
+            $("#cr_transfer").removeAttr("disabled","disabled");
+            $("#cr_cash").removeAttr("disabled","disabled");
+            $("#bank").removeAttr("disabled");
+            $("#btn_submit").removeClass("btn-danger");
+            $("#btn_submit").addClass("btn-primary");
+            $("#btn_submit").html("Simpan");
+          }else{
+            $("#nominal_bayar").html("Rp. " + FormatAngka(nominal_dibayar));
+            $("#cr_transfer").attr("disabled","disabled");
+            $("#cr_cash").attr("disabled","disabled");
+            $("#bank").attr("disabled","disabled");
+            $("#btn_submit").removeClass("btn-primary");
+            $("#btn_submit").addClass("btn-danger");
+            $("#btn_submit").html("Batalkan Pembayaran");
+          }
           $("#modal_bayar").modal("show");
           var itu = this;
           $('#modal_bayar').on('hidden.bs.modal', function () {
