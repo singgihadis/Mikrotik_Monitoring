@@ -32,7 +32,7 @@ module.exports = {
     pool.getConnection(function(err, connection) {
       if(jml != index){
         var item = result[index];
-        var sql_insert = "insert ignore into ppp_active_connection(server_id,id_ppp,name,service,caller_id,encoding,address,uptime) values(?,?,?,?,?,?,?,?)";
+        var sql_insert = "insert into ppp_active_connection(server_id,id_ppp,name,service,caller_id,encoding,address,uptime) values(?,?,?,?,?,?,?,?)";
         var query_data = connection.query(sql_insert,[server_id,item['id'],item['name'],item['service'],item['callerId'],item['encoding'],item['address'],item['uptime']], function (err, results3, fields) {
           if (!err){
             connection.release();

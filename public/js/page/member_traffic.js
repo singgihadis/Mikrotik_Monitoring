@@ -67,6 +67,10 @@ function load_data(){
         $("#nama").html(data['nama']);
         $("#alamat").html(data['alamat']);
         $("#no_wa").html(data['no_wa']);
+        $("#email").html(data['email']);
+        if(data['awal_tagihan_bulan'] != null){
+          $("#awal_tagihan").html(IndexToMonth(parseInt(data['awal_tagihan_bulan']) - 1) + " " + data['awal_tagihan_tahun']);
+        }
         $("#nominal_pembayaran").html("Rp. " + FormatAngka(data['nominal_pembayaran']));
         if(data['is_active'] == "1"){
           $("#widget_is_active").addClass("widget-success");

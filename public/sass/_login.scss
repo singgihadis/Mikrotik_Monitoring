@@ -1,6 +1,14 @@
 .login{
   height: 100%;
   position: relative;
+  .login-space-logo{
+    padding-top: 120px;
+  }
+  @media(max-width: 768px){
+    .login-space-logo{
+      padding-top: 80px;
+    }
+  }
   .row{
     height: 100%;
     .carousel-item{
@@ -11,6 +19,9 @@
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
+        @media(max-width: 768px){
+          height: 200px;
+        }
         .layer {
             // background-color: rgba(0, 0, 0, 0.6);
             position: absolute;

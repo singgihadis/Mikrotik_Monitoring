@@ -11,7 +11,7 @@ module.exports = function(app){
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data_total = "select count(a.id) as total, count(b.id_ppp) as total_aktif from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.remote_address=b.address " + filter_query;
+        var sql_data_total = "select count(a.id) as total, count(b.id_ppp) as total_aktif from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -50,7 +50,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("concat(a.name,a.password,a.profile,a.local_address,a.remote_address) like '%" + keyword + "%'");
+          arr_query.push("(concat(a.name,a.password,a.profile) like '%" + keyword + "%' or b.address like '%" + keyword + "%')");
         }
         if(is_active != ""){
           if(is_active == "1"){
@@ -65,7 +65,7 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 10) - 10;
-        var sql_data_total = "select count(a.id) as total from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.remote_address=b.address " + filter_query;
+        var sql_data_total = "select count(a.id) as total from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -74,7 +74,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "select a.*,IF(b.id_ppp is null,0,1) as is_active from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.remote_address=b.address " + filter_query + " limit " + limit + ",11";
+            var sql_data = "select a.*,IF(b.id_ppp is null,0,1) as is_active,b.address as address from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` " + filter_query + " limit " + limit + ",11";
             var query_data = connection.query(sql_data, function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -151,11 +151,24 @@ module.exports = function(app){
       api.connect().then((client) => {
         client.menu("/ppp active").get().then((result) => {
             var server_id = req.session.server_id;
-            ppp_function.Simpan_Active_Connection(0,server_id,result.length,result,function(){
-              var data = {is_error:false,data:[],msg:"Berhasil"};
-              api.close();
-              res.send(JSON.stringify(data));
-              res.end();
+            pool.getConnection(function(err, connection) {
+              var sql_delete = "delete from ppp_active_connection where server_id=?";
+              var query_delete = connection.query(sql_delete, [server_id], function (err, results_delete, fields) {
+                if(err){
+                  connection.release();
+                  var data = {is_error:true,data:[],msg:"Gagal hapus ppp active connection"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }else{
+                  connection.release();
+                  ppp_function.Simpan_Active_Connection(0,server_id,result.length,result,function(){
+                    var data = {is_error:false,data:[],msg:"Berhasil"};
+                    api.close();
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  });
+                }
+              });
             });
         }).catch((err) => {
           var data = {is_error:true,msg:err.message};

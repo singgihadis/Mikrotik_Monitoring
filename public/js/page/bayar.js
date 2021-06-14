@@ -151,6 +151,8 @@ function load_data(){
           if(k < 10){
             var bulan = v['bulan'];
             var arr_bulan = bulan.split(",");
+            var awal_tagihan_tahun = parseInt(v['awal_tagihan_tahun']);
+            var awal_tagihan_bulan = parseInt(v['awal_tagihan_bulan']);
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
@@ -167,6 +169,15 @@ function load_data(){
                 html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "'>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
+              }
+              if(tahun <= awal_tagihan_tahun){
+                if(tahun == awal_tagihan_tahun){
+                  if((a + 1) < awal_tagihan_bulan){
+                    html_switch = "";
+                  }
+                }else{
+                  html_switch = "";
+                }
               }
 
               html += "<td class='text-center'>" + html_switch + "</td>";

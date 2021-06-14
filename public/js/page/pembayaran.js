@@ -57,14 +57,25 @@ function load_data(){
           if(k < 10){
             var bulan = v['bulan'];
             var arr_bulan = bulan.split(",");
+            var awal_tagihan_tahun = parseInt(v['awal_tagihan_tahun']);
+            var awal_tagihan_bulan = parseInt(v['awal_tagihan_bulan']);
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
             for(var a=0;a<12;a++){
               var is_bayar = "<span class='fa fa-times-circle text-danger'></span>";
               if(arr_bulan.indexOf((a + 1).toString()) != -1){
                 is_bayar = "<span class='fa fa-check text-success'></span>";
+              }
+              if(tahun <= awal_tagihan_tahun){
+                if(tahun == awal_tagihan_tahun){
+                  if((a + 1) < awal_tagihan_bulan){
+                    is_bayar = "";
+                  }
+                }else{
+                  is_bayar = "";
+                }
               }
               html += "<td class='text-center'>" + is_bayar + "</td>";
             }
@@ -120,14 +131,25 @@ function modal_detail(itu){
   var nama = $(itu).attr("data-nama");
   var alamat = $(itu).attr("data-alamat");
   var no_wa = $(itu).attr("data-no-wa");
+  if(no_wa == ""){
+    no_wa = "-";
+  }
+  var email = $(itu).attr("data-email");
+  if(email == ""){
+    email = "-";
+  }
   var nominal_pembayaran = $(itu).attr("data-nominal-pembayaran");
+  var awal_tagihan_bulan = $(itu).attr("data-awal-tagihan-bulan");
+  var awal_tagihan_tahun = $(itu).attr("data-awal-tagihan-tahun");
   $("#name").html(name);
   $("#password").html(password);
   $("#profile").html(profile);
   $("#nama").html(nama);
   $("#alamat").html(alamat);
   $("#no_wa").html(no_wa);
+  $("#email").html(email);
   $("#nominal_pembayaran").html("Rp. " + FormatAngka(nominal_pembayaran));
+  $("#tagihan_dimulai").html(IndexToMonth(parseInt(awal_tagihan_bulan) - 1) + " " + awal_tagihan_tahun);
   $("#modal_detail").modal("show");
 }
 function html_pagination(jmldata){

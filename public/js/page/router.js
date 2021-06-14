@@ -238,7 +238,18 @@ function load_data(){
             html += "</td>";
             html += "<td>";
             if(v['user_id'] == $("#user_id").val()){
-              html += "" + v['password'] + "";
+              var password_length = v['password'].length;
+              if(password_length <= 2){
+                for(var a=0;a<password_length;a++){
+                  html += "*";
+                }
+              }else{
+                var password_bintang_length = password_length - 2;
+                for(var a=0;a<password_bintang_length;a++){
+                  html += "*";
+                }
+                html += "" + v['password'].substr(password_bintang_length,2) + "";
+              }
             }
             html += "</td>";
             html += "<td>";

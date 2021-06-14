@@ -165,8 +165,12 @@ body{
     border-bottom: 1px solid lightgrey;
     padding: 10px;
   }
+  .bg-warning-semi-transparent{
+    background-color: rgba(250,250,0,0.2) !important;
+  }
 }
 @import "_dashboard.scss";
 @import "_ping.scss";
 @import "_dns.scss";
 @import "_login.scss";
+@import "_member.scss";

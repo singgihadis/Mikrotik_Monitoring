@@ -37,7 +37,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,c.nama as nama_server,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + " limit " + limit + ",11";
+            var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,b.awal_tagihan_bulan,b.awal_tagihan_tahun,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.email,'') as email,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,c.nama as nama_server,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + " limit " + limit + ",11";
             var query_data = connection.query(sql_data, function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -74,7 +74,7 @@ module.exports = function(app){
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,IF(d.id_ppp is null,0,1) as is_active,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.id as member_id,c.host,c.port,c.user FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id  left join ppp_active_connection d on a.`name`=d.`name` and a.remote_address=d.address " + filter_query + "";
+        var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,b.awal_tagihan_bulan,b.awal_tagihan_tahun,IF(d.id_ppp is null,0,1) as is_active,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.email,'') as email,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.id as member_id,c.host,c.port,c.user FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id  left join ppp_active_connection d on a.`name`=d.`name` and a.remote_address=d.address " + filter_query + "";
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();
@@ -114,15 +114,27 @@ module.exports = function(app){
         if(req.body.no_wa != undefined){
           no_wa = req.body.no_wa;
         }
+        var email = "";
+        if(req.body.email != undefined){
+          email = req.body.email;
+        }
         var nominal_pembayaran = "";
         if(req.body.nominal_pembayaran != undefined){
           nominal_pembayaran = req.body.nominal_pembayaran;
         }
+        var awal_tagihan_bulan = "";
+        if(req.body.awal_tagihan_bulan != undefined){
+          awal_tagihan_bulan = req.body.awal_tagihan_bulan;
+        }
+        var awal_tagihan_tahun = "";
+        if(req.body.awal_tagihan_tahun != undefined){
+          awal_tagihan_tahun = req.body.awal_tagihan_tahun;
+        }
         var sql_cek = "select * from member where ppp_secret_id=?";
         var query_cek = connection.query(sql_cek,[id], function (err, results, fields) {
           if(results.length == 0){
-            var sql = "insert into member(ppp_secret_id,nama,alamat,no_wa,nominal_pembayaran) values(?,?,?,?,?)";
-            var query = connection.query(sql,[id,nama,alamat,no_wa,nominal_pembayaran], function (err, results, fields) {
+            var sql = "insert into member(ppp_secret_id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun) values(?,?,?,?,?,?,?,?)";
+            var query = connection.query(sql,[id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun], function (err, results, fields) {
               if (!err){
                 connection.release();
                 var data = {is_error:false,msg:"Berhasil menyimpan"};
@@ -136,8 +148,8 @@ module.exports = function(app){
               }
             });
           }else{
-            var sql = "update member set nama=?,alamat=?,no_wa=?,nominal_pembayaran=? where ppp_secret_id=?";
-            var query = connection.query(sql,[nama,alamat,no_wa,nominal_pembayaran,id], function (err, results, fields) {
+            var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=? where ppp_secret_id=?";
+            var query = connection.query(sql,[nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,id], function (err, results, fields) {
               if (!err){
                 connection.release();
                 var data = {is_error:false,msg:"Berhasil menyimpan"};
@@ -177,7 +189,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data_dibayar = "select count(a.id) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id INNER JOIN `server` c ON b.server_id=c.id " + filter_query;
+            var sql_data_dibayar = "select count(a.id) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id INNER JOIN `server` c ON b.server_id=c.id " + filter_query + " and a.awal_tagihan_bulan is not null ";
             var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
               if(results_dibayar.length == 0){
                 connection.release();

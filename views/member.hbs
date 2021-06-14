@@ -1,13 +1,13 @@
 <html>
   {{> head}}
-  <body class="dns">
+  <body class="member">
     <div class="d-flex" id="wrapper">
       {{> sidebar}}
       <div id="page-content-wrapper">
         {{> navbar}}
         <div class="container-fluid">
             <div class="row mt-4">
-              <div class="col-sm-6">
+              <div class="col-sm-6 mb-3">
                 <div class="breadcrumb-custom">
                   <ul>
                     <li>
@@ -33,7 +33,7 @@
                   <div class="widget-wrapper">
                     <div class="widget-style">&nbsp;</div>
                     <div class="widget-content">
-                      <div class="text">Member Belum Update</div>
+                      <div class="text">Member belum diupdate</div>
                       <div class="count" id="total_belum_update">0</div>
                     </div>
                   </div>
@@ -61,6 +61,19 @@
                         </form>
                       </div>
                       <div class="col-md-6 text-right">
+                        <table class="table table-sm table-borderless w-auto d-inline-block sign-not-updated">
+                          <tr>
+                            <td>
+                              <div class="dark"><div class="bg-warning-semi-transparent content">&nbsp;</div></div>
+                            </td>
+                            <td> / </td>
+                            <td>
+                              <div class="light"><div class="bg-warning-semi-transparent content">&nbsp;</div></div>
+                            </td>
+                            <td> : </td>
+                            <td>Member belum diupdate</td>
+                          </tr>
+                        </table>
                       </div>
                     </div>
                     <div class="table-responsive">
@@ -70,7 +83,7 @@
                             <th rowspan="2" class="align-middle border-right">No</th>
                             <th rowspan="2" class="align-middle border-right">Router</th>
                             <th colspan="2" class="text-center border-right border-bottom-0">PPP</th>
-                            <th colspan="4" class="text-center border-right border-bottom-0">Member</th>
+                            <th colspan="3" class="text-center border-right border-bottom-0">Member</th>
                             <th rowspan="2" class="text-center align-middle">Aksi</th>
                           </tr>
                           <tr>
@@ -78,12 +91,11 @@
                             <th class="border-right">Profile</th>
                             <th>Nama</th>
                             <th>Alamat</th>
-                            <th>No WA</th>
                             <th class="border-right">Nominal Pembayaran</th>
                           </tr>
                         </thead>
                         <tbody id="listdata">
-                          <tr><td colspan="9">Memuat Data ....</td></tr>
+                          <tr><td colspan="8">Memuat Data ....</td></tr>
                         </tbody>
                       </table>
                     </div>
@@ -130,8 +142,35 @@
                 <input id="no_wa" name="no_wa" type="text" class="form-control" placeholder="No Whatsapp Member" />
               </div>
               <div class="form-group">
+                <label class="control-label">Email</label>
+                <input id="email" name="email" type="text" class="form-control" placeholder="Email Member" />
+              </div>
+              <div class="form-group">
                 <label class="control-label">Nominal Pembayaran</label>
-                <input id="nominal_pembayaran" name="nominal_pembayaran" type="text" class="form-control" placeholder="Nominal Pembayaran" />
+                <input id="nominal_pembayaran" name="nominal_pembayaran" type="text" class="form-control" required placeholder="Nominal Pembayaran" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Tagihan Dimulai Pada</label>
+                <div class="input-group mb-3">
+                  <select required id="awal_tagihan_bulan" name="awal_tagihan_bulan" class="custom-select" id="inputGroupSelect02">
+                    <option value="">Pilih Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                  <div class="input-group-append">
+                    <input required id="awal_tagihan_tahun" name="awal_tagihan_tahun" type="text" class="form-control" placeholder="Tahun" />
+                  </div>
+                </div>
               </div>
               <div class="text-right">
                 <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>

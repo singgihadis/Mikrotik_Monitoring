@@ -16,10 +16,13 @@ $(document).ready(function(){
       var alamat = $("#alamat").val();
       var no_wa = $("#no_wa").val();
       var nominal_pembayaran = $("#nominal_pembayaran").val();
+      var awal_tagihan_bulan = $("#awal_tagihan_bulan").val();
+      var awal_tagihan_tahun = $("#awal_tagihan_tahun").val();
+      var email = $("#email").val();
       $.ajax({
         type:'post',
         url:'/ajax/member_simpan.html',
-        data:{id:id,nama:nama,alamat:alamat,no_wa:no_wa,nominal_pembayaran:nominal_pembayaran},
+        data:{id:id,nama:nama,alamat:alamat,no_wa:no_wa,email:email,nominal_pembayaran:nominal_pembayaran,awal_tagihan_bulan:awal_tagihan_bulan,awal_tagihan_tahun:awal_tagihan_tahun},
         success:function(resp){
           $("#form_member").loading("stop");
           var res = JSON.parse(resp);
@@ -59,7 +62,7 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='9'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='8'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
@@ -69,17 +72,22 @@ function load_data(){
         var first = no;
         $.each(data,function(k,v){
           if(k < 10){
+            var color_belum_update = "";
+            if(v['awal_tagihan_bulan'] == null){
+              color_belum_update = "bg-warning-semi-transparent";
+            }
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" + v['nama_server'] + "</td>";
             html += "<td>" + v['name'] + "</td>";
             html += "<td>" + v['profile'] + "</td>";
-            html += "<td>" + v['nama'] + "</td>";
-            html += "<td>" + v['alamat'] + "</td>";
-            html += "<td>" + v['no_wa'] + "</td>";
-            html += "<td>Rp. " + FormatAngka(v['nominal_pembayaran']) + "</td>";
+            html += "<td class='" + color_belum_update + "'>" + v['nama'] + "</td>";
+            html += "<td class='" + color_belum_update + "'>" + v['alamat'] + "</td>";
+            html += "<td class='" + color_belum_update + "'>";
+            html += "Rp. " + FormatAngka(v['nominal_pembayaran']) + "";
+            html += "</td>";
             html += "<td class='text-center'>";
-            html += "<a onclick='modal_update(this)' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
+            html += "<a onclick='modal_update(this)' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-awal-tagihan-bulan='" + (v['awal_tagihan_bulan']!=null?v['awal_tagihan_bulan']:"") + "' data-awal-tagihan-tahun='" + (v['awal_tagihan_tahun']!=null?v['awal_tagihan_tahun']:'') + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
             html += " <a href='/member/traffic/" + v['id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-area-chart'></span></a>";
             html += "</td>";
             html += "</tr>";
@@ -93,7 +101,7 @@ function load_data(){
     },error:function(){
       $("#listdata").loading("stop");
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='9'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='8'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }
@@ -130,12 +138,18 @@ function modal_update(itu){
   var nama = $(itu).attr("data-nama");
   var alamat = $(itu).attr("data-alamat");
   var no_wa = $(itu).attr("data-no-wa");
+  var awal_tagihan_bulan = $(itu).attr("data-awal-tagihan-bulan");
+  var awal_tagihan_tahun = $(itu).attr("data-awal-tagihan-tahun");
   var nominal_pembayaran = $(itu).attr("data-nominal-pembayaran");
+  var email = $(itu).attr("data-email");
   $("#id").val(id);
   $("#nama").val(nama);
   $("#alamat").val(alamat);
   $("#no_wa").val(no_wa);
+  $("#email").val(email);
   $("#nominal_pembayaran").val(nominal_pembayaran);
+  $("#awal_tagihan_bulan").val(awal_tagihan_bulan);
+  $("#awal_tagihan_tahun").val(awal_tagihan_tahun);
   $("#modal_update").modal("show");
 }
 function html_pagination(jmldata){

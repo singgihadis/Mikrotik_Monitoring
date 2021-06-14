@@ -35,7 +35,7 @@ function load_data(with_loading){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='7'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='6'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
@@ -56,8 +56,7 @@ function load_data(with_loading){
             html += "<td>" + v['name'] + "</td>";
             html += "<td>" + v['password'] + "</td>";
             html += "<td>" + v['profile'] + "</td>";
-            html += "<td>" + v['local_address'] + "</td>";
-            html += "<td>" + v['remote_address'] + "</td>";
+            html += "<td>" + (v['address'] != null?v['address']:"") + "</td>";
             html += "<td class='text-center'>" + is_active + "</td>";
             html += "</tr>";
             no++;
@@ -73,7 +72,7 @@ function load_data(with_loading){
         $("#listdata").loading("stop");
       }
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='7'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='6'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }
@@ -194,7 +193,7 @@ function html_pagination(jmldata){
     html_pagination += "    </li>";
   }
   html_pagination += "    <li class='page-item disabled'><a class='page-link text-body' href='javascript:void(0);'>" + page + "</a></li>";
-  if(jmldata > 5){
+  if(jmldata > 10){
     //Isnext true
     html_pagination += "    <li class='page-item'>";
     html_pagination += "      <a class='page-link text-body nextpage' data-page='" + (parseInt(page) + 1) + "' href='javascript:void(0);'>";
