@@ -226,7 +226,7 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='4'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='5'>" + res.msg + "</td></tr>");
         }
       }else{
         var html = "";
@@ -259,7 +259,7 @@ function load_data(){
       }
     },error:function(){
       $("#listdata").loading("stop");
-      $("#listdata").html("<tr><td colspan='4'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='5'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }

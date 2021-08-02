@@ -65,7 +65,8 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 10) - 10;
-        var sql_data_total = "select count(a.id) as total from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` " + filter_query;
+        var sql_data_total = "select count(a.id) as total from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.server_id = b.server_id " + filter_query;
+
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -74,7 +75,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "select a.*,IF(b.id_ppp is null,0,1) as is_active,b.address as address from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` " + filter_query + " limit " + limit + ",11";
+            var sql_data = "select a.*,IF(b.id_ppp is null,0,1) as is_active,b.address as address from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.server_id = b.server_id " + filter_query + " limit " + limit + ",11";
             var query_data = connection.query(sql_data, function (err, results, fields) {
               if(results.length == 0){
                 connection.release();

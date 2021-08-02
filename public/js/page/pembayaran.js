@@ -1,5 +1,9 @@
 var page = 1;
+var cur_bln = 0;
+var cur_thn = 0;
 $(document).ready(function(){
+  cur_thn = parseInt(moment().format("YYYY"));
+  cur_bln = parseInt(moment().format("M"));
   $('[data-toggle="tooltip"]').tooltip();
   $("#form_data").validate({
     submitHandler:function(){
@@ -63,20 +67,54 @@ function load_data(){
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
             html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
+
+            var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
+            var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];
             for(var a=0;a<12;a++){
+              var belum_waktunya = false;
+              if(tahun < cur_thn){
+                belum_waktunya = false;
+              }else if(cur_thn == tahun){
+                if((a + 1) <=cur_bln){
+                  belum_waktunya = false;
+                }else{
+                  belum_waktunya = true;
+                }
+              }else{
+                belum_waktunya = true;
+              }
+              var berhenti_langganan = false;
+              if(v['is_berhenti_langganan']){
+                if(tahun > tahun_berhenti_langganan){
+                  berhenti_langganan = true;
+                }else if(tahun_berhenti_langganan == tahun){
+                  if((a + 1) > bulan_berhenti_langganan){
+                    berhenti_langganan = true;
+                  }else{
+                    berhenti_langganan = false;
+                  }
+                }else{
+                  berhenti_langganan = false;
+                }
+              }
               var is_bayar = "<span class='fa fa-times-circle text-danger'></span>";
               if(arr_bulan.indexOf((a + 1).toString()) != -1){
                 is_bayar = "<span class='fa fa-check text-success'></span>";
               }
-              if(tahun <= awal_tagihan_tahun){
-                if(tahun == awal_tagihan_tahun){
-                  if((a + 1) < awal_tagihan_bulan){
+              if(belum_waktunya == true || berhenti_langganan == true){
+                is_bayar = "";
+              }else{
+                if(tahun <= awal_tagihan_tahun){
+                  if(tahun == awal_tagihan_tahun){
+                    if((a + 1) < awal_tagihan_bulan){
+                      is_bayar = "";
+                    }
+                  }else{
                     is_bayar = "";
                   }
-                }else{
-                  is_bayar = "";
                 }
               }
+
               html += "<td class='text-center'>" + is_bayar + "</td>";
             }
             html += "</tr>";

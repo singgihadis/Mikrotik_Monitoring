@@ -51,7 +51,7 @@ module.exports = {
       });
       api.connect().then((client) => {
         var torch = client.menu("/ping").where({address:client_ip}).stream((err, data, stream) => {
-            if (err) return err; // got an error while trying to stream
+          try{
             var hasil_arr = [];
             if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
               hasil_arr = JSON.parse(item['hasil']);
@@ -82,8 +82,16 @@ module.exports = {
                 }
               });
             });
+          }catch(err){
+            torch.stop();
+            api.close();
+            setTimeout(function(){
+              module.exports.Ping();
+            },60000);
+          }
         });
       }).catch((err) => {
+        api.close();
         index++;
         if(index == jml){
           setTimeout(function(){

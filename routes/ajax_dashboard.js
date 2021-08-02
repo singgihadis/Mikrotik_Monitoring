@@ -86,11 +86,18 @@ module.exports = function(app){
       });
       api.connect().then((client) => {
         client.menu("/system health").getOnly().then((result) => {
+          if(result != null){
             delete result['$$path'];
             var data = {is_error:false,data:result};
             api.close();
             res.send(JSON.stringify(data));
             res.end();
+          }else{
+            var data = {is_error:true,data:[],msg:"Data tegangan dan suhu tidak bisa diambil"};
+            api.close();
+            res.send(JSON.stringify(data));
+            res.end();
+          }
         }).catch((err) => {
           var data = {is_error:true,msg:err.message};
           res.send(JSON.stringify(data));

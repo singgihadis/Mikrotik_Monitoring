@@ -156,7 +156,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("concat(nama) like '%" + keyword + "%");
+          arr_query.push("concat(nama) like '%" + keyword + "%'");
         }
         var filter_query = "";
         if(arr_query.length > 0){

@@ -1,6 +1,10 @@
 var page = 1;
 var is_sukses = false;
+var cur_bln = 0;
+var cur_thn = 0;
 $(document).ready(function(){
+  cur_thn = parseInt(moment().format("YYYY"));
+  cur_bln = parseInt(moment().format("M"));
   $('[data-toggle="tooltip"]').tooltip();
   $("#form_data").validate({
     submitHandler:function(){
@@ -157,6 +161,8 @@ function load_data(){
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
             html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "'>" + v['nama'] + "</a></td>";
+            var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
+            var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];
             for(var a=0;a<12;a++){
               var html_switch = "";
               if(arr_bulan.indexOf((a + 1).toString()) != -1){
@@ -170,15 +176,47 @@ function load_data(){
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
               }
-              if(tahun <= awal_tagihan_tahun){
-                if(tahun == awal_tagihan_tahun){
-                  if((a + 1) < awal_tagihan_bulan){
-                    html_switch = "";
+
+              var belum_waktunya = false;
+              if(tahun < cur_thn){
+                belum_waktunya = false;
+              }else if(cur_thn == tahun){
+                if((a + 1) <=cur_bln){
+                  belum_waktunya = false;
+                }else{
+                  belum_waktunya = true;
+                }
+              }else{
+                belum_waktunya = true;
+              }
+              var berhenti_langganan = false;
+              if(v['is_berhenti_langganan']){
+                if(tahun > tahun_berhenti_langganan){
+                  berhenti_langganan = true;
+                }else if(tahun_berhenti_langganan == tahun){
+                  if((a + 1) > bulan_berhenti_langganan){
+                    berhenti_langganan = true;
+                  }else{
+                    berhenti_langganan = false;
                   }
                 }else{
-                  html_switch = "";
+                  berhenti_langganan = false;
                 }
               }
+              if(belum_waktunya == true || berhenti_langganan == true){
+                html_switch = "";
+              }else{
+                if(tahun <= awal_tagihan_tahun){
+                  if(tahun == awal_tagihan_tahun){
+                    if((a + 1) < awal_tagihan_bulan){
+                      html_switch = "";
+                    }
+                  }else{
+                    html_switch = "";
+                  }
+                }
+              }
+
 
               html += "<td class='text-center'>" + html_switch + "</td>";
             }

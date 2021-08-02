@@ -199,7 +199,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("concat(a.host,a.nama) like '%" + keyword + "%");
+          arr_query.push("concat(a.host,a.nama) like '%" + keyword + "%'");
         }
         if(req.session.level == "2" && is_pilih == "0"){
           //Jika admin
