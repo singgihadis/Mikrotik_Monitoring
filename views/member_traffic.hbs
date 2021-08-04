@@ -119,21 +119,62 @@
                 </div>
               </div>
               <div class="col-md-12">
-                <div class="card stat-card">
-                  <div class="card-body">
-                    <div class="text-right">
-                      <form class="form_tgl">
-                        <div class="form-group d-inline-block">
-                          <div class="input-group input-group-sm">
-                            <div class="input-group-prepend"><span class="input-group-text bg-primary text-white"><i class="fa fa-calendar"></i></span></div>
-                            <input type="text" name="tgl" id="tgl" class="daterange form-control" placeholder="Tgl" />
-                            <div class="input-group-append "><button class="btn btn-danger clear" type="button">Clear</button></div>
-                          </div>
+                <ul class="nav nav-tabs">
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link active" data-toggle="tab" href="#traffic">Traffic</a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a id="tab_inventaris_alat" class="nav-link" data-toggle="tab" href="#inventaris_alat">Inventaris Alat</a>
+                  </li>
+                </ul>
+                <div class="tab-content">
+                  <div class="tab-pane fade show active" id="traffic">
+                    <div class="stat-card">
+                      <div class="">
+                        <div class="text-right">
+                          <form class="form_tgl">
+                            <div class="form-group d-inline-block">
+                              <div class="input-group input-group-sm">
+                                <div class="input-group-prepend"><span class="input-group-text bg-primary text-white"><i class="fa fa-calendar"></i></span></div>
+                                <input type="text" name="tgl" id="tgl" class="daterange form-control" placeholder="Tgl" />
+                                <div class="input-group-append "><button class="btn btn-danger clear" type="button">Clear</button></div>
+                              </div>
+                            </div>
+                          </form>
                         </div>
-                      </form>
+                        <div id="data">
+                          <canvas id="chart" height="100"></canvas>
+                        </div>
+                      </div>
                     </div>
-                    <div id="data">
-                      <canvas id="chart" height="100"></canvas>
+                  </div>
+                  <div class="tab-pane fade" id="inventaris_alat">
+                    <div class="text-right">
+                      <a href="javascript:void(0);" onclick="modal_inventaris_alat(1,this)" class="btn btn-primary"><span class="fa fa-plus"></span> Tambah</a>
+                    </div>
+                    <br>
+                    <div>
+                      <table class="table table-striped">
+                        <thead>
+                          <th>No</th>
+                          <th>Nama Alat</th>
+                          <th>Serial Number</th>
+                          <th>Merek</th>
+                          <th>Tgl Pasang</th>
+                          <th>Aksi</th>
+                        </thead>
+                        <tbody id="listdata">
+
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4" id="info_page">
+
+                      </div>
+                      <div class="col-md-4 text-center" id="pagination">
+                      </div>
+                      <div class="col-md-4"></div>
                     </div>
                   </div>
                 </div>
@@ -144,7 +185,43 @@
         </div>
       </div>
       <!-- /#page-content-wrapper -->
-
+    </div>
+    <div class="modal" id="modal_inventaris_alat">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal_inventaris_alat_title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="form_inventaris_alat">
+              <input type="hidden" id="inventaris_alat_id" name="inventaris_alat_id" />
+              <div class="form-group">
+                <label class="control-label">Nama</label>
+                <input id="nama_alat" name="nama_alat" type="text" class="form-control" placeholder="Nama Alat" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Serial Number</label>
+                <input id="serial_number" name="serial_number" type="text" class="form-control" placeholder="Serial Number" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Merek</label>
+                <input id="merek" name="merek" type="text" class="form-control" placeholder="Merek" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Tgl Pasang</label>
+                <input type="text" id="tgl_pasang" name="tgl_pasang" class="form-control" placeholder="Tgl Pasang" required />
+              </div>
+              <div class="text-right">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- /#wrapper -->
     {{> foot}}

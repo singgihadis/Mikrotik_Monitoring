@@ -1,9 +1,188 @@
 var chart_timeout = null;
 var chart_graph = null;
+var inventaris_alat_is_tambah = false;
+var page_inventaris_alat = 1;
 $(document).ready(function(){
   $("#tgl").val("");
   load_data();
+   $("#tgl_pasang").datepicker({
+     format:"dd/mm/yyyy"
+   });
+   $("#form_inventaris_alat").validate({
+     submitHandler:function(){
+       if(inventaris_alat_is_tambah){
+         tambah_inventaris_alat();
+       }else{
+         edit_inventaris_alat();
+       }
+     }
+   });
+   $('#tab_inventaris_alat').on('shown.bs.tab', function (event) {
+      load_data_inventaris_alat();
+   });
 });
+function load_data_inventaris_alat(){
+  $("#listdata").loading();
+  var id = $("#id").val();
+  $.ajax({
+    type:'post',
+    url:'/ajax/member_inventaris_alat_data.html',
+    data:{ppp_secret_id:id,page:page_inventaris_alat},
+    success:function(resp){
+      $("#listdata").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          $("#listdata").html("<tr><td colspan='6'>" + res.msg + "</td></tr>");
+        }
+      }else{
+        var html = "";
+        var no = (page_inventaris_alat * 10) - 9;
+        var first = no;
+        $.each(res.data,function(k,v){
+          if(k < 10){
+            var tgl_pasang = v['tgl_pasang'];
+            var moment_tgl_pasang = moment(tgl_pasang,"YYYY-MM-DD");
+            html += "<tr>";
+            html += "<td>" + no + "</td>";
+            html += "<td>" + v['nama'] + "</td>";
+            html += "<td>" + v['serial_number'] + "</td>";
+            html += "<td>" + v['merek'] + "</td>";
+            html += "<td>" + moment_tgl_pasang.format("DD") + " " + IndexToMonth(moment_tgl_pasang.month()) + " " + moment_tgl_pasang.format("YYYY") + "</td>";
+            html += "<td><a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-serial-number='" + v['serial_number'] + "' data-merek='" + v['merek'] + "' data-tgl-pasang='" + v['tgl_pasang'] + "' onclick='modal_inventaris_alat(0,this)' class='btn btn-light'><span class='fa fa-edit'></span></a> <a onclick='hapus_inventaris_alat(this)' data-id='" + v['id'] + "' href='javascript:void(0);' class='btn btn-danger'><span class='fa fa-trash'></span></a></td>";
+            html += "</tr>";
+            no++;
+          }
+        });
+        $("#listdata").html(html);
+        html_pagination(res.data.length);
+        $("#info_page").html(first + " - " + (no - 1) + " dari " + FormatAngka(res.total));
+      }
+    },error:function(){
+      $("#listdata").loading("stop");
+      $("#listdata").html("<tr><td colspan='6'>Silahkan periksa koneksi internet anda</td></tr>");
+    }
+  });
+}
+function tambah_inventaris_alat(){
+  $("#form_inventaris_alat").loading();
+  var ppp_secret_id = $("#id").val();
+  var nama_alat = $("#nama_alat").val();
+  var serial_number = $("#serial_number").val();
+  var merek = $("#merek").val();
+  var get_tgl_pasang = $("#tgl_pasang").val();
+  var moment_tgl_pasang = moment(get_tgl_pasang,"DD/MM/YYYY");
+  var tgl_pasang = moment_tgl_pasang.format("YYYY-MM-DD");
+  $.ajax({
+    type:'post',
+    url:'/ajax/member_inventaris_alat_tambah.html',
+    data:{ppp_secret_id:ppp_secret_id,nama:nama_alat,serial_number:serial_number,merek:merek,tgl_pasang:tgl_pasang},
+    success:function(resp){
+      $("#form_inventaris_alat").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        $("#modal_inventaris_alat").modal("hide");
+        toastr["success"]("Berhasil menambah data");
+        load_data_inventaris_alat();
+      }
+    },error:function(){
+      $("#form_inventaris_alat").loading("stop");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function edit_inventaris_alat(){
+  $("#form_inventaris_alat").loading();
+  var ppp_secret_id = $("#id").val();
+  var inventaris_alat_id = $("#inventaris_alat_id").val();
+  var nama = $("#nama_alat").val();
+  var serial_number = $("#serial_number").val();
+  var merek = $("#merek").val();
+  var get_tgl_pasang = $("#tgl_pasang").val();
+  var moment_tgl_pasang = moment(get_tgl_pasang,"DD/MM/YYYY");
+  var tgl_pasang = moment_tgl_pasang.format("YYYY-MM-DD");
+  $.ajax({
+    type:'post',
+    url:'/ajax/member_inventaris_alat_edit.html',
+    data:{id:inventaris_alat_id,ppp_secret_id:ppp_secret_id,nama:nama,serial_number:serial_number,merek:merek,tgl_pasang:tgl_pasang},
+    success:function(resp){
+      $("#form_inventaris_alat").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        $("#modal_inventaris_alat").modal("hide");
+        toastr["success"]("Berhasil mengubah data");
+        load_data_inventaris_alat();
+      }
+    },error:function(){
+      $("#form_inventaris_alat").loading("stop");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function hapus_inventaris_alat(itu){
+  var ppp_secret_id = $("#id").val();
+  var id = $(itu).attr("data-id");
+  $.confirm({
+    title: 'Konfirmasi',
+    content: 'Apa anda yakin menghapus data tersebut ?',
+    buttons: {
+        cancel: {
+          text: 'Batal',
+          btnClass: 'btn-light',
+          action: function(){
+
+          }
+        },
+        confirm: {
+          text: 'Konfirmasi',
+          btnClass: 'btn-blue',
+          action: function(){
+            $(itu).parent().parent().loading();
+            $.ajax({
+              type:'post',
+              url:'/ajax/member_inventaris_alat_hapus.html',
+              data:{id:id,ppp_secret_id:ppp_secret_id},
+              success:function(resp){
+                $(itu).parent().parent().loading("stop");
+                var res = JSON.parse(resp);
+                var html = "";
+                if(res.is_error){
+                  if(res.must_login){
+                    window.location = "/login.html";
+                  }else{
+                    toastr["error"](res.msg);
+                  }
+                }else{
+                  toastr["success"]("Berhasil menghapus");
+                  load_data_inventaris_alat();
+                }
+              },error:function(){
+                $(itu).parent().parent().loading("stop");
+                toastr["error"]("Silahkan periksa koneksi internet anda");
+              }
+            });
+          }
+        }
+    }
+  });
+}
 function cetak(itu){
   var id = $(itu).attr("data-id");
   $(itu).find("span").removeClass("fa-file-pdf-o");
@@ -55,7 +234,7 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<div class='alert alert-warning'>" + res.msg + "</div>");
+          $("#data").html("<div class='alert alert-warning'>" + res.msg + "</div>");
         }
       }else{
         var data = res.data[0];
@@ -313,5 +492,83 @@ function chart2(data,tgl_start_complete,tgl_end_complete){
             }
           }
       }
+  });
+}
+function modal_inventaris_alat(is_tambah,itu){
+  $("#form_inventaris_alat").trigger("reset");
+  $("#modal_inventaris_alat").modal("show");
+  if(is_tambah == "1"){
+    inventaris_alat_is_tambah = true;
+    $("#modal_inventaris_alat_title").html("Tambah Inventaris Alat");
+  }else{
+    inventaris_alat_is_tambah = false;
+    $("#modal_inventaris_alat_title").html("Edit Inventaris Alat");
+    var nama = $(itu).attr("data-nama");
+    var serial_number = $(itu).attr("data-serial-number");
+    var merek = $(itu).attr("data-merek");
+    var get_tgl_pasang = $(itu).attr("data-tgl-pasang");
+    var moment_tgl_pasang = moment(get_tgl_pasang,"YYYY-MM-DD");
+    var tgl_pasang = moment_tgl_pasang.format("YYYY/MM/DD");
+    var id = $(itu).attr("data-id");
+    $("#inventaris_alat_id").val(id);
+    $("#nama_alat").val(nama);
+    $("#serial_number").val(serial_number);
+    $("#merek").val(merek);
+    $("#tgl_pasang").val(tgl_pasang);
+  }
+}
+function html_pagination(jmldata){
+  var html_pagination = "";
+  html_pagination += "<div class='d-inline-block'>";
+  html_pagination += "  <ul class='pagination'>";
+
+  if(page_inventaris_alat == 1){
+    //Isprev false
+    html_pagination += "    <li class='page-item disabled'>";
+    html_pagination += "      <a class='page-link text-secondary' href='javascript:void(0);'>";
+    html_pagination += "        <span class='fa fa-chevron-left text-secondary'>&nbsp;</span> Sebelumnya";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }else{
+    //Isprev true
+    html_pagination += "    <li class='page-item'>";
+    html_pagination += "      <a class='page-link text-body prevpage' data-page='" + (parseInt(page_inventaris_alat) - 1) + "' href='javascript:void(0);'>";
+    html_pagination += "        <span class='fa fa-chevron-left text-body'>&nbsp;</span> Sebelumnya";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }
+  html_pagination += "    <li class='page-item disabled'><a class='page-link text-body' href='javascript:void(0);'>" + page_inventaris_alat + "</a></li>";
+  if(jmldata > 10){
+    //Isnext true
+    html_pagination += "    <li class='page-item'>";
+    html_pagination += "      <a class='page-link text-body nextpage' data-page='" + (parseInt(page_inventaris_alat) + 1) + "' href='javascript:void(0);'>";
+    html_pagination += "        Selanjutnya <span class='fa fa-chevron-right text-body'>&nbsp;</span>";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }else{
+    //Isnext false
+    html_pagination += "    <li class='page-item disabled'>";
+    html_pagination += "      <a class='page-link text-secondary' href='javascript:void(0);'>";
+    html_pagination += "        Selanjutnya <span class='fa fa-chevron-right text-secondary'>&nbsp;</span>";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }
+  html_pagination += "  </ul>";
+  html_pagination += "</div>";
+  $("#pagination").html(html_pagination);
+  trigger_pagination();
+}
+function trigger_pagination(){
+  $(".prevpage").click(function(e){
+    e.preventDefault();
+    var get_page  = $(this).attr("data-page");
+    page_inventaris_alat = get_page;
+    load_data_inventaris_alat(true);
+  });
+  $(".nextpage").click(function(e){
+    e.preventDefault();
+    var get_page  = $(this).attr("data-page");
+    page_inventaris_alat = get_page;
+    load_data_inventaris_alat(true);
   });
 }

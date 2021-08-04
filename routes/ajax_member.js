@@ -142,38 +142,48 @@ module.exports = function(app){
         if(req.body.tahun_berhenti_langganan != undefined){
           tahun_berhenti_langganan = req.body.tahun_berhenti_langganan;
         }
-        var sql_cek = "select * from member where ppp_secret_id=?";
-        var query_cek = connection.query(sql_cek,[id], function (err, results, fields) {
-          if(results.length == 0){
-            var sql = "insert into member(ppp_secret_id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan) values(?,?,?,?,?,?,?,?,?,?,?)";
-            var query = connection.query(sql,[id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan], function (err, results, fields) {
-              if (!err){
-                connection.release();
-                var data = {is_error:false,msg:"Berhasil menyimpan"};
-                res.send(JSON.stringify(data));
-                res.end();
+        var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var query_cek_akses = connection.query(sql_cek_akses,[id,req.session.user_id], function (err, results, fields) {
+          if(results.length > 0 || req.session.level == 2){
+            var sql_cek = "select * from member where ppp_secret_id=?";
+            var query_cek = connection.query(sql_cek,[id], function (err, results, fields) {
+              if(results.length == 0){
+                var sql = "insert into member(ppp_secret_id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan) values(?,?,?,?,?,?,?,?,?,?,?)";
+                var query = connection.query(sql,[id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan], function (err, results, fields) {
+                  if (!err){
+                    connection.release();
+                    var data = {is_error:false,msg:"Berhasil menyimpan"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }else{
+                    connection.release();
+                    var data = {is_error:true,msg:"Gagal menyimpan"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }
+                });
               }else{
-                connection.release();
-                var data = {is_error:true,msg:"Gagal menyimpan"};
-                res.send(JSON.stringify(data));
-                res.end();
+                var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=?,is_berhenti_langganan=?,bulan_berhenti_langganan=?,tahun_berhenti_langganan=? where ppp_secret_id=?";
+                var query = connection.query(sql,[nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,id], function (err, results, fields) {
+                  if (!err){
+                    connection.release();
+                    var data = {is_error:false,msg:"Berhasil menyimpan"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }else{
+                    connection.release();
+                    var data = {is_error:true,msg:"Gagal menyimpan"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }
+                });
               }
             });
           }else{
-            var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=?,is_berhenti_langganan=?,bulan_berhenti_langganan=?,tahun_berhenti_langganan=? where ppp_secret_id=?";
-            var query = connection.query(sql,[nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,id], function (err, results, fields) {
-              if (!err){
-                connection.release();
-                var data = {is_error:false,msg:"Berhasil menyimpan"};
-                res.send(JSON.stringify(data));
-                res.end();
-              }else{
-                connection.release();
-                var data = {is_error:true,msg:"Gagal menyimpan"};
-                res.send(JSON.stringify(data));
-                res.end();
-              }
-            });
+            connection.release();
+            var data = {is_error:true,msg:"Anda tidak mempunyai akses"};
+            res.send(JSON.stringify(data));
+            res.end();
           }
         });
       });
@@ -415,6 +425,208 @@ module.exports = function(app){
           }else{
             connection.release();
             var data = {is_error:true,data:[],msg:"Silahkan lengkapi data pengaturan terlebih dahulu"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/member_inventaris_alat_data.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var ppp_secret_id = "";
+        if(req.body.ppp_secret_id != undefined){
+          ppp_secret_id = req.body.ppp_secret_id;
+        }
+        var page = "";
+        if(req.body.page != undefined){
+          page = req.body.page;
+        }
+        var limit_start = (page * 10) - 10;
+        var limit = limit_start + ",11";
+        var arr_query = [];
+        arr_query.push("c.user_id=" + req.session.user_id);
+        arr_query.push("a.ppp_secret_id=" + ppp_secret_id);
+        var filter_query = "";
+        if(arr_query.length > 0){
+          filter_query = " where " + arr_query.join(" and ");
+        }
+        var sql_count = "SELECT count(a.id) as total from inventaris_alat a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id = c.id " + filter_query + "";
+        var query_count = connection.query(sql_count, function (err, results, fields) {
+          var total = 0;
+          if(results.length > 0){
+            total = results[0]['total'];
+          }
+          var sql_data = "SELECT a.* from inventaris_alat a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id = c.id " + filter_query + " limit " + limit;
+          var query_data = connection.query(sql_data, function (err, results, fields) {
+            if(results.length == 0){
+              connection.release();
+              var data = {is_error:true,data:[],msg:"Data tidak ditemukan",total:total};
+              res.send(JSON.stringify(data));
+              res.end();
+            }else{
+              connection.release();
+              var data = {is_error:false,data:results,total:total};
+              res.send(JSON.stringify(data));
+              res.end();
+            }
+          });
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/member_inventaris_alat_tambah.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var ppp_secret_id = "";
+        if(req.body.ppp_secret_id != undefined){
+          ppp_secret_id = req.body.ppp_secret_id;
+        }
+        var nama = "";
+        if(req.body.nama != undefined){
+          nama = req.body.nama;
+        }
+        var serial_number = "";
+        if(req.body.serial_number != undefined){
+          serial_number = req.body.serial_number;
+        }
+        var merek = "";
+        if(req.body.merek != undefined){
+          merek = req.body.merek;
+        }
+        var tgl_pasang = "";
+        if(req.body.tgl_pasang != undefined){
+          tgl_pasang = req.body.tgl_pasang;
+        }
+        var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var query_cek_akses = connection.query(sql_cek_akses,[ppp_secret_id,req.session.user_id], function (err, results, fields) {
+          if(results.length > 0 || req.session.level == 2){
+            var sql_insert = "insert into inventaris_alat(ppp_secret_id,nama,serial_number,merek,tgl_pasang) values(?,?,?,?,?)";
+            var query_data = connection.query(sql_insert,[ppp_secret_id,nama,serial_number,merek,tgl_pasang], function (err, results, fields) {
+              if(err){
+                connection.release();
+                var data = {is_error:true,data:[],msg:"Gagal menambah data"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }else{
+                connection.release();
+                var data = {is_error:false,data:[],msg:"Berhasil menambah data"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }
+            });
+          }else{
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Anda tidak mempunyai akses"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/member_inventaris_alat_edit.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var id = "";
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+        var ppp_secret_id = "";
+        if(req.body.ppp_secret_id != undefined){
+          ppp_secret_id = req.body.ppp_secret_id;
+        }
+        var nama = "";
+        if(req.body.nama != undefined){
+          nama = req.body.nama;
+        }
+        var serial_number = "";
+        if(req.body.serial_number != undefined){
+          serial_number = req.body.serial_number;
+        }
+        var merek = "";
+        if(req.body.merek != undefined){
+          merek = req.body.merek;
+        }
+        var tgl_pasang = "";
+        if(req.body.tgl_pasang != undefined){
+          tgl_pasang = req.body.tgl_pasang;
+        }
+        var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var query_cek_akses = connection.query(sql_cek_akses,[ppp_secret_id,req.session.user_id], function (err, results, fields) {
+          if(results.length > 0 || req.session.level == 2){
+            var sql_insert = "update  inventaris_alat set nama=?,serial_number=?,merek=?,tgl_pasang=? where ppp_secret_id=? and id=?";
+            var query_data = connection.query(sql_insert,[nama,serial_number,merek,tgl_pasang,ppp_secret_id,id], function (err, results, fields) {
+              if(err){
+                connection.release();
+                var data = {is_error:true,data:[],msg:"Gagal mengubah data"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }else{
+                connection.release();
+                var data = {is_error:false,data:[],msg:"Berhasil mengubah data"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }
+            });
+          }else{
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Anda tidak mempunyai akses"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/member_inventaris_alat_hapus.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var id = "";
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+        var ppp_secret_id = "";
+        if(req.body.ppp_secret_id != undefined){
+          ppp_secret_id = req.body.ppp_secret_id;
+        }
+        var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var query_cek_akses = connection.query(sql_cek_akses,[ppp_secret_id,req.session.user_id], function (err, results, fields) {
+          if(results.length > 0 || req.session.level == 2){
+            var sql_insert = "delete from inventaris_alat where ppp_secret_id=? and id=?";
+            var query_data = connection.query(sql_insert,[ppp_secret_id,id], function (err, results, fields) {
+              if(err){
+                connection.release();
+                var data = {is_error:true,data:[],msg:"Gagal menghapus data"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }else{
+                connection.release();
+                var data = {is_error:false,data:[],msg:"Berhasil menghapus data"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }
+            });
+          }else{
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Anda tidak mempunyai akses"};
             res.send(JSON.stringify(data));
             res.end();
           }
