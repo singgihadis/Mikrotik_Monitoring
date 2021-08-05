@@ -66,12 +66,13 @@ app.use(function(req,res,next) {
 });
 require('./routes/routes')(app);
 require('./routes/ajax_login')(app);
-require('./routes/ajax_dashboard')(app);
+require('./routes/ajax_traffic')(app);
 require('./routes/ajax_monitoring')(app);
 require('./routes/ajax_ping')(app);
 require('./routes/ajax_dns')(app);
 require('./routes/ajax_ppp')(app);
 require('./routes/ajax_hotspot')(app);
+require('./routes/ajax_dashboard')(app);
 require('./routes/ajax_member')(app);
 require('./routes/ajax_pembayaran')(app);
 require('./routes/ajax_pengaturan')(app);

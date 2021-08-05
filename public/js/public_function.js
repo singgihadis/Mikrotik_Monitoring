@@ -215,6 +215,35 @@ function IndexToMonth(x){
   }
   return bulan;
 }
+function IndexToMonth_Short(x){
+  var bulan = "";
+  if(x == 0){
+    bulan = "Jan";
+  }else if(x == 1){
+    bulan = "Feb";
+  }else if(x == 2){
+    bulan = "Mar";
+  }else if(x == 3){
+    bulan = "Apr";
+  }else if(x == 4){
+    bulan = "Mei";
+  }else if(x == 5){
+    bulan = "Jun";
+  }else if(x == 6){
+    bulan = "Jul";
+  }else if(x == 7){
+    bulan = "Agu";
+  }else if(x == 8){
+    bulan = "Sep";
+  }else if(x == 9){
+    bulan = "Okt";
+  }else if(x == 10){
+    bulan = "Nov";
+  }else if(x == 11){
+    bulan = "Des";
+  }
+  return bulan;
+}
 function TwoDigitNumber(x){
   if(x == ""){
     return "00";

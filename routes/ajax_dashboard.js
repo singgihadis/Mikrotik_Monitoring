@@ -1,66 +1,28 @@
-const RouterOSClient = require('routeros-client').RouterOSClient;
+var moment = require("moment");
 const pool = require('../db');
+const config = require('../config');
 module.exports = function(app){
-  app.post(['/ajax/system_resources.html'],(req, res) => {
-    if(req.session.is_login){
-      if(req.session.server_id){
-        var host = req.session.host;
-        var port = req.session.port;
-        var user = req.session.user;
-        var password = req.session.password;
-        const api = new RouterOSClient({
-            host: host,
-            port: port,
-            user: user,
-            password: password
-        });
-        api.connect().then((client) => {
-          client.menu("/system resource").getOnly().then((result) => {
-              delete result['$$path'];
-              var data = {is_error:false,data:result};
-              api.close();
-              res.send(JSON.stringify(data));
-              res.end();
-          }).catch((err) => {
-            var data = {is_error:true,msg:err.message};
-            res.send(JSON.stringify(data));
-            res.end();
-          });
-        }).catch((err) => {
-          var data = {is_error:true,msg:err.message};
-          res.send(JSON.stringify(data));
-          res.end();
-        });
-      }else{
-        var data = {is_error:true,msg:""};
-        res.send(JSON.stringify(data));
-        res.end();
-      }
-    }else{
-      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
-      res.send(JSON.stringify(data));
-      res.end();
-    }
-  });
-  app.post(['/ajax/master_kota_id_simpan.html'],(req, res) => {
+  app.post(['/ajax/member_stat_inserted_daily.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
-        var master_kota_id = "";
-        if(req.body.master_kota_id != undefined){
-          master_kota_id = req.body.master_kota_id;
+        var bulan = "";
+        if(req.body.bulan != undefined){
+          bulan = req.body.bulan;
         }
-        var user_id = req.session.user_id;
-        var sql = "update pengaturan set master_kota_id=? where user_id=?";
-        var query = connection.query(sql,[master_kota_id,user_id], function (err, results, fields) {
-          if (!err){
+        var tahun = "";
+        if(req.body.tahun != undefined){
+          tahun = req.body.tahun;
+        }
+        var sql_data = "SELECT count(a.id) AS jml, DAY(a.tgl_insert) as tgl FROM member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id where c.user_id=? and MONTH(a.tgl_insert)= ? AND YEAR(a.tgl_insert)= ? GROUP BY DAY(a.tgl_insert)";
+        var query_data = connection.query(sql_data,[req.session.user_id,bulan,tahun], function (err, results, fields) {
+          if(results.length == 0){
             connection.release();
-            req.session.master_kota_id = master_kota_id;
-            var data = {is_error:false,msg:"Berhasil menyimpan"};
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
             res.send(JSON.stringify(data));
             res.end();
           }else{
             connection.release();
-            var data = {is_error:true,msg:"Gagal menyimpan"};
+            var data = {is_error:false,data:results};
             res.send(JSON.stringify(data));
             res.end();
           }
@@ -72,41 +34,27 @@ module.exports = function(app){
       res.end();
     }
   });
-  app.post(['/ajax/system_health.html'],(req, res) => {
+  app.post(['/ajax/member_stat_inserted_monthly.html'],(req, res) => {
     if(req.session.is_login){
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password
-      });
-      api.connect().then((client) => {
-        client.menu("/system health").getOnly().then((result) => {
-          if(result != null){
-            delete result['$$path'];
-            var data = {is_error:false,data:result};
-            api.close();
+      pool.getConnection(function(err, connection) {
+        var tahun = "";
+        if(req.body.tahun != undefined){
+          tahun = req.body.tahun;
+        }
+        var sql_data = "SELECT count(a.id) AS jml, MONTH(a.tgl_insert) as bln FROM member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id where c.user_id=? and YEAR(a.tgl_insert)= ? GROUP BY MONTH(a.tgl_insert)";
+        var query_data = connection.query(sql_data,[req.session.user_id,tahun], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
             res.send(JSON.stringify(data));
             res.end();
           }else{
-            var data = {is_error:true,data:[],msg:"Data tegangan dan suhu tidak bisa diambil"};
-            api.close();
+            connection.release();
+            var data = {is_error:false,data:results};
             res.send(JSON.stringify(data));
             res.end();
           }
-        }).catch((err) => {
-          var data = {is_error:true,msg:err.message};
-          res.send(JSON.stringify(data));
-          res.end();
         });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
-        res.send(JSON.stringify(data));
-        res.end();
       });
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
@@ -114,33 +62,23 @@ module.exports = function(app){
       res.end();
     }
   });
-  app.post(['/ajax/interface.html'],(req, res) => {
+  app.post(['/ajax/member_stat_inserted_yearly.html'],(req, res) => {
     if(req.session.is_login){
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password
-      });
-      api.connect().then((client) => {
-        client.menu("/interface").get().then((result) => {
-            var data = {is_error:false,data:result};
-            api.close();
+      pool.getConnection(function(err, connection) {
+        var sql_data = "SELECT count(a.id) AS jml, YEAR(a.tgl_insert) as thn FROM member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id where c.user_id=? GROUP BY YEAR(a.tgl_insert)";
+        var query_data = connection.query(sql_data,[req.session.user_id], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
             res.send(JSON.stringify(data));
             res.end();
-        }).catch((err) => {
-          var data = {is_error:true,msg:err.message};
-          res.send(JSON.stringify(data));
-          res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,data:results};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
         });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
-        res.send(JSON.stringify(data));
-        res.end();
       });
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
@@ -148,67 +86,23 @@ module.exports = function(app){
       res.end();
     }
   });
-  app.post(['/ajax/interface_traffic.html'],(req, res) => {
+  app.post(['/ajax/member_terbaru.html'],(req, res) => {
     if(req.session.is_login){
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      var interface = req.body.interface;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password
-      });
-      api.connect().then((client) => {
-        var torch = client.menu("/interface monitor-traffic").where({interface:interface}).stream((err, data_traffic, stream) => {
-            if (err) return err; // got an error while trying to stream
-            var data = {is_error:false,data:data_traffic};
-            torch.stop();
-            api.close();
+      pool.getConnection(function(err, connection) {
+        var sql_data = "select a.* from member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id where c.user_id=? order by a.tgl_insert desc limit 5";
+        var query_data = connection.query(sql_data,[req.session.user_id], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
             res.send(JSON.stringify(data));
             res.end();
-        });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
-        res.send(JSON.stringify(data));
-        res.end();
-      });
-    }else{
-      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
-      res.send(JSON.stringify(data));
-      res.end();
-    }
-  });
-  app.post(['/ajax/netwatch.html'],(req, res) => {
-    if(req.session.is_login){
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      var interface = req.body.interface;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password
-      });
-      api.connect().then((client) => {
-        client.menu("/tool netwatch").get().then((result) => {
-            var data = {is_error:false,data:result};
-            api.close();
+          }else{
+            connection.release();
+            var data = {is_error:false,data:results};
             res.send(JSON.stringify(data));
             res.end();
-        }).catch((err) => {
-          var data = {is_error:true,msg:err.message};
-          res.send(JSON.stringify(data));
-          res.end();
+          }
         });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
-        res.send(JSON.stringify(data));
-        res.end();
       });
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};

@@ -27,7 +27,7 @@ module.exports = function(app){
         }else{
           title = "Traffic";
         }
-        res.render("dashboard",{
+        res.render("traffic",{
           title:title,
           favicon:website_config['favicon'],
           logo:website_config['logo'],
@@ -425,6 +425,33 @@ module.exports = function(app){
         menu:"user",
         server_id:server_id,
         level:level,
+        with_server:0
+      });
+    }
+  });
+  app.get(['/dashboard.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      var website_config = req.website_config;
+      var level = req.session.level;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Dashboard - " + website_config['title'];
+      }else{
+        title = "Dashboard";
+      }
+      var server_id = "";
+      if(req.session.server_id){
+        server_id = req.session.server_id;
+      }
+      res.render("dashboard",{
+        title:title,
+        favicon:website_config['favicon'],
+        logo:website_config['logo'],
+        menu:"dashboard",
+        level:level,
+        server_id:server_id,
         with_server:0
       });
     }

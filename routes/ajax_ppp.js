@@ -11,8 +11,8 @@ module.exports = function(app){
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data_total = "select count(a.id) as total, count(b.id_ppp) as total_aktif from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` " + filter_query;
-        var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
+        var sql_data_total = "select count(a.id) as total, count(b.id_ppp) as total_aktif from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and b.server_id=? " + filter_query;
+        var query_data_total = connection.query(sql_data_total,[req.session.server_id], function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
             var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
