@@ -1,6 +1,11 @@
 const RouterOSClient = require('routeros-client').RouterOSClient;
 var ppp_function = require("../function/ppp_function.js");
+var public_function = require("../function/public_function.js");
+const fs = require('fs');
 const pool = require('../db');
+const config = require('../config');
+var moment = require("moment");
+var pdf = require("html-pdf");
 module.exports = function(app){
   app.post(['/ajax/ppp_secret_total.html'],(req, res) => {
     if(req.session.is_login){
@@ -180,6 +185,72 @@ module.exports = function(app){
         var data = {is_error:true,msg:err.message};
         res.send(JSON.stringify(data));
         res.end();
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/ppp_cetak_tidak_aktif.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var sql_data_router = "select * from server where id=?";
+        var query_data_router = connection.query(sql_data_router,[req.session.server_id], function (err, results_router, fields) {
+          if(results_router.length > 0){
+            var nama_router = results_router[0]['nama'];
+            var sql_data = "select a.*,IF(b.id_ppp is null,0,1) as is_active,b.address as address from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.server_id = b.server_id where a.server_id=? and b.id_ppp is null";
+            var query_data = connection.query(sql_data,[req.session.server_id], function (err, results_ppp, fields) {
+              connection.release();
+              var html_list = "";
+              if(results_ppp.length > 0){
+                var no = 1;
+                results_ppp.forEach((item, i) => {
+                  html_list += "<tr>";
+                  html_list += "<td style='padding-left:15px;padding-top:8px;padding-bottom:8px;padding-right:8px;border: 1px solid #ddd;'>" + no + "</td>";
+                  html_list += "<td style='padding-left:5px;padding-top:8px;padding-bottom:8px;padding-right:5px;border: 1px solid #ddd;'>" + item['name'] + "</td>";
+                  html_list += "<td style='padding-left:5px;padding-top:8px;padding-bottom:8px;padding-right:5px;border: 1px solid #ddd;'>" + item['password'] + "</td>";
+                  html_list += "<td style='padding-left:5px;padding-top:8px;padding-bottom:8px;padding-right:15px;border: 1px solid #ddd;'>" + item['profile'] + "</td>";
+                  html_list += "<td style='padding-left:5px;padding-top:8px;padding-bottom:8px;padding-right:15px;border: 1px solid #ddd;'>" + item['local_address'] + "</td>";
+                  html_list += "<td style='padding-left:5px;padding-top:8px;padding-bottom:8px;padding-right:15px;border: 1px solid #ddd;'>" + item['remote_address'] + "</td>";
+                  html_list += "</tr>";
+                  no++;
+                });
+              }else{
+                html_list += "<tr><td colspan='6'>Data tidak data</td></tr>";
+              }
+              var tgl = moment().format("D") + " " + public_function.NamaBulan(moment().format("M")) + " " + moment().format("YYYY");
+              var html = __dirname + '/../ppp.html';
+              fs.readFile(html, 'utf8', function(err, data) {
+                  if (err) throw err;
+                  if (!fs.existsSync("./public/pdf/" + req.session.user_id)){
+                      fs.mkdirSync("./public/pdf/" + req.session.user_id);
+                  }
+                  data = data.replace(/{{nama_router}}/g,nama_router);
+                  data = data.replace(/{{tgl}}/g,tgl);
+                  data = data.replace(/{{data_html}}/g,html_list);
+                  var options = { format: 'A4' };
+                  pdf.create(data,options).toStream(function(err, stream){
+                    // res.setHeader('Content-disposition', 'inline; filename="invoice"');
+                    // res.setHeader('Content-type', 'application/pdf');
+                    // res.setHeader('Content-Type', 'application/pdf');
+                    // res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf;');
+                    // stream.pipe(res);
+                    stream.pipe(fs.createWriteStream('./public/pdf/' + req.session.user_id + "/ppp_" + req.session.server_id + '.pdf'));
+                    var data = {is_error:false,data:[],msg:"sukses",output:config['main_url'] + '/assets/pdf/' + req.session.user_id + "/ppp_" + req.session.server_id + '.pdf'};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  });
+              });
+            });
+          }else{
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data router tidak ditemukan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+
       });
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};

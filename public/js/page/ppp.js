@@ -227,3 +227,39 @@ function trigger_pagination(){
     load_data(true);
   });
 }
+
+function cetak(itu){
+  $(itu).find("span").removeClass("fa-file-pdf-o");
+  $(itu).find("span").addClass("fa-spin");
+  $(itu).find("span").addClass("fa-spinner");
+  $(itu).addClass("disabled");
+  $.ajax({
+    type:'post',
+    url:'/ajax/ppp_cetak_tidak_aktif.html',
+    data:{},
+    success:function(resp){
+      $(itu).find("span").addClass("fa-file-pdf-o");
+      $(itu).find("span").removeClass("fa-spin");
+      $(itu).find("span").removeClass("fa-spinner");
+      $(itu).removeClass("disabled");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        var output = res.output;
+        window.open(output,"_blank");
+      }
+    },error:function(){
+      $(itu).find("span").addClass("fa-file-pdf-o");
+      $(itu).find("span").removeClass("fa-spin");
+      $(itu).find("span").removeClass("fa-spinner");
+      $(itu).removeClass("disabled");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
