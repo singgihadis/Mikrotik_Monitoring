@@ -50,19 +50,40 @@ module.exports = function(app){
           master_kota_id = req.body.master_kota_id;
         }
         var user_id = req.session.user_id;
-        var sql = "update pengaturan set master_kota_id=? where user_id=?";
-        var query = connection.query(sql,[master_kota_id,user_id], function (err, results, fields) {
-          if (!err){
-            connection.release();
-            req.session.master_kota_id = master_kota_id;
-            var data = {is_error:false,msg:"Berhasil menyimpan"};
-            res.send(JSON.stringify(data));
-            res.end();
+        var sql_cek = "select * from pengaturan where user_id=?";
+        var query_cek = connection.query(sql_cek,[master_kota_id,user_id], function (err, results, fields) {
+          if(results.length > 0){
+            var sql_update = "update pengaturan set master_kota_id=? where user_id=?";
+            var query_update = connection.query(sql_update,[master_kota_id,user_id], function (err, results, fields) {
+              if (!err){
+                connection.release();
+                req.session.master_kota_id = master_kota_id;
+                var data = {is_error:false,msg:"Berhasil menyimpan"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }else{
+                connection.release();
+                var data = {is_error:true,msg:"Gagal menyimpan"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }
+            });
           }else{
-            connection.release();
-            var data = {is_error:true,msg:"Gagal menyimpan"};
-            res.send(JSON.stringify(data));
-            res.end();
+            var sql_insert = "insert into pengaturan(master_kota_id,user_id) values(?,?)";
+            var query_insert = connection.query(sql_insert,[master_kota_id,user_id], function (err, results, fields) {
+              if (!err){
+                connection.release();
+                req.session.master_kota_id = master_kota_id;
+                var data = {is_error:false,msg:"Berhasil menyimpan"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }else{
+                connection.release();
+                var data = {is_error:true,msg:"Gagal menyimpan"};
+                res.send(JSON.stringify(data));
+                res.end();
+              }
+            });
           }
         });
       });

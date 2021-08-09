@@ -51,11 +51,25 @@ app.use(function(req,res,next) {
           logo : ""
         };
       }else{
-        req.session.master_kota_id = data[0]['master_kota_id'];
+        if(data[0]['master_kota_id'] != null){
+          req.session.master_kota_id = data[0]['master_kota_id'];
+        }
+        var title = "";
+        var favicon = "";
+        var logo = "";
+        if(data[0]['title'] != null){
+          title = data[0]['title'];
+        }
+        if(data[0]['favicon'] != null){
+          favicon = data[0]['favicon'];
+        }
+        if(data[0]['logo'] != null){
+          logo = data[0]['logo'];
+        }
         req.website_config = {
-          title : data[0]['title'],
-          favicon : data[0]['favicon'],
-          logo : data[0]['logo']
+          title : title,
+          favicon : favicon,
+          logo : logo
         };
       }
       next();

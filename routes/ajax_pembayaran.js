@@ -127,6 +127,7 @@ module.exports = function(app){
                           res.send(JSON.stringify(data));
                           res.end();
                         }else{
+                          console.log(err);
                           connection.release();
                           var data = {is_error:true,msg:"Gagal melakukan pembayaran"};
                           res.send(JSON.stringify(data));
@@ -172,6 +173,8 @@ module.exports = function(app){
       pool.getConnection(function(err, connection) {
         var arr_query = [];
         arr_query.push("d.user_id=" + req.session.user_id);
+        arr_query.push("((a.awal_tagihan_tahun = YEAR(CURDATE()) and MONTH(CURDATE()) >= a.awal_tagihan_bulan) or (YEAR(CURDATE()) > a.awal_tagihan_tahun))");
+        arr_query.push("(a.is_berhenti_langganan != 1 or ((a.tahun_berhenti_langganan = YEAR(CURDATE()) and MONTH(CURDATE()) < a.bulan_berhenti_langganan) or (YEAR(CURDATE()) < a.awal_tagihan_tahun)))");
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
