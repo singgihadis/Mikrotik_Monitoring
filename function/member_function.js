@@ -120,5 +120,14 @@ module.exports = {
       },60000);
     }
 
+  },
+  Data_Pembayaran: function(member_id,callback){
+    pool.getConnection(function(err, connection) {
+      var sql_data = "SELECT * from pembayaran where member_id=?";
+      var query_data = connection.query(sql_data,[member_id], function (err, results, fields) {
+        connection.release();
+        callback(results);
+      });
+    });
   }
 }

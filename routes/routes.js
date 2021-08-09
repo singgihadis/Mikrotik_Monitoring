@@ -301,7 +301,7 @@ module.exports = function(app){
 
     }
   });
-  app.get(['/member/traffic/:id/:server_id.html'],(req, res) => {
+  app.get(['/member/detail/:id/:server_id.html'],(req, res) => {
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
@@ -315,14 +315,14 @@ module.exports = function(app){
       }
       var title = "";
       if(website_config['title'] != ""){
-        title = "Member Traffic - " + website_config['title'];
+        title = "Detail Member - " + website_config['title'];
       }else{
-        title = "Member Traffic";
+        title = "Detail Member";
       }
       if(level == "4"){
         res.redirect("/pilih_router.html");
       }else{
-        res.render("member_traffic",{
+        res.render("member_detail",{
           title:title,
           favicon:website_config['favicon'],
           logo:website_config['logo'],

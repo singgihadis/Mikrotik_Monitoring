@@ -113,7 +113,7 @@ function load_data(){
             html += "<td class='" + color_belum_update + "'>" + is_berlangganan + "</td>";
             html += "<td class='text-center'>";
             html += "<a onclick='modal_update(this)' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-awal-tagihan-bulan='" + (v['awal_tagihan_bulan']!=null?v['awal_tagihan_bulan']:"") + "' data-awal-tagihan-tahun='" + (v['awal_tagihan_tahun']!=null?v['awal_tagihan_tahun']:'') + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-is-berhenti-langganan='" + v['is_berhenti_langganan'] + "' data-bulan-berhenti-langganan='" + v['bulan_berhenti_langganan'] + "' data-tahun-berhenti-langganan='" + v['tahun_berhenti_langganan'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
-            html += " <a href='/member/traffic/" + v['id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-area-chart'></span></a>";
+            html += " <a href='/member/detail/" + v['id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-list'></span></a>";
             html += "</td>";
             html += "</tr>";
             no++;
