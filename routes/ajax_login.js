@@ -18,6 +18,7 @@ module.exports = function(app){
         if(results.length > 0){
           req.session.is_login = true;
           req.session.user_id = results[0]['id'];
+          req.session.parent_user_id = results[0]['parent_user_id'];
           req.session.level = results[0]['level'];
           connection.release();
           req.session.save(function(err) {

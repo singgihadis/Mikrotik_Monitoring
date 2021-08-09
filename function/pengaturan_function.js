@@ -23,10 +23,10 @@ module.exports = {
       callback(old_file);
     }
   },
-  GetData: function(user_id,callback){
+  GetData: function(user_id,parent_user_id,callback){
     pool.getConnection(function(err, connection) {
       var arr_query = [];
-      arr_query.push("user_id=" + user_id);
+      arr_query.push("(user_id=" + user_id + " or user_id=" + parent_user_id + ")");
       var filter_query = "";
       if(arr_query.length > 0){
         filter_query = " where " + arr_query.join(" and ");

@@ -20,8 +20,12 @@ module.exports = function(app){
         if(req.body.level != undefined){
           level = req.body.level;
         }
-        var sql_insert = "update user set nama=?,user=?,level=? where id=?";
-        var query_insert = connection.query(sql_insert,[nama,user,level,id], function (err, results, fields) {
+        var parent_user_id = "";
+        if(req.body.parent_user_id != undefined){
+          parent_user_id = req.body.parent_user_id;
+        }
+        var sql_insert = "update user set nama=?,user=?,level=?,parent_user_id=? where id=?";
+        var query_insert = connection.query(sql_insert,[nama,user,level,parent_user_id,id], function (err, results, fields) {
           if (!err){
             connection.release();
             var data = {is_error:false,msg:"Berhasil mengubah"};
@@ -117,13 +121,17 @@ module.exports = function(app){
         if(req.body.level != undefined){
           level = req.body.level;
         }
+        var parent_user_id = "";
+        if(req.body.parent_user_id != undefined){
+          parent_user_id = req.body.parent_user_id;
+        }
         var password = "";
         if(req.body.password != undefined){
           password = req.body.password;
           password = crypto.createHash('sha1').update(password).digest("hex");
         }
-        var sql_insert = "insert into user(nama,user,level,password) values(?,?,?,?)";
-        var query_insert = connection.query(sql_insert,[nama,user,level,password], function (err, results, fields) {
+        var sql_insert = "insert into user(nama,user,level,password,parent_user_id) values(?,?,?,?,?)";
+        var query_insert = connection.query(sql_insert,[nama,user,level,password,parent_user_id], function (err, results, fields) {
           if (!err){
             connection.release();
             var data = {is_error:false,msg:"Berhasil menambahkan"};
@@ -154,15 +162,22 @@ module.exports = function(app){
         if(req.body.keyword != undefined){
           keyword = req.body.keyword;
         }
+        var level = "";
+        if(req.body.level != undefined){
+          level = req.body.level;
+        }
         var arr_query = [];
         if(keyword != ""){
           arr_query.push("concat(nama) like '%" + keyword + "%'");
+        }
+        if(level != ""){
+          arr_query.push("level = " + level + "");
         }
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var limit = (page * 5) - 5;
+        var limit = (page * 10) - 10;
         var query_limit = "";
         if(page != "x"){
           query_limit = " limit " + limit + ",6";

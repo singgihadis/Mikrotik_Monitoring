@@ -1,5 +1,6 @@
 <div class="bg-white border-right sidebar" id="sidebar-wrapper">
   <div class="sidebar-heading">{{#ifNotEquals logo ""}}<img src="{{logo}}" style="width:100%;" />{{/ifNotEquals}}</div>
+  {{#ifEqualsOR2 level "1"  level "2" level "4"}}
   <div class="px-3 py-1">
     <select class="form-control select2" id="select_router" style="display:none;">
 
@@ -26,16 +27,21 @@
       {{/ifNotEquals}}
   </div>
   <hr>
+  {{/ifEqualsOR2}}
   <div class="list-group list-group-flush">
+      {{#ifEqualsOR2 level "1"  level "2" level "3"}}
       <a href="/dashboard.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "dashboard"}}font-weight-bolder{{/ifEquals}}">Dashboard</a>
       <a href="/pembayaran.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "pembayaran"}}font-weight-bolder{{/ifEquals}}">Pembayaran</a>
       <a href="/member.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "member"}}font-weight-bolder{{/ifEquals}}">Member</a>
+      {{/ifEqualsOR2}}
+      {{#ifEqualsOR level "1" level "2"}}
       <a href="/pengaturan.html" class="list-group-item menu-item list-group-item-action bg-white {{#ifEquals menu "pengaturan"}}font-weight-bolder{{/ifEquals}}">
         Pengaturan
       </a>
       <a href="/router.html" class="list-group-item menu-item list-group-item-action bg-white {{#ifEquals menu "router"}}font-weight-bolder{{/ifEquals}}">
         Router
       </a>
+      {{/ifEqualsOR}}
       {{#ifEquals level "2"}}
       <a href="/user.html" class="list-group-item menu-item list-group-item-action bg-white {{#ifEquals menu "user"}}font-weight-bolder{{/ifEquals}}">
         User

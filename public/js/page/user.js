@@ -30,6 +30,14 @@ $(document).ready(function(){
       return false;
     }
   });
+  $("#level").change(function(){
+    if($(this).val() == "3" || $(this).val() == "4"){
+      $("#div_parent_user_id").show();
+      dropdown_user("");
+    }else{
+      $("#div_parent_user_id").hide();
+    }
+  });
 });
 function tambah(){
   $("#form_data").loading();
@@ -37,10 +45,14 @@ function tambah(){
   var user = $("#user").val();
   var level = $("#level").val();
   var password = $("#hidden_password").val();
+  var parent_user_id = "0";
+  if(level == "3" || level == "4"){
+    parent_user_id = $("#parent_user_id").val();
+  }
   $.ajax({
     type:'post',
     url:'/ajax/user_tambah.html',
-    data:{nama:nama,user:user,level:level,password:password},
+    data:{nama:nama,user:user,level:level,password:password,parent_user_id:parent_user_id},
     success:function(resp){
       $("#form_data").loading("stop");
       var res = JSON.parse(resp);
@@ -69,10 +81,14 @@ function edit(){
   var nama = $("#nama").val();
   var user = $("#user").val();
   var level = $("#level").val();
+  var parent_user_id = "0";
+  if(level == "3" || level == "4"){
+    parent_user_id = $("#parent_user_id").val();
+  }
   $.ajax({
     type:'post',
     url:'/ajax/user_edit.html',
-    data:{id:id,nama:nama,user:user,level:level},
+    data:{id:id,nama:nama,user:user,level:level,parent_user_id:parent_user_id},
     success:function(resp){
       $("#form_data").loading("stop");
       var res = JSON.parse(resp);
@@ -176,6 +192,7 @@ function modal_tambah(){
   $("#div_nama").show();
   $("#div_user").show();
   $("#div_level").show();
+  $("#div_parent_user_id").hide();
   $("#modal_form").modal("show");
 }
 function modal_edit(itu){
@@ -186,6 +203,7 @@ function modal_edit(itu){
   var nama = $(itu).attr("data-nama");
   var user = $(itu).attr("data-user");
   var level = $(itu).attr("data-level");
+  var parent_user_id = $(itu).attr("data-parent-user-id");
   $("#modal_form_title").html("Edit User");
   $("#div_password").hide();
   $("#div_nama").show();
@@ -196,6 +214,10 @@ function modal_edit(itu){
   $("#user").val(user);
   $("#level").val(level);
   $("#modal_form").modal("show");
+  if(level == "3" || level == "4"){
+    $("#div_parent_user_id").show();
+    dropdown_user(parent_user_id);
+  }
 }
 function modal_password(itu){
   is_edit = true;
@@ -207,6 +229,7 @@ function modal_password(itu){
   $("#div_nama").hide();
   $("#div_user").hide();
   $("#div_level").hide();
+  $("#div_parent_user_id").hide();
   $("#password").val("");
   $("#modal_form").modal("show");
 }
@@ -232,13 +255,17 @@ function load_data(){
         var html = "";
         var no = page * 10 - 10;
         $.each(res.data,function(k,v){
-          if(k < 5){
+          if(k < 10){
             no++;
             var level = "";
             if(v['level'] == "1"){
               level = "Umum";
-            }else{
+            }else if(v['level'] == "2"){
               level = "Admin";
+            }else if(v['level'] == "3"){
+              level = "Keuangan";
+            }else if(v['level'] == "4"){
+              level = "Teknisi";
             }
             html += "<tr>";
             html += "<td>" + no + "</td>";
@@ -247,7 +274,7 @@ function load_data(){
             html += "<td>" + level + "</td>";
             html += "<td>";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='modal_password(this);' class='btn btn-primary'><span class='fa fa-key'></span></a> ";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
+            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' data-parent-user-id='" + v['parent_user_id'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a>";
             html += "</td>";
             html += "</tr>";
@@ -284,7 +311,7 @@ function html_pagination(jmldata){
     html_pagination += "    </li>";
   }
   html_pagination += "    <li class='page-item disabled'><a class='page-link text-body' href='javascript:void(0);'>" + page + "</a></li>";
-  if(jmldata > 5){
+  if(jmldata > 10){
     //Isnext true
     html_pagination += "    <li class='page-item'>";
     html_pagination += "      <a class='page-link text-body nextpage' data-page='" + (parseInt(page) + 1) + "' href='javascript:void(0);'>";
@@ -316,5 +343,37 @@ function trigger_pagination(){
     var get_page  = $(this).attr("data-page");
     page = get_page;
     load_data();
+  });
+}
+function dropdown_user(parent_user_id){
+  $("#div_parent_user_id").loading();
+  $.ajax({
+    type:'post',
+    url:'/ajax/user_data.html',
+    data:{keyword:"",page:"x",level:"1"},
+    success:function(resp){
+      $("#div_parent_user_id").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        var html = "";
+        $.each(res.data,function(k,v){
+          html += "<option value='" + v['id'] + "'>" + v['nama'] + "</option>";
+        });
+        $("#parent_user_id").html(html);
+        if(parent_user_id != ""){
+          $("#parent_user_id").val(parent_user_id);
+        }
+      }
+    },error:function(){
+      $("#div_parent_user_id").loading("stop");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
   });
 }

@@ -1,0 +1,49 @@
+<html>
+  {{> head}}
+  <body class="dashboard">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <input type="hidden" id="user_id" name="user_id" value="{{user_id}}" />
+        <input type="hidden" id="level" name="level" value="{{level}}" />
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-6">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      Pilih Router
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="alert alert-info">
+                      Silahkan pilih router di samping
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+          <br><br>
+        </div>
+      </div>
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/router.js"></script>
+  </body>
+</html>

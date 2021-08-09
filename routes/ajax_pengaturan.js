@@ -37,7 +37,7 @@ module.exports = function(app){
   });
   app.post(['/ajax/pengaturan_simpan.html'],(req, res) => {
     if(req.session.is_login){
-      pengaturan_function.GetData(req.session.user_id,function(results){
+      pengaturan_function.GetData(req.session.user_id,"",function(results){
         var data_json = [];
         if(results != null){
           data_json = results;

@@ -10,6 +10,12 @@ hbs.registerPartials(__dirname + '/views');
 hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
     return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 });
+hbs.registerHelper('ifEqualsOR', function(arg1, arg2, arg3, arg4, options) {
+    return ((arg1 == arg2) || (arg3 == arg4)) ? options.fn(this) : options.inverse(this);
+});
+hbs.registerHelper('ifEqualsOR2', function(arg1, arg2, arg3, arg4, arg5, arg6, options) {
+    return ((arg1 == arg2) || (arg3 == arg4) || (arg5 == arg6)) ? options.fn(this) : options.inverse(this);
+});
 hbs.registerHelper('ifNotEquals', function(arg1, arg2, options) {
     return (arg1 != arg2) ? options.fn(this) : options.inverse(this);
 });
@@ -43,7 +49,7 @@ app.use(session({
 app.use(function(req,res,next) {
   if(req.session.is_login){
     var pengaturan_function = require("./function/pengaturan_function.js");
-    pengaturan_function.GetData(req.session.user_id,function(data){
+    pengaturan_function.GetData(req.session.user_id,req.session.parent_user_id,function(data){
       if(data == null){
         req.website_config = {
           title : "",

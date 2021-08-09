@@ -204,7 +204,7 @@ module.exports = function(app){
         if(req.session.level == "2" && is_pilih == "0"){
           //Jika admin
         }else{
-          arr_query.push("a.user_id ='" + req.session.user_id + "'");
+          arr_query.push("(a.user_id ='" + req.session.user_id + "' or a.user_id ='" + req.session.parent_user_id + "')");
         }
         var filter_query = "";
         if(arr_query.length > 0){
@@ -258,8 +258,8 @@ module.exports = function(app){
             res.end();
           });
         }else{
-          var sql_data = "select * from server where id=? and user_id=?";
-          var query_data = connection.query(sql_data,[id,req.session.user_id], function (err, results, fields) {
+          var sql_data = "select * from server where id=? and (user_id=? or user_id=?)";
+          var query_data = connection.query(sql_data,[id,req.session.user_id,req.session.parent_user_id], function (err, results, fields) {
             if(results.length == 0){
               connection.release();
               var data = {is_error:true,data:[],msg:"Router tidak ditemukan"};
