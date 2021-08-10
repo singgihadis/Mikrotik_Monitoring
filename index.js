@@ -99,6 +99,7 @@ require('./routes/ajax_pengaturan')(app);
 require('./routes/ajax_router')(app);
 require('./routes/ajax_user')(app);
 require('./routes/ajax_umum')(app);
+require('./routes/ajax_master_paket')(app);
 
 //server listening
 var server = app.listen(3002, () => {

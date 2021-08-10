@@ -1,4 +1,10 @@
 body{
+  .error{
+    border-color: red;
+    &:hover,&:focus,&.active{
+      box-shadow: 1px 0px 3px red;
+    }
+  }
   .datepicker{
     margin-bottom: 3rem;
     td,th{

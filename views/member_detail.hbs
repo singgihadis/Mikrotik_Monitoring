@@ -7,7 +7,7 @@
         {{> navbar}}
         <div class="container-fluid">
             <div class="row mt-4">
-              <div class="col-sm-8">
+              <div class="col-sm-6">
                 <div class="breadcrumb-custom">
                   <ul>
                     <li>
@@ -22,8 +22,26 @@
                   </ul>
                 </div>
               </div>
-              <div class="col-sm-4 text-right">
-                <a href="javascript:void(0);" data-id="{{id}}" onclick="cetak(this)" class="btn btn-primary btn-cetak"><span class="fa fa-file-pdf-o"></span> Cetak</a>
+              <div class="col-sm-6 text-right">
+                <form id="form_cetak">
+                  <select id="bulan_cetak" name="bulan_cetak" class="form-control w-auto d-inline-block">
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                  <input type="text" id="tahun_cetak" name="tahun_cetak" required class="form-control w-auto d-inline-block" placeholder="Tahun">
+                  <input type="hidden" id="id_cetak" value="{{id}}" />
+                  <button id="btn_cetak" type="submit" class="btn btn-primary btn-cetak w-auto d-inline-block align-top"><span class="fa fa-file-pdf-o"></span> Cetak</button>
+                </form>
               </div>
             </div>
             <br>
@@ -186,9 +204,10 @@
                 <div class="card stat-card">
                   <div class="card-header bg-gradient-primary text-white">
                     Tagihan Khusus
+                    <a href="javascript:void(0);" class="btn btn-light float-right"><span class="fa fa-plus"></span></a>
                   </div>
                   <div class="card-body">
-                    
+
                   </div>
                 </div>
               </div>
@@ -226,6 +245,44 @@
               <div class="form-group">
                 <label class="control-label">Tgl Pasang</label>
                 <input type="text" id="tgl_pasang" name="tgl_pasang" class="form-control" placeholder="Tgl Pasang" required />
+              </div>
+              <div class="text-right">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="modal_tagihan_khusus">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal_tagihan_khusus_title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="form_inventaris_alat">
+              <input type="hidden" id="inventaris_alat_id" name="inventaris_alat_id" />
+              <div class="form-group">
+                <label class="control-label">Nama</label>
+                <input id="nama_alat" name="nama_alat" type="text" class="form-control" placeholder="Nama Alat" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Keterangan</label>
+                <textarea id="keterangan" name="keterangan" class="form-control" placeholder="Keterangan Tagihan"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Nominal Tagihan</label>
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Rp. </span>
+                  </div>
+                  <input type="text" id="nominal_pembayaran" name="nominal_pembayaran" class="form-control" placeholder="Nominal Tagihan" required />
+                </div>
               </div>
               <div class="text-right">
                 <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>

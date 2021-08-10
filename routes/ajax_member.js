@@ -2,7 +2,6 @@ const RouterOSClient = require('routeros-client').RouterOSClient;
 const fs = require('fs');
 var ppp_function = require("../function/ppp_function.js");
 var public_function = require("../function/public_function.js");
-var member_function = require("../function/member_function.js");
 var moment = require("moment");
 const pool = require('../db');
 const config = require('../config');
@@ -38,7 +37,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,b.awal_tagihan_bulan,b.awal_tagihan_tahun,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.email,'') as email,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.is_berhenti_langganan,b.bulan_berhenti_langganan,b.tahun_berhenti_langganan,c.nama as nama_server,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + " limit " + limit + ",11";
+            var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,b.awal_tagihan_bulan,b.awal_tagihan_tahun,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.email,'') as email,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.is_berhenti_langganan,b.bulan_berhenti_langganan,b.tahun_berhenti_langganan,b.master_paket_id,c.nama as nama_server,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + " limit " + limit + ",11";
             var query_data = connection.query(sql_data, function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -143,14 +142,18 @@ module.exports = function(app){
         if(req.body.tahun_berhenti_langganan != undefined){
           tahun_berhenti_langganan = req.body.tahun_berhenti_langganan;
         }
+        var master_paket_id = "";
+        if(req.body.master_paket_id != undefined){
+          master_paket_id = req.body.master_paket_id;
+        }
         var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
         var query_cek_akses = connection.query(sql_cek_akses,[id,req.session.user_id], function (err, results, fields) {
           if(results.length > 0 || req.session.level == 2){
             var sql_cek = "select * from member where ppp_secret_id=?";
             var query_cek = connection.query(sql_cek,[id], function (err, results, fields) {
               if(results.length == 0){
-                var sql = "insert into member(ppp_secret_id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan) values(?,?,?,?,?,?,?,?,?,?,?)";
-                var query = connection.query(sql,[id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan], function (err, results, fields) {
+                var sql = "insert into member(ppp_secret_id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+                var query = connection.query(sql,[id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id], function (err, results, fields) {
                   if (!err){
                     connection.release();
                     var data = {is_error:false,msg:"Berhasil menyimpan"};
@@ -164,8 +167,8 @@ module.exports = function(app){
                   }
                 });
               }else{
-                var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=?,is_berhenti_langganan=?,bulan_berhenti_langganan=?,tahun_berhenti_langganan=? where ppp_secret_id=?";
-                var query = connection.query(sql,[nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,id], function (err, results, fields) {
+                var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=?,is_berhenti_langganan=?,bulan_berhenti_langganan=?,tahun_berhenti_langganan=?,master_paket_id=? where ppp_secret_id=?";
+                var query = connection.query(sql,[nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id,id], function (err, results, fields) {
                   if (!err){
                     connection.release();
                     var data = {is_error:false,msg:"Berhasil menyimpan"};
@@ -347,21 +350,29 @@ module.exports = function(app){
         if(req.body.id != undefined){
           id = req.body.id;
         }
+        var bulan = "";
+        if(req.body.bulan != undefined){
+          bulan = req.body.bulan;
+        }
+        var tahun = "";
+        if(req.body.tahun != undefined){
+          tahun = req.body.tahun;
+        }
         var sql_data = "select * from pengaturan where user_id=?";
         var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_pengaturan, fields) {
           if(results_pengaturan.length > 0){
             var sql_data = "select * from bank where user_id=?";
             var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_bank, fields) {
-              var sql_member = "select a.*,b.nama,b.alamat,b.no_wa,b.nominal_pembayaran,b.id as member_id,b.awal_tagihan_bulan,b.awal_tagihan_tahun,b.is_berhenti_langganan,b.bulan_berhenti_langganan,b.tahun_berhenti_langganan from ppp_secret a left join member b on a.id=b.ppp_secret_id where a.id=?";
+              var sql_member = "select a.*,b.nama,b.alamat,b.no_wa,b.nominal_pembayaran,b.id as member_id from ppp_secret a left join member b on a.id=b.ppp_secret_id where a.id=?";
               var query_member = connection.query(sql_member,[id], function (err, results_member, fields) {
                 connection.release();
                 if(results_member.length > 0){
-                  var member_id = results_member[0]['website'];
                   var logo = results_pengaturan[0]['logo'];
                   if(logo != ""){
                     logo = config['main_url'] + logo;
                   }
                   var website = results_pengaturan[0]['website'];
+                  var member_id = results_member[0]['member_id'];
                   var email = results_pengaturan[0]['email'];
                   var no_wa = results_pengaturan[0]['no_wa'];
                   var nama_member = results_member[0]['nama'];
@@ -376,121 +387,46 @@ module.exports = function(app){
                   if(nominal_pembayaran != ""){
                     nominal_pembayaran = "Rp. " + public_function.FormatAngka(nominal_pembayaran);
                   }
-                  member_function.Data_Pembayaran(member_id,function(results_pembayaran){
-                    var awal_tagihan_bulan = results_member[0]['awal_tagihan_bulan'];
-                    var awal_tagihan_tahun = results_member[0]['awal_tagihan_tahun'];
-                    var is_berhenti_langganan = results_member[0]['is_berhenti_langganan'];
-                    var bulanan_belum_dibayar = [];
-                    var akhir_bulan = moment().format("M");
-                    var akhir_tahun = moment().format("YYYY");
-                    if(is_berhenti_langganan == "1"){
-                      akhir_bulan = results_member[0]['bulan_berhenti_langganan'];
-                      akhir_tahun = results_member[0]['tahun_berhenti_langganan'];
-                    }
-                    var jml_bulan = 0;
-                    var selisih_tahun = akhir_tahun - awal_tagihan_tahun;
-                    if(selisih_tahun > 1){
-                      jml_bulan = (selisih_tahun - 1) * 12;
-                      jml_bulan = jml_bulan + (13 - awal_tagihan_bulan);
-                      jml_bulan = jml_bulan + (akhir_bulan - 1);
-                    }else if(selisih_tahun == 1){
-                      jml_bulan = jml_bulan + (13 - awal_tagihan_bulan);
-                      jml_bulan = jml_bulan + (akhir_bulan - 1);
-                    }else{
-                      var selisih1 = 12 - awal_tagihan_bulan;
-                      var selisih2 = 12 - akhir_bulan;
-                      jml_bulan = selisih1 - selisih2;
-                    }
-                    var i_bulan = awal_tagihan_bulan;
-                    var i_tahun = awal_tagihan_tahun;
-                    var data_tagihan = [];
-                    for(var i = 1;i<=jml_bulan;i++){
-                      var is_match = false;
-                      results_pembayaran.forEach((item, i) => {
-                        if(i_bulan == item['bulan'] && i_tahun == item['tahun']){
-                          is_match = true;
-                          return false;
-                        }
-                      });
-                      if(is_match == false){
-                        var data_bulanan_belum_dibayar = {
-                          bulan:i_bulan,
-                          tahun:i_tahun,
-                          nominal_pembayaran:nominal_pembayaran,
-                          nama:"Internet"
-                        };
-                        data_tagihan.push(data_bulanan_belum_dibayar);
-                      }
-
-                      if(i_bulan == 12){
-                        i_tahun++;
-                        i_bulan = 1;
-                      }else{
-                        i_bulan++;
-                      }
-                    }
-                    var no_invoice = moment().format('YYYYMMDD') + "0001";
-                    var tgl = moment().format("DD") + " " + public_function.NamaBulan(moment().format("M")) + " " + moment().format("YYYY");
-                    var bln_thn = public_function.NamaBulan(moment().format("M")) + " " + moment().format("YYYY");
-                    var html_bank = "";
-                    if(results_bank.length > 0){
-                      html_bank += "<h4 style='margin-bottom:10px;'>TRANSFER BANK</h4>";
-                      results_bank.forEach((item, i) => {
-                        html_bank += "<div style='margin-bottom:8px;'>" + item['nama'] + " - " + item['no_rekening'] + "</div>";
-                      });
-                    }
-
-                    var html_tagihan = "";
-                    data_tagihan.forEach((item, i) => {
-                      html_tagihan += "<tr style='background-color:rgb(230,230,230);color:black;'>";
-                      html_tagihan += "<td style='padding-left:15px;padding-top:5px;padding-bottom:5px;padding-right:5px;font-size:8px;'>";
-                      html_tagihan += "<b>" + item['nama'] + "</b>";
-                      html_tagihan += "<br>";
-                      html_tagihan += public_function.NamaBulan(item['bulan']) + " " + item['tahun'];
-                      html_tagihan += "</td>";
-                      html_tagihan += "<td style='padding-left:5px;padding-top:5px;padding-bottom:5px;padding-right:5px;font-size:8px;text-align:center;'>";
-                      html_tagihan += "Rp." + public_function.FormatAngka(item['nominal_pembayaran']);
-                      html_tagihan += "</td>";
-                      html_tagihan += "<td style='padding-left:5px;padding-top:5px;padding-bottom:5px;padding-right:5px;font-size:8px;text-align:center;'>";
-                      html_tagihan += "1";
-                      html_tagihan += "</td>";
-                      html_tagihan += "<td style='padding-left:5px;padding-top:5px;padding-bottom:5px;padding-right:15px;font-size:8px;text-align:center;'>";
-                      html_tagihan += "Rp." + public_function.FormatAngka(item['nominal_pembayaran']);
-                      html_tagihan += "</td>";
-                      html_tagihan += "</tr>";
+                  var no_invoice = tahun + (bulan.toString().length==1?"0" + bulan:bulan) + moment().format('DD') + member_id + "0001";
+                  var tgl = "01 " + public_function.NamaBulan(bulan) + " " + moment().format("YYYY");
+                  var bln_thn = public_function.NamaBulan(bulan) + " " + moment().format("YYYY");
+                  var html_bank = "";
+                  if(results_bank.length > 0){
+                    html_bank += "<h4 style='margin-bottom:10px;'>TRANSFER BANK</h4>";
+                    results_bank.forEach((item, i) => {
+                      html_bank += "<div style='margin-bottom:8px;'>" + item['nama'] + " - " + item['no_rekening'] + "</div>";
                     });
-
-                    var html = __dirname + '/../invoice.html';
-                    fs.readFile(html, 'utf8', function(err, data) {
-                        if (err) throw err;
-                        if (!fs.existsSync("./public/pdf/" + req.session.user_id)){
-                            fs.mkdirSync("./public/pdf/" + req.session.user_id);
-                        }
-                        data = data.replace(/{{logo}}/g,logo);
-                        data = data.replace(/{{html_bank}}/g,html_bank);
-                        data = data.replace(/{{website}}/g,website);
-                        data = data.replace(/{{no_wa}}/g,no_wa);
-                        data = data.replace(/{{email}}/g,email);
-                        data = data.replace(/{{nama_member}}/g,nama_member);
-                        data = data.replace(/{{alamat_member}}/g,alamat_member);
-                        data = data.replace(/{{no_invoice}}/g,no_invoice);
-                        data = data.replace(/{{tgl}}/g,tgl);
-                        data = data.replace(/{{html_tagihan}}/g,html_tagihan);
-                        var options = { format: 'A6' };
-                        pdf.create(data,options).toStream(function(err, stream){
-                          // res.setHeader('Content-disposition', 'inline; filename="invoice"');
-                          // res.setHeader('Content-type', 'application/pdf');
-                          // res.setHeader('Content-Type', 'application/pdf');
-                          // res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf;');
-                          // stream.pipe(res);
-                          stream.pipe(fs.createWriteStream('./public/pdf/' + req.session.user_id + "/" + id + '.pdf'));
-                          var data = {is_error:false,data:[],msg:"sukses",output:config['main_url'] + '/assets/pdf/' + req.session.user_id + "/" + id + '.pdf'};
-                          res.send(JSON.stringify(data));
-                          res.end();
-                        });
-                    });
+                  }
+                  var html = __dirname + '/../invoice.html';
+                  fs.readFile(html, 'utf8', function(err, data) {
+                      if (err) throw err;
+                      if (!fs.existsSync("./public/pdf/" + req.session.user_id)){
+                          fs.mkdirSync("./public/pdf/" + req.session.user_id);
+                      }
+                      data = data.replace(/{{logo}}/g,logo);
+                      data = data.replace(/{{html_bank}}/g,html_bank);
+                      data = data.replace(/{{website}}/g,website);
+                      data = data.replace(/{{no_wa}}/g,no_wa);
+                      data = data.replace(/{{email}}/g,email);
+                      data = data.replace(/{{nama_member}}/g,nama_member);
+                      data = data.replace(/{{alamat_member}}/g,alamat_member);
+                      data = data.replace(/{{nominal_pembayaran}}/g,nominal_pembayaran);
+                      data = data.replace(/{{no_invoice}}/g,no_invoice);
+                      data = data.replace(/{{tgl}}/g,tgl);
+                      data = data.replace(/{{bln_thn}}/g,bln_thn);
+                      var options = { format: 'A6' };
+                      pdf.create(data,options).toStream(function(err, stream){
+                        // res.setHeader('Content-disposition', 'inline; filename="invoice"');
+                        // res.setHeader('Content-type', 'application/pdf');
+                        // res.setHeader('Content-Type', 'application/pdf');
+                        // res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf;');
+                        // stream.pipe(res);
+                        stream.pipe(fs.createWriteStream('./public/pdf/' + req.session.user_id + "/" + id + '.pdf'));
+                        var data = {is_error:false,data:[],msg:"sukses",output:config['main_url'] + '/assets/pdf/' + req.session.user_id + "/" + id + '.pdf'};
+                        res.send(JSON.stringify(data));
+                        res.end();
+                      });
                   });
-
                 }else{
                   connection.release();
                   var data = {is_error:true,data:[],msg:"Data member tidak tersedia"};

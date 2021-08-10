@@ -3,6 +3,8 @@ var chart_graph = null;
 var inventaris_alat_is_tambah = false;
 var page_inventaris_alat = 1;
 $(document).ready(function(){
+  $("#bulan_cetak").val(moment().format("M"));
+  $("#tahun_cetak").val(moment().format("YYYY"));
   $("#tgl").val("");
   load_data();
    $("#tgl_pasang").datepicker({
@@ -19,6 +21,52 @@ $(document).ready(function(){
    });
    $('#tab_inventaris_alat').on('shown.bs.tab', function (event) {
       load_data_inventaris_alat();
+   });
+   $("#form_cetak").validate({
+     errorPlacement: function(error,element) {
+        return true;
+     },
+     submitHandler:function(){
+       var id = $("#id_cetak").val();
+       var bulan = $("#bulan_cetak").val();
+       var tahun = $("#tahun_cetak").val();
+       $("#btn_cetak").find("span").removeClass("fa-file-pdf-o");
+       $("#btn_cetak").find("span").addClass("fa-spin");
+       $("#btn_cetak").find("span").addClass("fa-spinner");
+       $("#btn_cetak").addClass("disabled");
+       $.ajax({
+         type:'post',
+         url:'/ajax/member_cetak_invoice.html',
+         data:{id:id,bulan:bulan,tahun:tahun},
+         success:function(resp){
+           $("#btn_cetak").find("span").addClass("fa-file-pdf-o");
+           $("#btn_cetak").find("span").removeClass("fa-spin");
+           $("#btn_cetak").find("span").removeClass("fa-spinner");
+           $("#btn_cetak").removeClass("disabled");
+           var res = JSON.parse(resp);
+           var html = "";
+           if(res.is_error){
+             if(res.must_login){
+               window.location = "/login.html";
+             }else{
+               toastr["error"](res.msg);
+             }
+           }else{
+             var output = res.output;
+             window.open(output,"_blank");
+           }
+         },error:function(){
+           $("#btn_cetak").find("span").addClass("fa-file-pdf-o");
+           $("#btn_cetak").find("span").removeClass("fa-spin");
+           $("#btn_cetak").find("span").removeClass("fa-spinner");
+           $("#btn_cetak").removeClass("disabled");
+           toastr["error"]("Silahkan periksa koneksi internet anda");
+         }
+       });
+     }
+   });
+   $("#nominal_pembayaran").keyup(function(){
+     $("#nominal_pembayaran").val(FormatAngka($("#nominal_pembayaran").val()));
    });
 });
 function load_data_inventaris_alat(){
@@ -180,42 +228,6 @@ function hapus_inventaris_alat(itu){
             });
           }
         }
-    }
-  });
-}
-function cetak(itu){
-  var id = $(itu).attr("data-id");
-  $(itu).find("span").removeClass("fa-file-pdf-o");
-  $(itu).find("span").addClass("fa-spin");
-  $(itu).find("span").addClass("fa-spinner");
-  $(itu).addClass("disabled");
-  $.ajax({
-    type:'post',
-    url:'/ajax/member_cetak_invoice.html',
-    data:{id:id},
-    success:function(resp){
-      $(itu).find("span").addClass("fa-file-pdf-o");
-      $(itu).find("span").removeClass("fa-spin");
-      $(itu).find("span").removeClass("fa-spinner");
-      $(itu).removeClass("disabled");
-      var res = JSON.parse(resp);
-      var html = "";
-      if(res.is_error){
-        if(res.must_login){
-          window.location = "/login.html";
-        }else{
-          toastr["error"](res.msg);
-        }
-      }else{
-        var output = res.output;
-        window.open(output,"_blank");
-      }
-    },error:function(){
-      $(itu).find("span").addClass("fa-file-pdf-o");
-      $(itu).find("span").removeClass("fa-spin");
-      $(itu).find("span").removeClass("fa-spinner");
-      $(itu).removeClass("disabled");
-      toastr["error"]("Silahkan periksa koneksi internet anda");
     }
   });
 }

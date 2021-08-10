@@ -1,211 +1,219 @@
 /* line 2, ../sass/global.scss */
+body .error {
+  border-color: red;
+}
+/* line 4, ../sass/global.scss */
+body .error:hover, body .error:focus, body .error.active {
+  box-shadow: 1px 0px 3px red;
+}
+/* line 8, ../sass/global.scss */
 body .datepicker {
   margin-bottom: 3rem;
 }
-/* line 4, ../sass/global.scss */
+/* line 10, ../sass/global.scss */
 body .datepicker td, body .datepicker th {
   width: 2.5rem;
   height: 2.5rem;
   font-size: 0.85rem;
 }
-/* line 10, ../sass/global.scss */
+/* line 16, ../sass/global.scss */
 body .datepicker .input-group {
   border-radius: 30rem;
 }
-/* line 14, ../sass/global.scss */
+/* line 20, ../sass/global.scss */
 body .datepicker input.form-control {
   border-radius: 30rem 0 0 30rem;
   border: none;
 }
-/* line 19, ../sass/global.scss */
+/* line 25, ../sass/global.scss */
 body .datepicker input.form-control:focus {
   box-shadow: none;
 }
-/* line 23, ../sass/global.scss */
+/* line 29, ../sass/global.scss */
 body .datepicker input.form-control::placeholder {
   font-style: italic;
 }
-/* line 27, ../sass/global.scss */
+/* line 33, ../sass/global.scss */
 body .datepicker .input-group-text {
   border-radius: 0 30rem 30rem 0;
   border: none;
 }
-/* line 32, ../sass/global.scss */
+/* line 38, ../sass/global.scss */
 body .datepicker .datepicker-dropdown {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
-/* line 39, ../sass/global.scss */
+/* line 45, ../sass/global.scss */
 body table {
   font-size: 14px;
 }
-/* line 42, ../sass/global.scss */
+/* line 48, ../sass/global.scss */
 body .text-nowrap {
   vertical-align: middle;
 }
-/* line 46, ../sass/global.scss */
+/* line 52, ../sass/global.scss */
 body label.error {
   margin-top: 10px;
   font-size: 12px;
   color: red;
 }
-/* line 52, ../sass/global.scss */
+/* line 58, ../sass/global.scss */
 body .line-through {
   text-decoration: line-through;
 }
-/* line 55, ../sass/global.scss */
+/* line 61, ../sass/global.scss */
 body .nowrap {
   white-space: nowrap;
 }
-/* line 58, ../sass/global.scss */
+/* line 64, ../sass/global.scss */
 body .sidebar {
   z-index: 1;
 }
-/* line 60, ../sass/global.scss */
+/* line 66, ../sass/global.scss */
 body .sidebar .list-group-item {
   font-size: 14px;
   border-top: none;
   border-bottom: none;
   padding: 8px 20px;
 }
-/* line 67, ../sass/global.scss */
+/* line 73, ../sass/global.scss */
 body .sidebar .list-group-item.menu-item span:before {
   content: "\f0d7";
 }
-/* line 73, ../sass/global.scss */
+/* line 79, ../sass/global.scss */
 body .sidebar .list-group-item.menu-item.collapsed span:before {
   content: "\f0da";
 }
-/* line 80, ../sass/global.scss */
+/* line 86, ../sass/global.scss */
 body .sidebar .sub-menu {
   width: calc(100% - 6px) !important;
   margin-left: 6px;
 }
-/* line 88, ../sass/global.scss */
+/* line 94, ../sass/global.scss */
 body .bg-gradient-primary {
   background: #0f73ac;
   background: linear-gradient(135deg, #0f73ac 0%, #0e68b1 51%, #066ac1 100%);
 }
-/* line 92, ../sass/global.scss */
+/* line 98, ../sass/global.scss */
 body .bg-gradient-info {
   background: #00fff9;
   background: linear-gradient(135deg, #00fff9 0%, #00ffe8 51%, #00ebff 100%);
 }
-/* line 96, ../sass/global.scss */
+/* line 102, ../sass/global.scss */
 body .bg-gradient-danger {
   background: red;
   background: linear-gradient(135deg, #ff0037 0%, #ff0037 51%, #ff0040 100%);
 }
-/* line 100, ../sass/global.scss */
+/* line 106, ../sass/global.scss */
 body .bg-gradient-warning {
   background: #ffa300;
   background: linear-gradient(135deg, #ffa300 0%, #ffc600 51%, #ffac00 100%);
 }
-/* line 105, ../sass/global.scss */
+/* line 111, ../sass/global.scss */
 body .breadcrumb-custom ul {
   list-style-type: none;
   padding: 0px;
   margin: 0px;
 }
-/* line 109, ../sass/global.scss */
+/* line 115, ../sass/global.scss */
 body .breadcrumb-custom ul li {
   display: inline-block;
 }
-/* line 111, ../sass/global.scss */
+/* line 117, ../sass/global.scss */
 body .breadcrumb-custom ul li:not(.active) {
   font-weight: bold;
 }
-/* line 113, ../sass/global.scss */
+/* line 119, ../sass/global.scss */
 body .breadcrumb-custom ul li:not(.active):after {
   margin-left: 5px;
   margin-right: 5px;
   font: normal normal normal 14px/1 FontAwesome;
   content: " \f105 ";
 }
-/* line 120, ../sass/global.scss */
+/* line 126, ../sass/global.scss */
 body .breadcrumb-custom ul li a {
   color: #0e68b1;
 }
-/* line 122, ../sass/global.scss */
+/* line 128, ../sass/global.scss */
 body .breadcrumb-custom ul li a:hover, body .breadcrumb-custom ul li a:focus {
   text-decoration: none;
 }
-/* line 129, ../sass/global.scss */
+/* line 135, ../sass/global.scss */
 body .widget {
   display: inline-block;
   border: 1px solid lightgrey;
   position: relative;
   margin-left: 5px;
 }
-/* line 135, ../sass/global.scss */
+/* line 141, ../sass/global.scss */
 body .widget.widget-danger .widget-style {
   background-color: red;
 }
-/* line 138, ../sass/global.scss */
+/* line 144, ../sass/global.scss */
 body .widget.widget-danger .count {
   color: red;
 }
-/* line 143, ../sass/global.scss */
+/* line 149, ../sass/global.scss */
 body .widget.widget-primary .widget-style {
   background-color: #0f73ac;
 }
-/* line 146, ../sass/global.scss */
+/* line 152, ../sass/global.scss */
 body .widget.widget-primary .count {
   color: #0f73ac;
 }
-/* line 151, ../sass/global.scss */
+/* line 157, ../sass/global.scss */
 body .widget.widget-success .widget-style {
   background-color: green;
 }
-/* line 154, ../sass/global.scss */
+/* line 160, ../sass/global.scss */
 body .widget.widget-success .count {
   color: green;
 }
-/* line 158, ../sass/global.scss */
+/* line 164, ../sass/global.scss */
 body .widget .widget-wrapper {
   display: table;
 }
-/* line 160, ../sass/global.scss */
+/* line 166, ../sass/global.scss */
 body .widget .widget-wrapper .widget-style {
   display: table-cell;
   width: 10px;
 }
-/* line 164, ../sass/global.scss */
+/* line 170, ../sass/global.scss */
 body .widget .widget-wrapper .widget-content {
   display: table-cell;
   padding: 5px 10px;
   min-width: 100px;
 }
-/* line 169, ../sass/global.scss */
+/* line 175, ../sass/global.scss */
 body .widget .widget-wrapper .text {
   font-size: 12px;
   font-weight: bold;
   color: #535252;
 }
-/* line 174, ../sass/global.scss */
+/* line 180, ../sass/global.scss */
 body .widget .widget-wrapper .count {
   font-weight: bold;
 }
-/* line 180, ../sass/global.scss */
+/* line 186, ../sass/global.scss */
 body .widget.widget-lg .text {
   font-size: 13px;
 }
-/* line 183, ../sass/global.scss */
+/* line 189, ../sass/global.scss */
 body .widget.widget-lg .count {
   font-size: 18px;
 }
-/* line 190, ../sass/global.scss */
+/* line 196, ../sass/global.scss */
 body .nav-tabs .nav-item .nav-link {
   border-top-left-radius: 1px;
   border-top-right-radius: 1px;
 }
-/* line 196, ../sass/global.scss */
+/* line 202, ../sass/global.scss */
 body .tab-content {
   border-left: 1px solid lightgrey;
   border-right: 1px solid lightgrey;
   border-bottom: 1px solid lightgrey;
   padding: 10px;
 }
-/* line 202, ../sass/global.scss */
+/* line 208, ../sass/global.scss */
 body .bg-warning-semi-transparent {
   background-color: rgba(250, 250, 0, 0.2) !important;
 }

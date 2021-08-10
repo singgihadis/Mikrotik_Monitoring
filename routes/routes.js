@@ -401,6 +401,37 @@ module.exports = function(app){
 
     }
   });
+  app.get(['/master_paket.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      var server_id = "";
+      if(req.session.server_id){
+        server_id = req.session.server_id;
+      }
+      var website_config = req.website_config;
+      var level = req.session.level;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "Master Paket - " + website_config['title'];
+      }else{
+        title = "Master Paket";
+      }
+      if(level == "2" || level == "1"){
+        res.render("master_paket",{
+          title:title,
+          favicon:website_config['favicon'],
+          logo:website_config['logo'],
+          menu:"master_paket",
+          server_id:server_id,
+          level:level,
+          with_server:0
+        });
+      }else{
+        res.redirect("/dashboard.html");
+      }
+    }
+  });
   app.get(['/pengaturan.html'],(req, res) => {
     if(!req.session.is_login){
       res.redirect("/login.html");

@@ -26,10 +26,11 @@ $(document).ready(function(){
         bulan_berhenti_langganan = $("#bulan_berhenti_langganan").val();
         tahun_berhenti_langganan = $("#tahun_berhenti_langganan").val();
       }
+      var master_paket_id = $("#master_paket_id").val();
       $.ajax({
         type:'post',
         url:'/ajax/member_simpan.html',
-        data:{id:id,nama:nama,alamat:alamat,no_wa:no_wa,email:email,nominal_pembayaran:nominal_pembayaran,awal_tagihan_bulan:awal_tagihan_bulan,awal_tagihan_tahun:awal_tagihan_tahun,is_berhenti_langganan:is_berhenti_langganan,bulan_berhenti_langganan:bulan_berhenti_langganan,tahun_berhenti_langganan:tahun_berhenti_langganan},
+        data:{id:id,nama:nama,alamat:alamat,no_wa:no_wa,email:email,nominal_pembayaran:nominal_pembayaran,awal_tagihan_bulan:awal_tagihan_bulan,awal_tagihan_tahun:awal_tagihan_tahun,is_berhenti_langganan:is_berhenti_langganan,bulan_berhenti_langganan:bulan_berhenti_langganan,tahun_berhenti_langganan:tahun_berhenti_langganan,master_paket_id:master_paket_id},
         success:function(resp){
           $("#form_member").loading("stop");
           var res = JSON.parse(resp);
@@ -60,6 +61,10 @@ $(document).ready(function(){
     }else{
       $("#fg_berhenti_langganan").hide();
     }
+  });
+  $("#master_paket_id").change(function(){
+    var harga = $("#master_paket_id option:selected").attr("data-harga");
+    $("#nominal_pembayaran").val(FormatAngka(harga));
   });
 });
 function load_data(){
@@ -112,7 +117,7 @@ function load_data(){
             html += "</td>";
             html += "<td class='" + color_belum_update + "'>" + is_berlangganan + "</td>";
             html += "<td class='text-center'>";
-            html += "<a onclick='modal_update(this)' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-awal-tagihan-bulan='" + (v['awal_tagihan_bulan']!=null?v['awal_tagihan_bulan']:"") + "' data-awal-tagihan-tahun='" + (v['awal_tagihan_tahun']!=null?v['awal_tagihan_tahun']:'') + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-is-berhenti-langganan='" + v['is_berhenti_langganan'] + "' data-bulan-berhenti-langganan='" + v['bulan_berhenti_langganan'] + "' data-tahun-berhenti-langganan='" + v['tahun_berhenti_langganan'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
+            html += "<a onclick='modal_update(this)' data-master-paket-id='" + v['master_paket_id'] + "' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-awal-tagihan-bulan='" + (v['awal_tagihan_bulan']!=null?v['awal_tagihan_bulan']:"") + "' data-awal-tagihan-tahun='" + (v['awal_tagihan_tahun']!=null?v['awal_tagihan_tahun']:'') + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-is-berhenti-langganan='" + v['is_berhenti_langganan'] + "' data-bulan-berhenti-langganan='" + v['bulan_berhenti_langganan'] + "' data-tahun-berhenti-langganan='" + v['tahun_berhenti_langganan'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
             html += " <a href='/member/detail/" + v['id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-list'></span></a>";
             html += "</td>";
             html += "</tr>";
@@ -169,6 +174,7 @@ function modal_update(itu){
   var is_berhenti_langganan = $(itu).attr("data-is-berhenti-langganan");
   var bulan_berhenti_langganan = $(itu).attr("data-bulan-berhenti-langganan");
   var tahun_berhenti_langganan = $(itu).attr("data-tahun-berhenti-langganan");
+  var master_paket_id = $(itu).attr("data-master-paket-id");
   var email = $(itu).attr("data-email");
   $("#id").val(id);
   $("#nama").val(nama);
@@ -189,6 +195,7 @@ function modal_update(itu){
     $("#bulan_berhenti_langganan").val("");
     $("#tahun_berhenti_langganan").val("");
   }
+  dropdown_paket(master_paket_id);
   $("#modal_update").modal("show");
 }
 function html_pagination(jmldata){
@@ -244,5 +251,46 @@ function trigger_pagination(){
     var get_page  = $(this).attr("data-page");
     page = get_page;
     load_data(true);
+  });
+}
+function dropdown_paket(id_paket){
+  $.ajax({
+    type:'post',
+    url:'/ajax/master_paket.html',
+    data:{},
+    success:function(resp){
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          // toastr["error"](res.msg);
+          var html = "<option data-harga='0' value=''>Pilih Paket</option>";
+          $("#master_paket_id").html(html);
+        }
+      }else{
+        var html = "<option data-harga='0' value=''>Pilih Paket</option>";
+        $.each(res.data,function(k,v){
+          if(id_paket == v['id']){
+            html += "<option data-harga='" + v['harga'] + "' value='" + v['id'] + "' selected='selected'>" + v['nama'] + "</option>";
+          }else{
+            html += "<option data-harga='" + v['harga'] + "' value='" + v['id'] + "'>" + v['nama'] + "</option>";
+          }
+        });
+        $("#master_paket_id").html(html);
+        $("#master_paket_id").select2({
+          theme: "bootstrap"
+        });
+      }
+    },error:function(){
+      var html = "";
+      html += "<option value=''>Periksa internet anda</option>";
+      $("#select_router").html(html);
+      $("#select_router").show();
+      $("#select_router").select2({
+        theme: "bootstrap"
+      });
+    }
   });
 }
