@@ -15,7 +15,7 @@ $(document).ready(function(){
       var nama = $("#nama").val();
       var alamat = $("#alamat").val();
       var no_wa = $("#no_wa").val();
-      var nominal_pembayaran = $("#nominal_pembayaran").val();
+      var nominal_pembayaran = StrToNumber($("#nominal_pembayaran").val());
       var awal_tagihan_bulan = $("#awal_tagihan_bulan").val();
       var awal_tagihan_tahun = $("#awal_tagihan_tahun").val();
       var email = $("#email").val();
@@ -65,6 +65,9 @@ $(document).ready(function(){
   $("#master_paket_id").change(function(){
     var harga = $("#master_paket_id option:selected").attr("data-harga");
     $("#nominal_pembayaran").val(FormatAngka(harga));
+  });
+  $("#nominal_pembayaran").keyup(function(){
+    $("#nominal_pembayaran").val(FormatAngka($("#nominal_pembayaran").val()));
   });
 });
 function load_data(){
@@ -181,7 +184,7 @@ function modal_update(itu){
   $("#alamat").val(alamat);
   $("#no_wa").val(no_wa);
   $("#email").val(email);
-  $("#nominal_pembayaran").val(nominal_pembayaran);
+  $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran));
   $("#awal_tagihan_bulan").val(awal_tagihan_bulan);
   $("#awal_tagihan_tahun").val(awal_tagihan_tahun);
   if(is_berhenti_langganan == "1"){

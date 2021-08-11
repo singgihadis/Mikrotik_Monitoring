@@ -180,6 +180,7 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var sql_data_total = "select sum(a.nominal_pembayaran) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server d on d.id=b.server_id " + filter_query;
+        console.log(sql_data_total);
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();

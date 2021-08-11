@@ -204,7 +204,7 @@
                 <div class="card stat-card">
                   <div class="card-header bg-gradient-primary text-white">
                     Tagihan Khusus
-                    <a href="javascript:void(0);" class="btn btn-light float-right"><span class="fa fa-plus"></span></a>
+                    <a href="javascript:void(0);" onclick='modal_tagihan_khusus()' class="btn btn-light float-right"><span class="fa fa-plus"></span></a>
                   </div>
                   <div class="card-body">
 
@@ -259,21 +259,26 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modal_tagihan_khusus_title"></h5>
+            <h5 class="modal-title">Tambah Tagihan Khusus</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <form id="form_inventaris_alat">
+            <form id="form_tagihan_khusus">
               <input type="hidden" id="inventaris_alat_id" name="inventaris_alat_id" />
               <div class="form-group">
                 <label class="control-label">Nama</label>
-                <input id="nama_alat" name="nama_alat" type="text" class="form-control" placeholder="Nama Alat" required />
+                <input id="nama_tagihan" name="nama_tagihan" type="text" class="form-control" placeholder="Nama Alat" required />
               </div>
               <div class="form-group">
-                <label class="control-label">Keterangan</label>
-                <textarea id="keterangan" name="keterangan" class="form-control" placeholder="Keterangan Tagihan"></textarea>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">First and last name</span>
+                  </div>
+                  <input type="text" aria-label="First name" class="form-control">
+                  <input type="text" aria-label="Last name" class="form-control">
+                </div>
               </div>
               <div class="form-group">
                 <label class="control-label">Nominal Tagihan</label>
@@ -281,7 +286,7 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text">Rp. </span>
                   </div>
-                  <input type="text" id="nominal_pembayaran" name="nominal_pembayaran" class="form-control" placeholder="Nominal Tagihan" required />
+                  <input type="text" id="nominal_tagihan" name="nominal_tagihan" class="form-control" placeholder="Nominal Tagihan" required />
                 </div>
               </div>
               <div class="text-right">

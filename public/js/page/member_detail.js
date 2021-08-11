@@ -584,3 +584,6 @@ function trigger_pagination(){
     load_data_inventaris_alat(true);
   });
 }
+function modal_tagihan_khusus(){
+  $("#modal_tagihan_khusus").modal("show");
+}
