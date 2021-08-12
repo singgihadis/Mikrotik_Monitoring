@@ -86,7 +86,7 @@ function dropdown_bank(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#bank").html("<option value=''>" + res.msg + "</option>");
+          $("#bank").html("<option value=''>Silahkan tambahkan data bank</option>");
           $("#bank").select2({
             theme: "bootstrap"
           });

@@ -2,6 +2,20 @@ const RouterOSClient = require('routeros-client').RouterOSClient;
 const pool = require('../db');
 var moment = require('moment');
 module.exports = {
+  Cek_Akses_Member: function(member_id,parent_member_id,callback){
+    pool.getConnection(function(err, connection) {
+      var sql_cek = "select a.id from member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id inner join user d on c.user_id=d.id where d.id=? or d.id=?";
+      var query_cek = connection.query(sql_cek,[member_id,parent_member_id], function (err, results_cek, fields) {
+        if(results_cek.length == 0){
+          connection.release();
+          callback(false)
+        }else{
+          connection.release();
+          callback(true);
+        }
+      });
+    });
+  },
   Traffic: function(){
     pool.getConnection(function(err, connection) {
       var sql_data = "SELECT a.id, a.nama, b.`name`, c.`host`, c.`password`, c.`port`, c.`user`, d.hasil, d.filled FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id LEFT JOIN member_traffic_data d ON a.id = d.member_id and d.tgl=CURDATE()";

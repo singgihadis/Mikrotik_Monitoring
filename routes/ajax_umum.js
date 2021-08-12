@@ -25,6 +25,30 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/dropdown_member.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var sql_data = "select a.* from member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id inner join user d on c.user_id=d.id where d.id=? or d.id=?";
+        var query_data = connection.query(sql_data,[req.session.user_id,req.session.parent_user_id], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,data:results};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
   app.post(['/ajax/master_paket.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {

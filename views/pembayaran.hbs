@@ -1,6 +1,6 @@
 <html>
   {{> head}}
-  <body class="dns">
+  <body class="dashboard">
     <div class="d-flex" id="wrapper">
       {{> sidebar}}
       <div id="page-content-wrapper">
@@ -20,7 +20,15 @@
                 </div>
               </div>
               <div class="col-sm-7 text-right">
-                <div class="widget widget-danger">
+                <div class="d-inline-block">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                    <input id="tahun" name="tahun" class="form-control" placeholder="Tahun" required />
+                  </div>
+                </div>
+                <!-- <div class="widget widget-danger">
                   <div class="widget-wrapper">
                     <div class="widget-style">&nbsp;</div>
                     <div class="widget-content">
@@ -46,26 +54,27 @@
                       <div class="count" id="total_dibayar">Rp. 0</div>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
             <div class="row mt-2">
               <div class="col-md-12">
                 <div class="card stat-card">
                   <div class="card-header bg-gradient-primary text-white">
-                    Pembayaran Khusus
-                    <a href="/pembayaran/bayar.html" class="btn btn-light float-right"><span class="fa fa-edit"></span></a>
+                    Statistik <span class="tahun"></span>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="statistik_chart"></canvas>
                   </div>
                 </div>
-                <div class="card-body">
-
-                </div>
               </div>
-              <br>
+            </div>
+            <br>
+            <div class="row">
               <div class="col-md-12">
                 <div class="card stat-card">
                   <div class="card-header bg-gradient-primary text-white">
-                    Pembayaran Bulanan
+                    Pembayaran Internet Bulanan <span class="tahun"></span>
                     <a href="/pembayaran/bayar.html" class="btn btn-light float-right"><span class="fa fa-edit"></span></a>
                   </div>
                   <div class="card-body">
@@ -78,14 +87,6 @@
                               <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span></button>
                               </div>
-                            </div>
-                          </div>
-                          <div class="d-inline-block">
-                            <div class="input-group mb-3">
-                              <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                              </div>
-                              <input id="tahun" name="tahun" class="form-control" placeholder="Tahun" required />
                             </div>
                           </div>
                         </form>
@@ -154,6 +155,59 @@
                 </div>
               </div>
             </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Pembayaran Lainnya <span class="tahun"></span>
+                    <a href="javascript:void(0);" onclick='modal_tagihan_khusus()' class="btn btn-light float-right"><span class="fa fa-plus"></span></a>
+                  </div>
+                  <div class="card-body">
+                    <form id="form_data_tagihan" class="text-left">
+                      <div class="d-inline-block mr-2">
+                        <div class="input-group mb-3">
+                          <input type="text" id="keyword_tagihan" name="keyword_tagihan" class="form-control" placeholder="Nama">
+                          <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span></button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                    <div class="table-responsive">
+                      <table class="table table-striped" id="table_dns_cache">
+                        <thead>
+                          <tr>
+                            <th rowspan="2" class="border-right align-middle">No</th>
+                            <th rowspan="2" class="border-right align-middle">Router</th>
+                            <th rowspan="2" class="border-right align-middle">Nama</th>
+                            <th colspan="5" class="text-center border-bottom-0">Info</th>
+                          </tr>
+                          <tr>
+                            <th>Nama Tagihan</th>
+                            <th>Bulan</th>
+                            <th>Nominal Pembayaran</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="listdata2">
+                          <tr><td colspan="8">Memuat Data ....</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4" id="info_page2">
+
+                      </div>
+                      <div class="col-md-4 text-center" id="pagination2">
+                      </div>
+                      <div class="col-md-4"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           <br><br>
         </div>
       </div>
@@ -209,6 +263,200 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-dismiss="modal">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="modal_tagihan_khusus">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Tambah Tagihan Khusus</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="form_tagihan_khusus">
+              <div class="form-group">
+                <label class="control-label">Member</label>
+                <select id="member_id" name="member_id" class="form-control" required>
+
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Nama</label>
+                <input id="nama_tagihan" name="nama_tagihan" type="text" class="form-control" placeholder="Nama Tagihan" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Bulan</label>
+                <select id="bulan_tagihan" name="bulan_tagihan" class="form-control" required>
+                  <option value="">Pilih Bulan</option>
+                  <option value="1">Januari</option>
+                  <option value="2">Februari</option>
+                  <option value="3">Maret</option>
+                  <option value="4">April</option>
+                  <option value="5">Mei</option>
+                  <option value="6">Juni</option>
+                  <option value="7">Juli</option>
+                  <option value="8">Agustus</option>
+                  <option value="9">September</option>
+                  <option value="10">Oktober</option>
+                  <option value="11">November</option>
+                  <option value="12">Desember</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Tahun</label>
+                <input id="tahun_tagihan" name="tahun_tagihan" type="text" placeholder="Tahun" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Nominal Tagihan</label>
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Rp. </span>
+                  </div>
+                  <input type="text" id="nominal_tagihan" name="nominal_tagihan" class="form-control" placeholder="Nominal Tagihan" required />
+                </div>
+              </div>
+              <div class="text-right">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="modal_bayar">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Pembayaran</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="font-size:14px;">
+            <form id="form_bayar">
+              <input type="hidden" id="id" name="id" />
+              <input type="hidden" id="is_bayar" name="is_bayar" />
+              <input type="hidden" id="bulan" name="bulan" />
+              <table class="table table-borderless w-100">
+                <tr>
+                  <td>Nama CLient</td>
+                  <td>:</td>
+                  <td id="modal_bayar_nama_client"></td>
+                </tr>
+                <tr>
+                  <td>Nama Tagihan</td>
+                  <td>:</td>
+                  <td id="modal_bayar_nama_tagihan"></td>
+                </tr>
+                <tr>
+                  <td>Bulan & Tahun</td>
+                  <td>:</td>
+                  <td id="modal_bayar_bulan_tahun"></td>
+                </tr>
+                <tr>
+                  <td>Nominal Bayar</td>
+                  <td>:</td>
+                  <td id="modal_bayar_nominal_bayar"></td>
+                </tr>
+                <tr>
+                  <td>Metode Bayar</td>
+                  <td>:</td>
+                  <td id="metode_bayar_admin">
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="cr_transfer" name="cr_metode_bayar" class="custom-control-input" checked>
+                      <label class="custom-control-label" for="cr_transfer">Transfer</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="cr_cash" name="cr_metode_bayar" class="custom-control-input">
+                      <label class="custom-control-label" for="cr_cash">Cash</label>
+                    </div>
+                  </td>
+                  <td id="metode_bayar_user" style="display:none;">
+
+                  </td>
+                </tr>
+                <tr id="div_bank">
+                  <td>Bank</td>
+                  <td>:</td>
+                  <td>
+                    <select class="form-control" id="bank" name="bank">
+
+                    </select>
+                  </td>
+                </tr>
+                <tr id="div_password">
+                  <td>Password</td>
+                  <td>:</td>
+                  <td>
+                    <input id="modal_bayar_password" name="modal_bayar_password" type="password" class="form-control" placeholder="Masukkan password akun anda" required />
+                    <input type="hidden" id="modal_bayar_hidden_password" name="modal_bayar_hidden_password" />
+                  </td>
+                </tr>
+              </table>
+              <div class="text-right" id="modal_bayar_tutup" style="display:none;">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Tutup</button>
+              </div>
+              <div class="text-right" id="modal_bayar_aksi">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                <button id="btn_submit" type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="modal_hapus">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Hapus Tagihan</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="font-size:14px;">
+            <form id="form_hapus">
+              <input type="hidden" id="id_hapus" name="id_hapus" />
+              <table class="table table-borderless w-100">
+                <tr>
+                  <td>Nama CLient</td>
+                  <td>:</td>
+                  <td id="modal_hapus_nama_client"></td>
+                </tr>
+                <tr>
+                  <td>Nama Tagihan</td>
+                  <td>:</td>
+                  <td id="modal_hapus_nama_tagihan"></td>
+                </tr>
+                <tr>
+                  <td>Bulan & Tahun</td>
+                  <td>:</td>
+                  <td id="modal_hapus_bulan_tahun"></td>
+                </tr>
+                <tr>
+                  <td>Nominal Bayar</td>
+                  <td>:</td>
+                  <td id="modal_hapus_nominal_bayar"></td>
+                </tr>
+                <tr id="div_password_hapus">
+                  <td>Password</td>
+                  <td>:</td>
+                  <td>
+                    <input id="modal_hapus_password" name="modal_hapus_password" type="password" class="form-control" placeholder="Masukkan password akun anda" required />
+                    <input type="hidden" id="modal_hapus_hidden_password" name="modal_hapus_hidden_password" />
+                  </td>
+                </tr>
+              </table>
+              <div class="text-right">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                <button id="btn_submit_hapus" type="submit" class="btn btn-danger">Hapus</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
