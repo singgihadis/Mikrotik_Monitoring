@@ -30,7 +30,7 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 5) - 5;
-        var sql_data_total = "SELECT count(a.id) as total FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN server d on d.id=b.server_id " + filter_query + "";
+        var sql_data_total = "select count(tb.id) as total from (SELECT a.id FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id) as tb";
         var query_data_total = connection.query(sql_data_total,[tahun], function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();

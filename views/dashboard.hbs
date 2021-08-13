@@ -62,7 +62,43 @@
               <div class="col-md-5">
                 <div class="card stat-card">
                   <div class="card-header bg-gradient-primary text-white">
-                    Member Terbaru
+                    Total Kapasitas
+                  </div>
+                  <div class="card-body">
+                    <div class="d-inline-block float-right">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-light btn_kapasitas" data-value="3" onclick="ubah_satuan_kapasitas(this)">Gbps</button>
+                        <button type="button" class="btn btn-light btn_kapasitas active" data-value="2" onclick="ubah_satuan_kapasitas(this)">Mbps</button>
+                        <button type="button" class="btn btn-light btn_kapasitas" data-value="1" onclick="ubah_satuan_kapasitas(this)">Kbps</button>
+                      </div>
+                    </div>
+                    <div class="d-inline-block">
+                      Total
+                      <br>
+                      <b id="total_kapasitas"></b>
+
+                    </div>
+                    <br>
+                    <br>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Router</th>
+                            <th>Kapasitas</th>
+                          </tr>
+                        </thead>
+                        <tbody id="total_kapasitas_listdata">
+
+                        </tbody>
+                      </table>
+                      </div>
+                    </div>
+                </div>
+                <br>
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    5 Member Terbaru
                   </div>
                   <div class="card-body">
                     <div class="table-responsive">

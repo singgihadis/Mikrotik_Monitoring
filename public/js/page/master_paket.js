@@ -12,6 +12,13 @@ $(document).ready(function(){
         tambah();
       }
       return false;
+    },
+    errorPlacement: function(error, element) {
+      if(element.attr("name") == "kapasitas") {
+        error.appendTo(element.parent().parent());
+      } else {
+        error.insertAfter(element);
+      }
     }
   });
   $("#form_search").validate({
@@ -132,7 +139,7 @@ function load_data(){
             html += "<tr>";
             html += "<td>" + no + "</td>";
             html += "<td>" + v['nama'] + "</td>";
-            html += "<td>" + v['kapasitas'] + "</td>";
+            html += "<td>" + v['kapasitas'] + " Kbps</td>";
             html += "<td>Rp. " + FormatAngka(v['harga']) + "</td>";
             html += "<td>";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-kapasitas='" + v['kapasitas'] + "' data-harga='" + v['harga'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";

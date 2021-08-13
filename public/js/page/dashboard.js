@@ -3,6 +3,7 @@ var cur_thn = 0;
 var stat_chart = null;
 var stat_ajax = null;
 var member_stat_type = 1;
+var kapasitas_satuan = 2;
 $(document).ready(function(){
   $("#filter_member").val("1");
   cur_bln = moment().format("M");
@@ -21,6 +22,7 @@ $(document).ready(function(){
     }
   });
   member_terbaru();
+  total_kapasitas();
 });
 function member_stat_daily(){
   $("#title_statistik_member").html(" - " + IndexToMonth(parseInt(cur_bln) - 1) + " " + cur_thn);
@@ -416,4 +418,63 @@ function member_terbaru(){
       toastr["error"]("Silahkan periksa koneksi internet anda");
     }
   });
+}
+function total_kapasitas(){
+  $("#total_kapasitas_listdata").loading();
+  $.ajax({
+    type:'post',
+    url:'/ajax/kapasitas_total.html',
+    data:{},
+    success:function(resp){
+      $("#total_kapasitas_listdata").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          $("#total_kapasitas_listdata").html("<tr><td colspan='2'>" + res.msg + "</td></tr>");
+        }
+      }else{
+        var total_kapasitas = 0;
+        var html = "";
+        $.each(res.data,function(k,v){
+          var kapasitas = parseInt(v['kapasitas']);
+          var kapasitas_txt = "";
+          if(kapasitas_satuan == "1"){
+            kapasitas_txt = kapasitas + " Kbps";
+          }else if(kapasitas_satuan == "2"){
+            kapasitas_txt = KiloBitToMegabit(kapasitas) + " Mbps";
+          }else if(kapasitas_satuan == "3"){
+            kapasitas_txt = KiloBitToGigabit(kapasitas) + " Gbps";
+          }
+          html += "<tr>";
+          html += "<td>" + v['nama'] + "</td>";
+          html += "<td>" + kapasitas_txt + "</td>";
+          html += "</tr>";
+          total_kapasitas = total_kapasitas + kapasitas;
+        });
+        var total_kapasitas_txt = "";
+        if(kapasitas_satuan == "1"){
+          total_kapasitas_txt = total_kapasitas + " Kbps";
+        }else if(kapasitas_satuan == "2"){
+          total_kapasitas_txt = KiloBitToMegabit(total_kapasitas) + " Mbps";
+        }else if(kapasitas_satuan == "3"){
+          total_kapasitas_txt = KiloBitToGigabit(total_kapasitas) + " Gbps";
+        }
+        $("#total_kapasitas").html(total_kapasitas_txt);
+        $("#total_kapasitas_listdata").html(html);
+      }
+    },error:function(){
+      $("#total_kapasitas_listdata").loading("stop");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function ubah_satuan_kapasitas(itu){
+  var value = $(itu).attr("data-value");
+  kapasitas_satuan = value;
+  $(".btn_kapasitas").removeClass("active");
+  $(itu).addClass("active");
+  total_kapasitas();
 }

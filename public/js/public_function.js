@@ -132,6 +132,22 @@ function BitToKibiByte(x){
   var hasil = (x / 8) / 1024;
   return hasil;
 }
+function KiloBitToMegabit(x){
+  x = parseInt(x);
+  var hasil = 0;
+  if(x > 0){
+    hasil = x / 1000;
+  }
+  return hasil;
+}
+function KiloBitToGigabit(x){
+  x = parseInt(x);
+  var hasil = 0;
+  if(x > 0){
+    hasil = x / 1000000;
+  }
+  return hasil;
+}
 function IsEmpty(isi){
   if(isi == 0 || isi == "" || isi == null){
     return true;

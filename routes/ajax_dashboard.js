@@ -110,4 +110,28 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/kapasitas_total.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var sql_data = "SELECT a.nama, SUM(IFNULL(e.kapasitas, 0))AS kapasitas FROM server a LEFT JOIN user b ON a.user_id = b.id LEFT JOIN ppp_secret c ON a.id = c.server_id LEFT JOIN member d ON d.ppp_secret_id = c.id LEFT JOIN master_paket e ON d.master_paket_id = e.id where a.user_id=? or a.user_id=? or (" + req.session.level + "=2 and (a.user_id=? or a.user_id=?)) GROUP BY a.id";
+        var query_data = connection.query(sql_data,[req.session.user_id,req.session.parent_user_id,req.session.user_id,req.session.parent_user_id], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,data:results};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
 }

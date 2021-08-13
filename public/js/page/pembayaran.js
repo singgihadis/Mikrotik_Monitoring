@@ -190,6 +190,7 @@ function build_tahun(){
       load_data();
       page2 = 1;
       load_data_tagihan();
+      statistik_total();
     },100);
   });;
 }
@@ -216,10 +217,10 @@ function load_data(){
       }else{
         var data = res.data;
         var html = "";
-        var no = (page * 10) - 9;
+        var no = (page * 5) - 4;
         var first = no;
         $.each(data,function(k,v){
-          if(k < 10){
+          if(k < 5){
             var bulan = v['bulan'];
             var arr_bulan = bulan.split(",");
             var awal_tagihan_tahun = parseInt(v['awal_tagihan_tahun']);
@@ -458,12 +459,12 @@ function statistik_chart(new_data_statistik_total) {
             borderColor: 'rgba(10,100,255,1)'
         },{
             label: 'Tagihan Belum Dibayar',
-            data: datas_dibayar,
+            data: datas_belum_dibayar,
             backgroundColor: 'rgba(255,50,50,0.5)',
             borderColor: 'rgba(255,50,50,1)'
         },{
             label: 'Tagihan Sudah Dibayar',
-            data: datas_belum_dibayar,
+            data: datas_dibayar,
             backgroundColor: 'rgba(50,255,100,0.5)',
             borderColor: 'rgba(50,255,100,1)'
         }]
