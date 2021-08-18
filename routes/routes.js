@@ -21,6 +21,7 @@ module.exports = function(app){
         var website_config = req.website_config;
         var master_kota_id = req.session.master_kota_id;
         var level = req.session.level;
+        var nama_user = req.session.nama;
         var title = "";
         if(website_config['title'] != ""){
           title = "Traffic - " + website_config['title'];
@@ -39,7 +40,8 @@ module.exports = function(app){
             master_kota_id:master_kota_id,
             server_id:server_id,
             level:level,
-            with_server:1
+            with_server:1,
+            nama_user:nama_user
           });
         }
 
@@ -57,6 +59,7 @@ module.exports = function(app){
         server_id = req.session.server_id;
         var website_config = req.website_config;
         var level = req.session.level;
+        var nama_user = req.session.nama;
         var title = "";
         if(website_config['title'] != ""){
           title = "Host - " + website_config['title'];
@@ -74,7 +77,8 @@ module.exports = function(app){
             sub_menu:"host",
             server_id:server_id,
             level:level,
-            with_server:1
+            with_server:1,
+            nama_user:nama_user
           });
         }
 
@@ -93,6 +97,7 @@ module.exports = function(app){
         server_id = req.session.server_id;
         var website_config = req.website_config;
         var level = req.session.level;
+        var nama_user = req.session.nama;
         var title = "";
         if(website_config['title'] != ""){
           title = "Ping - " + website_config['title'];
@@ -110,7 +115,8 @@ module.exports = function(app){
             sub_menu:"ping",
             server_id:server_id,
             level:level,
-            with_server:1
+            with_server:1,
+            nama_user:nama_user
           });
         }
 
@@ -129,6 +135,7 @@ module.exports = function(app){
         server_id = req.session.server_id;
         var website_config = req.website_config;
         var level = req.session.level;
+        var nama_user = req.session.nama;
         var title = "";
         if(website_config['title'] != ""){
           title = "DNS - " + website_config['title'];
@@ -146,7 +153,8 @@ module.exports = function(app){
             sub_menu:"dns",
             server_id:server_id,
             level:level,
-            with_server:1
+            with_server:1,
+            nama_user:nama_user
           });
         }
 
@@ -206,6 +214,7 @@ module.exports = function(app){
         server_id = req.session.server_id;
         var website_config = req.website_config;
         var level = req.session.level;
+        var nama_user = req.session.nama;
         var title = "";
         if(website_config['title'] != ""){
           title = "Hotspot - " + website_config['title'];
@@ -223,7 +232,8 @@ module.exports = function(app){
             sub_menu:"hotspot",
             server_id:server_id,
             level:level,
-            with_server:1
+            with_server:1,
+            nama_user:nama_user
           });
         }
 
@@ -242,6 +252,7 @@ module.exports = function(app){
         server_id = req.session.server_id;
         var website_config = req.website_config;
         var level = req.session.level;
+        var nama_user = req.session.nama;
         var title = "";
         if(website_config['title'] != ""){
           title = "PPP - " + website_config['title'];
@@ -259,7 +270,8 @@ module.exports = function(app){
             sub_menu:"ppp",
             server_id:server_id,
             level:level,
-            with_server:1
+            with_server:1,
+            nama_user:nama_user
           });
         }
 
@@ -285,6 +297,7 @@ module.exports = function(app){
       if(req.session.server_id){
         server_id = req.session.server_id;
       }
+      var nama_user = req.session.nama;
       if(level == "4"){
         res.redirect("/pilih_router.html");
       }else{
@@ -295,7 +308,8 @@ module.exports = function(app){
           menu:"member",
           level:level,
           server_id:server_id,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }
 
@@ -313,6 +327,7 @@ module.exports = function(app){
       if(req.session.server_id){
         server_id = req.session.server_id;
       }
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Detail Member - " + website_config['title'];
@@ -331,7 +346,8 @@ module.exports = function(app){
           server_id_unselected:server_id_unselected,
           level:level,
           server_id:server_id,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }
 
@@ -347,6 +363,7 @@ module.exports = function(app){
       }
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Pembayaran - " + website_config['title'];
@@ -363,7 +380,8 @@ module.exports = function(app){
           menu:"pembayaran",
           server_id:server_id,
           level:level,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }
 
@@ -379,6 +397,7 @@ module.exports = function(app){
       }
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Bayar - " + website_config['title'];
@@ -395,7 +414,8 @@ module.exports = function(app){
           menu:"pembayaran",
           server_id:server_id,
           level:level,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }
 
@@ -411,6 +431,7 @@ module.exports = function(app){
       }
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Master Paket - " + website_config['title'];
@@ -425,7 +446,8 @@ module.exports = function(app){
           menu:"master_paket",
           server_id:server_id,
           level:level,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }else{
         res.redirect("/dashboard.html");
@@ -442,6 +464,7 @@ module.exports = function(app){
       }
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Pengaturan - " + website_config['title'];
@@ -456,7 +479,8 @@ module.exports = function(app){
           menu:"pengaturan",
           server_id:server_id,
           level:level,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }else{
         res.redirect("/dashboard.html");
@@ -473,6 +497,7 @@ module.exports = function(app){
       }
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Router - " + website_config['title'];
@@ -488,7 +513,8 @@ module.exports = function(app){
           server_id:server_id,
           level:level,
           with_server:0,
-          user_id:req.session.user_id
+          user_id:req.session.user_id,
+          nama_user:nama_user
         });
       }else{
         res.redirect("/dashboard.html");
@@ -505,6 +531,7 @@ module.exports = function(app){
       }
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "User - " + website_config['title'];
@@ -519,7 +546,8 @@ module.exports = function(app){
           menu:"user",
           server_id:server_id,
           level:level,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }else{
         res.redirect("/dashboard.html");
@@ -532,6 +560,7 @@ module.exports = function(app){
     }else{
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Dashboard - " + website_config['title'];
@@ -552,7 +581,8 @@ module.exports = function(app){
           menu:"dashboard",
           level:level,
           server_id:server_id,
-          with_server:0
+          with_server:0,
+          nama_user:nama_user
         });
       }
     }
@@ -567,6 +597,7 @@ module.exports = function(app){
       }
       var website_config = req.website_config;
       var level = req.session.level;
+      var nama_user = req.session.nama;
       var title = "";
       if(website_config['title'] != ""){
         title = "Pilih Router - " + website_config['title'];
@@ -581,7 +612,8 @@ module.exports = function(app){
         server_id:server_id,
         level:level,
         with_server:0,
-        user_id:req.session.user_id
+        user_id:req.session.user_id,
+        nama_user:nama_user
       });
     }
   });
