@@ -55,12 +55,12 @@
                   <div class="card-header bg-gradient-primary text-white">
                     PPP
                     <div id="loader_insert_data" class="mt-1 d-inline-block float-right">
-                      <span class="fa fa-spin fa-spinner d-table-cell align-middle"></span> <small class="pl-1 d-table-cell align-middle">Memproses data</small>
+                      <span class="fa fa-spin fa-spinner d-table-cell align-middle"></span> <small class="pl-1 d-table-cell align-middle">Sinkron data PPP dari Router</small>
                     </div>
                   </div>
                   <div class="card-body">
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-7">
                         <form id="form_data" class="text-left">
                           <div class="d-inline-block mr-2">
                             <div class="input-group mb-3">
@@ -75,12 +75,14 @@
                               <option value="">Semua Koneksi</option>
                               <option value="1">Aktif</option>
                               <option value="0">Tidak Aktif</option>
+                              <option value="10">PPP Tidak Ada Di Server</option>
                             </select>
                           </div>
                         </form>
                       </div>
-                      <div class="col-md-6 text-right">
+                      <div class="col-md-5 text-right">
                         <a href="javascript:void(0);" onclick="cetak(this)" class="btn btn-primary mb-2"><span class="fa fa-file-pdf-o"></span> Cetak Koneksi Tidak Aktif</a>
+                        <a href="javascript:void(0);" id="btn_hapus" onclick="hapus()" class="btn btn-danger mb-2">Hapus (<span id="jml_hapus">0</span>)</a>
                       </div>
                     </div>
                     <div class="table-responsive">
@@ -93,10 +95,14 @@
                             <th>Profile</th>
                             <th>Address</th>
                             <th class="text-center">Active</th>
+                            <th class="text-center">
+                              <a href="javascript:void(0);" class="btn btn-light btn-sm" id="cbk_semua"><span class='fa fa-check-square-o'></span></a>
+                              <a href="javascript:void(0);" class="btn btn-light btn-sm" id="cbk_semua_un"><span class='fa fa-square-o'></span></a>
+                            </th>
                           </tr>
                         </thead>
                         <tbody id="listdata">
-                          <tr><td colspan="7">Memuat Data ....</td></tr>
+                          <tr><td colspan="8">Memuat Data ....</td></tr>
                         </tbody>
                       </table>
                     </div>

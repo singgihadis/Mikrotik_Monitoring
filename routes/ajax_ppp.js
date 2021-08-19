@@ -62,6 +62,8 @@ module.exports = function(app){
             arr_query.push("b.id_ppp is not null");
           }else if(is_active == "0"){
             arr_query.push("b.id_ppp is null");
+          }else if(is_active == "10"){
+            arr_query.push("a.is_ada = 0");
           }
         }
         arr_query.push("a.server_id=" + req.session.server_id);
@@ -103,6 +105,58 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/ppp_secret_tidak_ada.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var sql_data = "select group_concat(a.id) as ids from ppp_secret a where a.server_id=? and is_ada=0";
+        var query_data = connection.query(sql_data,[req.session.server_id], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,data:results};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/ppp_secret_hapus.html'],(req, res) => {
+    if(req.session.is_login){
+      var ids = "";
+      if(req.body.ids != undefined){
+        ids = req.body.ids;
+      }
+      pool.getConnection(function(err, connection) {
+        var sql_data = "delete from ppp_secret where server_id=? and find_in_set(id," + ids + ") > 0 and is_ada = 0";
+        var query_data = connection.query(sql_data,[req.session.server_id], function (err, results, fields) {
+          if(err){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Tidak bisa menghapus"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,data:results};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
   app.post(['/ajax/ppp_secret_simpan.html'],(req, res) => {
     if(req.session.is_login){
       var host = req.session.host;
@@ -119,11 +173,24 @@ module.exports = function(app){
       api.connect().then((client) => {
         client.menu("/ppp secret").get().then((result) => {
             var server_id = req.session.server_id;
-            ppp_function.Simpan_Secret(0,server_id,result.length,result,function(){
-              var data = {is_error:false,data:[],msg:"Berhasil"};
-              api.close();
-              res.send(JSON.stringify(data));
-              res.end();
+            pool.getConnection(function(err, connection) {
+              var sql_delete = "update ppp_secret set is_ada=0 where server_id=?";
+              var query_delete = connection.query(sql_delete, [server_id], function (err, results_update, fields) {
+                if(err){
+                  connection.release();
+                  var data = {is_error:true,data:[],msg:"Gagal mengupdate ppp secret"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }else{
+                  connection.release();
+                  ppp_function.Simpan_Secret(0,server_id,result.length,result,function(){
+                    var data = {is_error:false,data:[],msg:"Berhasil"};
+                    api.close();
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  });
+                }
+              });
             });
         }).catch((err) => {
           var data = {is_error:true,msg:err.message};

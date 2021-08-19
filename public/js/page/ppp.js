@@ -13,7 +13,82 @@ $(document).ready(function(){
     load_data(true);
   });
   load_data(true);
+  $("#cbk_semua").click(function(){
+    set_cbk_semua();
+  });
+  $("#cbk_semua_un").click(function(){
+    localStorage.removeItem("data_hapus");
+    localStorage.removeItem("is_checked_semua");
+    load_data(true);
+  });
 });
+function set_cbk_semua(){
+  $("#cbk_semua").loading();
+  $.ajax({
+    type:'post',
+    url:'/ajax/ppp_secret_tidak_ada.html',
+    data:{},
+    success:function(resp){
+      $("#cbk_semua").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+
+        }
+      }else{
+        var ids = res.data[0]['ids'];
+        localStorage.setItem("is_checked_semua","1");
+        localStorage.setItem("data_hapus",ids);
+        load_data(true);
+      }
+    },error:function(){
+      $("#cbk_semua").loading("stop");
+      toastr['error']('Silahkan periksa koneksi internet anda');
+    }
+  });
+}
+function hapus(){
+  var data_hapus = "";
+  if(localStorage.getItem("data_hapus") !== null){
+    data_hapus = localStorage.getItem("data_hapus");
+  }
+  if(data_hapus != ""){
+    var r = confirm("Apa anda yakin ingin menghapus data yang dipilih? \nData yang terhubung menuju ke PPP otomatis tidak bisa diakses");
+    if(r){
+      $("#btn_hapus").loading();
+      $.ajax({
+        type:'post',
+        url:'/ajax/ppp_secret_hapus.html',
+        data:{ids:data_hapus},
+        success:function(resp){
+          $("#btn_hapus").loading("stop");
+          var res = JSON.parse(resp);
+          var html = "";
+          if(res.is_error){
+            if(res.must_login){
+              window.location = "/login.html";
+            }else{
+
+            }
+          }else{
+            localStorage.removeItem("is_checked_semua");
+            localStorage.removeItem("data_hapus");
+            toastr['success']('Berhasil menghapus');
+            load_data(true);
+          }
+        },error:function(){
+          $("#btn_hapus").loading("stop");
+          toastr['error']('Silahkan periksa koneksi internet anda');
+        }
+      });
+    }
+  }else{
+    toastr['error']('Silahkan pilih data yang akan dihapus');
+  }
+}
 function load_data(with_loading){
   $("#pagination").html("");
   if(with_loading){
@@ -35,10 +110,19 @@ function load_data(with_loading){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='6'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='8'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
+        var data_hapus = "";
+        if(localStorage.getItem("data_hapus") !== null){
+          data_hapus = localStorage.getItem("data_hapus");
+        }
+        var arr_data_hapus = [];
+        if(data_hapus != ""){
+          arr_data_hapus = data_hapus.split(",")
+        }
+        jml_hapus();
         var data = res.data;
         var html = "";
         var no = (page * 10) - 9;
@@ -58,6 +142,18 @@ function load_data(with_loading){
             html += "<td>" + v['profile'] + "</td>";
             html += "<td>" + (v['address'] != null?v['address']:"") + "</td>";
             html += "<td class='text-center'>" + is_active + "</td>";
+            html += "<td class='text-center'>";
+            if(v['is_ada'] == "0"){
+              var checked = "";
+              if($.inArray(v['id'].toString(),arr_data_hapus) !== -1){
+                checked = "checked";
+              }
+              html += "<div class='custom-control custom-checkbox'>";
+              html += "  <input data-id='" + v['id'] + "' " + checked + " type='checkbox' class='custom-control-input cbk_hapus' id='cbk_hapus" + k + "'>";
+              html += "  <label class='custom-control-label' for='cbk_hapus" + k + "'></label>";
+              html += "</div>";
+            }
+            html += "</td>";
             html += "</tr>";
             no++;
           }
@@ -66,15 +162,45 @@ function load_data(with_loading){
         html_pagination(res.data.length);
         $("#info_page").html(first + " - " + (no - 1) + " dari " + FormatAngka(res.total));
         total_aktif();
+        $(".cbk_hapus").on("change",function(){
+          var data_hapus = "";
+          if(localStorage.getItem("data_hapus") !== null){
+            data_hapus = localStorage.getItem("data_hapus");
+          }
+          var arr_data_hapus = [];
+          if(data_hapus != ""){
+            arr_data_hapus = data_hapus.split(",")
+          }
+          var id = $(this).attr("data-id");
+          if($(this).is(":checked")){
+            arr_data_hapus.push(id);
+          }else{
+            localStorage.removeItem("is_checked_semua");
+            arr_data_hapus = removeArray(arr_data_hapus,id);
+          }
+          localStorage.setItem("data_hapus",arr_data_hapus.join(","));
+          jml_hapus();
+        });
       }
     },error:function(){
       if(with_loading){
         $("#listdata").loading("stop");
       }
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='6'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='8'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
+}
+function jml_hapus(){
+  var data_hapus = "";
+  if(localStorage.getItem("data_hapus") !== null){
+    data_hapus = localStorage.getItem("data_hapus");
+  }
+  var arr_data_hapus = [];
+  if(data_hapus != ""){
+    arr_data_hapus = data_hapus.split(",")
+  }
+  $("#jml_hapus").html(FormatAngka(arr_data_hapus.length));
 }
 function total_aktif(){
   $.ajax({

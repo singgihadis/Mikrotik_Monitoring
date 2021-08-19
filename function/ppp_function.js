@@ -13,7 +13,7 @@ module.exports = {
         var sql_cek = "select * from ppp_secret where server_id=? and name=?";
         var query_cek = connection.query(sql_cek,[server_id,item['name']], function (err, results_cek, fields) {
           if (results_cek.length > 0){
-            var sql_update = "update ppp_secret set id_ppp=?,password=?,profile=?,local_address=?,remote_address=? where server_id=? and name=?";
+            var sql_update = "update ppp_secret set id_ppp=?,password=?,profile=?,local_address=?,remote_address=?,is_ada=1 where server_id=? and name=?";
             var query_data = connection.query(sql_update,[item['id'],item['password'],item['profile'],localAddress,item['remoteAddress'],server_id,item['name']], function (err, results3, fields) {
               if (!err){
                 connection.release();
@@ -26,7 +26,7 @@ module.exports = {
               }
             });
           }else{
-            var sql_insert = "insert into ppp_secret(server_id,id_ppp,name,password,profile,local_address,remote_address) values(?,?,?,?,?,?,?)";
+            var sql_insert = "insert into ppp_secret(server_id,id_ppp,name,password,profile,local_address,remote_address,is_ada) values(?,?,?,?,?,?,?,1)";
             var query_data = connection.query(sql_insert,[server_id,item['id'],item['name'],item['password'],item['profile'],localAddress,item['remoteAddress']], function (err, results3, fields) {
               if (!err){
                 connection.release();

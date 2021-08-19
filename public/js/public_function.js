@@ -376,3 +376,10 @@ function ParseDNSCacheTime(x){
   var hasil = day  + time;
   return hasil;
 }
+
+function removeArray(y,removeItem) {
+  y = jQuery.grep(y, function(value) {
+    return value != removeItem;
+  });
+  return y;
+}

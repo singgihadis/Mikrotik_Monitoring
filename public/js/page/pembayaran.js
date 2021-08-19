@@ -4,9 +4,14 @@ var cur_bln = 0;
 var cur_thn = 0;
 var data_statistik_total = [];
 var statistik_chart_render = null;
+var new_data_statistik_total = [];
 $(document).ready(function(){
   cur_thn = parseInt(moment().format("YYYY"));
   cur_bln = parseInt(moment().format("M"));
+  $("#bulan").val(cur_bln);
+  $("#bulan").change(function(){
+    widget_total();
+  });
   $('[data-toggle="tooltip"]').tooltip();
   $("#form_data").validate({
     submitHandler:function(){
@@ -173,6 +178,17 @@ $(document).ready(function(){
     }
   });
 });
+function widget_total(){
+  var bulan = $("#bulan").val();
+  $(".bulan").html("(" + IndexToMonth(parseInt(bulan) - 1) + " " + $("#tahun").val() + ")");
+  $.each(new_data_statistik_total,function(k,v){
+    if(bulan == (k + 1)){
+      $("#total_belum_dibayar").html("Rp. " + FormatAngka(v['total_belum_dibayar']));
+      $("#total").html("Rp. " + FormatAngka(v['total_tagihan']));
+      $("#total_dibayar").html("Rp. " + FormatAngka(v['total_dibayar']));
+    }
+  });
+}
 function build_tahun(){
   var html = "";
   var tahun_sekarang = parseInt(moment().format("YYYY"));
@@ -295,6 +311,7 @@ function load_data(){
   });
 }
 function statistik_total(){
+  data_statistik_total = [];
   var tahun = $("#tahun").val();
   total_tagihan_data(1,tahun);
 }
@@ -414,7 +431,7 @@ function total_tagihan_khusus_data(tahun){
   });
 }
 function statistik_combine_data(data_statistik_khusus_total){
-  var new_data_statistik_total = [];
+  new_data_statistik_total = [];
   for(var i=0;i<12;i++){
     var total_tagihan = parseInt(data_statistik_total[i]['total_tagihan']) + parseInt(data_statistik_khusus_total[i]['total_tagihan']);
     var total_dibayar = parseInt(data_statistik_total[i]['total_dibayar']) + parseInt(data_statistik_khusus_total[i]['total_dibayar']);
@@ -425,10 +442,12 @@ function statistik_combine_data(data_statistik_khusus_total){
       total_belum_dibayar:total_belum_dibayar
     });
   }
-  statistik_chart(new_data_statistik_total);
+  widget_total();
+  statistik_chart();
 }
-function statistik_chart(new_data_statistik_total) {
+function statistik_chart() {
   var tahun = $("#tahun").val();
+  var bulan = $("#bulan").val();
   if(statistik_chart_render != null){
     statistik_chart_render.destroy();
   }
@@ -436,6 +455,7 @@ function statistik_chart(new_data_statistik_total) {
   var datas_total = [];
   var datas_dibayar = [];
   var datas_belum_dibayar = [];
+
   $.each(new_data_statistik_total,function(k,v){
     datas_total.push(v['total_tagihan']);
     datas_dibayar.push(v['total_dibayar']);
