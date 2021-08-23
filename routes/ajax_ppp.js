@@ -136,7 +136,7 @@ module.exports = function(app){
         ids = req.body.ids;
       }
       pool.getConnection(function(err, connection) {
-        var sql_data = "delete from ppp_secret where server_id=? and find_in_set(id," + ids + ") > 0 and is_ada = 0";
+        var sql_data = "delete from ppp_secret where server_id=? and find_in_set(id,'" + ids + "') > 0 and is_ada = 0";
         var query_data = connection.query(sql_data,[req.session.server_id], function (err, results, fields) {
           if(err){
             connection.release();

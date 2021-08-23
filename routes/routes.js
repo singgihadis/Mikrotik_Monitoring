@@ -168,6 +168,7 @@ module.exports = function(app){
       res.redirect("/login.html");
     }else{
       if(req.session.server_id){
+        var level = req.session.level;
         if(level == "3"){
           res.redirect("/dashboard.html");
         }else{

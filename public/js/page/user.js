@@ -2,6 +2,14 @@ var page = 1;
 var is_edit = false;
 var is_edit_password = false;
 $(document).ready(function(){
+  $('#file_npwp').on('change',function(){
+    var fileName = $(this).val();
+    $(this).next('.custom-file-label').html(fileName);
+  });
+  $('#file_ktp').on('change',function(){
+    var fileName = $(this).val();
+    $(this).next('.custom-file-label').html(fileName);
+  });
   $("#form_search").validate({
     submitHandler:function(){
       page = 1;
@@ -49,10 +57,31 @@ function tambah(){
   if(level == "3" || level == "4"){
     parent_user_id = $("#parent_user_id").val();
   }
+  var nik = $("#nik").val();
+  var email = $("#email").val();
+  var alamat = $("#alamat").val();
+  var data = new FormData();
+  data.append("id",id);
+  data.append("nama",nama);
+  data.append("user",user);
+  data.append("level",level);
+  data.append("parent_user_id",parent_user_id);
+  data.append("nik",nik);
+  data.append("email",email);
+  data.append("alamat",alamat);
+  if($('#file_npwp')[0].files.length > 0){
+    data.append('file_npwp', $('#file_npwp')[0].files[0]);
+  }
+  if($('#file_ktp')[0].files.length > 0){
+    data.append('file_ktp', $('#file_ktp')[0].files[0]);
+  }
   $.ajax({
     type:'post',
     url:'/ajax/user_tambah.html',
-    data:{nama:nama,user:user,level:level,password:password,parent_user_id:parent_user_id},
+    cache: false,
+    contentType: false,
+    processData: false,
+    data:data,
     success:function(resp){
       $("#form_data").loading("stop");
       var res = JSON.parse(resp);
@@ -81,14 +110,37 @@ function edit(){
   var nama = $("#nama").val();
   var user = $("#user").val();
   var level = $("#level").val();
+  var nik = $("#nik").val();
+  var email = $("#email").val();
+  var alamat = $("#alamat").val();
+  var password = $("#hidden_password").val();
   var parent_user_id = "0";
   if(level == "3" || level == "4"){
     parent_user_id = $("#parent_user_id").val();
   }
+  var data = new FormData();
+  data.append("id",id);
+  data.append("nama",nama);
+  data.append("user",user);
+  data.append("level",level);
+  data.append("password",password);
+  data.append("parent_user_id",parent_user_id);
+  data.append("nik",nik);
+  data.append("email",email);
+  data.append("alamat",alamat);
+  if($('#file_npwp')[0].files.length > 0){
+    data.append('file_npwp', $('#file_npwp')[0].files[0]);
+  }
+  if($('#file_ktp')[0].files.length > 0){
+    data.append('file_ktp', $('#file_ktp')[0].files[0]);
+  }
   $.ajax({
     type:'post',
     url:'/ajax/user_edit.html',
-    data:{id:id,nama:nama,user:user,level:level,parent_user_id:parent_user_id},
+    cache: false,
+    contentType: false,
+    processData: false,
+    data:data,
     success:function(resp){
       $("#form_data").loading("stop");
       var res = JSON.parse(resp);
@@ -190,9 +242,16 @@ function modal_tambah(){
   $("#modal_form_title").html("Tambah User");
   $("#div_password").show();
   $("#div_nama").show();
+  $("#div_nik").show();
+  $("#div_email").show();
+  $("#div_alamat").show();
+  $("#div_file_npwp").show();
+  $("#div_file_ktp").show();
   $("#div_user").show();
   $("#div_level").show();
   $("#div_parent_user_id").hide();
+  $("#img_npwp").attr("src","");
+  $("#img_ktp").attr("src","");
   $("#modal_form").modal("show");
 }
 function modal_edit(itu){
@@ -204,15 +263,34 @@ function modal_edit(itu){
   var user = $(itu).attr("data-user");
   var level = $(itu).attr("data-level");
   var parent_user_id = $(itu).attr("data-parent-user-id");
+  var nik = $(itu).attr("data-nik");
+  var email = $(itu).attr("data-email");
+  var alamat = $(itu).attr("data-alamat");
+  var file_npwp = $(itu).attr("data-file-npwp");
+  var file_ktp = $(itu).attr("data-file-ktp");
   $("#modal_form_title").html("Edit User");
   $("#div_password").hide();
   $("#div_nama").show();
+  $("#div_nik").show();
+  $("#div_email").show();
+  $("#div_alamat").show();
+  $("#div_file_npwp").show();
+  $("#div_file_ktp").show();
   $("#div_user").show();
   $("#div_level").show();
   $("#id").val(id);
   $("#nama").val(nama);
   $("#user").val(user);
   $("#level").val(level);
+  $("#nik").val(nik);
+  $("#email").val(email);
+  $("#alamat").val(alamat);
+  if(file_npwp != ""){
+    $("#img_npwp").attr("src",file_npwp);
+  }
+  if(file_ktp != ""){
+    $("#img_ktp").attr("src",file_ktp);
+  }
   $("#modal_form").modal("show");
   if(level == "3" || level == "4"){
     $("#div_parent_user_id").show();
@@ -229,6 +307,11 @@ function modal_password(itu){
   $("#div_nama").hide();
   $("#div_user").hide();
   $("#div_level").hide();
+  $("#div_nik").hide();
+  $("#div_email").hide();
+  $("#div_alamat").hide();
+  $("#div_file_npwp").hide();
+  $("#div_file_ktp").hide();
   $("#div_parent_user_id").hide();
   $("#password").val("");
   $("#modal_form").modal("show");
@@ -274,7 +357,7 @@ function load_data(){
             html += "<td>" + level + "</td>";
             html += "<td>";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='modal_password(this);' class='btn btn-primary'><span class='fa fa-key'></span></a> ";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' data-parent-user-id='" + v['parent_user_id'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
+            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-file-npwp='" + v['file_npwp'] + "' data-file-ktp='" + v['file_ktp'] + "' data-nik='" + v['nik'] + "' data-email='" + v['email'] + "' data-alamat='" + v['alamat'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' data-parent-user-id='" + v['parent_user_id'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a>";
             html += "</td>";
             html += "</tr>";

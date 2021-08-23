@@ -52,7 +52,13 @@ module.exports = function(app){
   app.post(['/ajax/master_paket.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
-        var sql_data = "select * from master_paket";
+        var arr_query = [];
+        arr_query.push("(user_id=" + req.session.user_id + " or user_id=" + req.session.parent_user_id + ")");
+        var filter_query = "";
+        if(arr_query.length > 0){
+          filter_query = " where " + arr_query.join(" and ");
+        }
+        var sql_data = "select * from master_paket " + filter_query + " order by tgl_insert desc";
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();
