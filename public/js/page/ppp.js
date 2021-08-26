@@ -138,7 +138,8 @@ function load_data(with_loading){
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" + v['name'] + "</td>";
-            html += "<td>" + v['password'] + "</td>";
+            html += "<td>" + v['id_ppp'] + "</td>";
+            html += "<td>" + v['nama'] + "</td>";
             html += "<td>" + v['profile'] + "</td>";
             html += "<td>" + (v['address'] != null?v['address']:"") + "</td>";
             html += "<td class='text-center'>" + is_active + "</td>";

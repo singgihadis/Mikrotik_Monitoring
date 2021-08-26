@@ -82,7 +82,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "select a.*,IF(b.id_ppp is null,0,1) as is_active,b.address as address from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.server_id = b.server_id " + filter_query + " limit " + limit + ",11";
+            var sql_data = "select a.*,IFNULL(c.nama,'') as nama,IF(b.id_ppp is null,0,1) as is_active,b.address as address from ppp_secret a left join ppp_active_connection b on a.`name`=b.`name` and a.server_id = b.server_id left join member c on a.id = c.ppp_secret_id " + filter_query + " limit " + limit + ",11";
             var query_data = connection.query(sql_data, function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
