@@ -388,11 +388,11 @@
                   <td>:</td>
                   <td id="metode_bayar_admin">
                     <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" id="cr_transfer" name="cr_metode_bayar" class="custom-control-input" checked>
-                      <label class="custom-control-label" for="cr_transfer">Transfer</label>
+                      <input type="radio" id="cr_transfer" name="cr_metode_bayar" class="custom-control-input" checked value="1">
+                      <label class="custom-control-label" for="cr_transfer">Transfer Bank (Manual)</label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" id="cr_cash" name="cr_metode_bayar" class="custom-control-input">
+                      <input type="radio" id="cr_cash" name="cr_metode_bayar" class="custom-control-input" value="2">
                       <label class="custom-control-label" for="cr_cash">Cash</label>
                     </div>
                   </td>
@@ -404,7 +404,7 @@
                   <td>Bank</td>
                   <td>:</td>
                   <td>
-                    <select class="form-control" id="bank" name="bank">
+                    <select class="form-control" id="bank" name="bank" required>
 
                     </select>
                   </td>

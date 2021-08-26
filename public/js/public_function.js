@@ -383,3 +383,16 @@ function removeArray(y,removeItem) {
   });
   return y;
 }
+function MetodeBayarByKodeNumber(kode){
+  if(kode == "1"){
+    return "Transfer Bank (Manual)";
+  }else if(kode == "2"){
+    return "Cash";
+  }else if(kode == "3"){
+    return "OVO";
+  }else if(kode == "4"){
+    return "QRIS";
+  }else{
+    return "";
+  }
+}

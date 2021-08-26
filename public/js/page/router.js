@@ -144,7 +144,7 @@ function dropdown_user(user_id){
   $.ajax({
     type:'post',
     url:'/ajax/user_data.html',
-    data:{keyword:"",page:"x"},
+    data:{keyword:"",page:"x",level:"1"},
     success:function(resp){
       var res = JSON.parse(resp);
       var html = "";

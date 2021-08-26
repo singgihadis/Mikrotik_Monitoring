@@ -67,7 +67,9 @@ module.exports = {
               hasil = JSON.stringify(hasil_arr);
             }
             torch.stop();
-            api.close();
+            if(api['rosApi']['closing'] == false){
+              api.close();
+            }
             pool.getConnection(function(err, connection) {
               var sql_update = "update ping_data set hasil=?,filled=1 where monitoring_id=? and tgl=CURDATE()";
               var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {

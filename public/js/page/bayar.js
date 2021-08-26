@@ -22,7 +22,7 @@ $(document).ready(function(){
       var is_bayar = $("#is_bayar").val();
       var tahun = $("#tahun").val();
       var metode_bayar = "";
-      if($("input[name='cr_metode_bayar']").attr("id") == "cr_transfer"){
+      if($("input[name='cr_metode_bayar']:checked").attr("id") == "cr_transfer"){
         metode_bayar = "1";
       }else{
         metode_bayar = "2";
@@ -55,6 +55,7 @@ $(document).ready(function(){
               }
               is_sukses = true;
               $('#modal_bayar').modal("hide");
+              load_data();
             }
           },error:function(){
             $("#form_bayar").loading("stop");
@@ -153,6 +154,7 @@ function load_data(){
         var first = no;
         $.each(data,function(k,v){
           if(k < 10){
+            var arr_metode_bayar = v['metode_bayar'].split(",");
             var bulan = v['bulan'];
             var arr_bulan = bulan.split(",");
             var awal_tagihan_tahun = parseInt(v['awal_tagihan_tahun']);
@@ -166,13 +168,20 @@ function load_data(){
             for(var a=0;a<12;a++){
               var html_switch = "";
               if(arr_bulan.indexOf((a + 1).toString()) != -1){
+                var aa = 0;
+                arr_bulan.forEach((item, i) => {
+                  if(item == (a + 1)){
+                    aa = i;
+                  }
+                });
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "' checked>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='" + arr_metode_bayar[aa] + "' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "' checked>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
+                aa++;
               }else{
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "'>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "'>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
               }
@@ -234,6 +243,7 @@ function load_data(){
           var nominal = $(this).attr("data-nominal-pembayaran");
           var nominal_dibayar = $(this).attr("data-nominal-pembayaran-dibayar");
           var bulan = $(this).attr("data-bulan");
+          var metode_bayar = $(this).attr("data-metode-bayar");
           var id = $(this).attr("data-id");
           $("#nama_bayar").html(nama);
           $("#profile_bayar").html(profile);
@@ -251,21 +261,59 @@ function load_data(){
           $('#modal_bayar').unbind();
           var is_bayar = $("#is_bayar").val();
           if(is_bayar == "1"){
+            //Aksi membayar
+            $("#modal_bayar_tutup").hide();
+            $("#modal_bayar_aksi").show();
+            $("#metode_bayar_user").hide();
+            $("#metode_bayar_admin").show();
+            $("#div_password").show();
+            $("#div_bank").show();
             $("#nominal_bayar").html("Rp. " + FormatAngka(nominal));
             $("#cr_transfer").removeAttr("disabled","disabled");
             $("#cr_cash").removeAttr("disabled","disabled");
             $("#bank").removeAttr("disabled");
+            $("#cr_transfer").prop("checked",true);
             $("#btn_submit").removeClass("btn-danger");
             $("#btn_submit").addClass("btn-primary");
             $("#btn_submit").html("Simpan");
           }else{
             $("#nominal_bayar").html("Rp. " + FormatAngka(nominal_dibayar));
-            $("#cr_transfer").attr("disabled","disabled");
-            $("#cr_cash").attr("disabled","disabled");
-            $("#bank").attr("disabled","disabled");
-            $("#btn_submit").removeClass("btn-primary");
-            $("#btn_submit").addClass("btn-danger");
-            $("#btn_submit").html("Batalkan Pembayaran");
+            if(metode_bayar == "3"){
+              $("#modal_bayar_tutup").show();
+              $("#modal_bayar_aksi").hide();
+              $("#metode_bayar_admin").hide();
+              $("#metode_bayar_user").show();
+              $("#metode_bayar_user").html("<img src='/assets/img/ovo.png' style='width:36px;' />");
+              $("#div_bank").hide();
+              $("#div_password").hide();
+            }else if(metode_bayar == "4"){
+              $("#modal_bayar_tutup").show();
+              $("#modal_bayar_aksi").hide();
+              $("#metode_bayar_admin").hide();
+              $("#metode_bayar_user").show();
+              $("#metode_bayar_user").html("<img src='/assets/img/qris.png' style='width:200px;vertical-align: bottom;margin-top: 2px;'>");
+              $("#div_bank").hide();
+              $("#div_password").hide();
+            }else{
+              $("#modal_bayar_tutup").hide();
+              $("#modal_bayar_aksi").show();
+              $("#metode_bayar_user").hide();
+              $("#metode_bayar_admin").show();
+              $("#div_password").show();
+              if(metode_bayar == "1"){
+                $("#cr_transfer").prop("checked",true);
+                $("#div_bank").show();
+              }else{
+                $("#cr_cash").prop("checked",true);
+                $("#div_bank").hide();
+              }
+              $("#cr_transfer").attr("disabled","disabled");
+              $("#cr_cash").attr("disabled","disabled");
+              $("#bank").attr("disabled","disabled");
+              $("#btn_submit").removeClass("btn-primary");
+              $("#btn_submit").addClass("btn-danger");
+              $("#btn_submit").html("Batalkan Pembayaran");
+            }
           }
           $("#modal_bayar").modal("show");
           var itu = this;

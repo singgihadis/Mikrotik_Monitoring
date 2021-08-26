@@ -210,27 +210,30 @@
                 <tr>
                   <td>Metode Bayar</td>
                   <td>:</td>
-                  <td>
+                  <td id="metode_bayar_admin">
                     <div class="custom-control custom-radio custom-control-inline">
                       <input type="radio" id="cr_transfer" name="cr_metode_bayar" class="custom-control-input" checked>
-                      <label class="custom-control-label" for="cr_transfer">Transfer</label>
+                      <label class="custom-control-label" for="cr_transfer">Transfer Bank (Manual)</label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
                       <input type="radio" id="cr_cash" name="cr_metode_bayar" class="custom-control-input">
                       <label class="custom-control-label" for="cr_cash">Cash</label>
                     </div>
                   </td>
+                  <td id="metode_bayar_user" style="display:none;">
+
+                  </td>
                 </tr>
                 <tr id="div_bank">
                   <td>Bank</td>
                   <td>:</td>
                   <td>
-                    <select class="form-control" id="bank" name="bank">
+                    <select class="form-control" id="bank" name="bank" required>
 
                     </select>
                   </td>
                 </tr>
-                <tr>
+                <tr id="div_password">
                   <td>Password</td>
                   <td>:</td>
                   <td>
@@ -239,7 +242,10 @@
                   </td>
                 </tr>
               </table>
-              <div class="text-right">
+              <div class="text-right" id="modal_bayar_tutup" style="display:none;">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Tutup</button>
+              </div>
+              <div class="text-right" id="modal_bayar_aksi">
                 <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
                 <button id="btn_submit" type="submit" class="btn btn-primary">Simpan</button>
               </div>

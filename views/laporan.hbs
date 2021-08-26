@@ -1,0 +1,100 @@
+<html>
+  {{> head}}
+  <body class="dashboard">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-5 mb-3">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      Laporan
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-7 text-right">
+                <div class="d-inline-block">
+                  <select id="bulan" name="bulan" class="form-control">
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                </div>
+                <div class="d-inline-block">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                    <input id="tahun" name="tahun" class="form-control" placeholder="Tahun" required />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Data <span class="bulan_tahun"></span>
+                  </div>
+                  <div class="card-body">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th rowspan="2" class="align-middle">
+                            Metode Bayar
+                          </th>
+                          <th rowspan="2" class="align-middle">
+                            Jml Transaksi
+                          </th>
+                          <th rowspan="2" class="border-right align-middle">
+                            Jml Pembayaran
+                          </th>
+                          <th colspan="2" class="text-center">
+                            Biaya Layanan
+                          </th>
+                          <th rowspan="2" class="border-left align-middle">
+                            Total Pembayaran
+                          </th>
+                        </tr>
+                        <tr>
+                          <th>
+                            Citra Informatika
+                          </th>
+                          <th class="border-left">
+                            Duitku
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="listdata"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <br><br>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/laporan.js"></script>
+  </body>
+</html>

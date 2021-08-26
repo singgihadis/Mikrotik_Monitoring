@@ -74,7 +74,7 @@ $(document).ready(function(){
       var is_bayar = $("#is_bayar").val();
       var tahun = $("#tahun").val();
       var metode_bayar = "";
-      if($("input[name='cr_metode_bayar']").attr("id") == "cr_transfer"){
+      if($("input[name='cr_metode_bayar']:checked").attr("id") == "cr_transfer"){
         metode_bayar = "1";
       }else{
         metode_bayar = "2";
@@ -850,7 +850,7 @@ function modal_bayar(itu){
       $("#modal_bayar_aksi").hide();
       $("#metode_bayar_admin").hide();
       $("#metode_bayar_user").show();
-      $("#metode_bayar_user").html("<img src='/assets/img/shopee_pay.png' style='width:36px;' />");
+      $("#metode_bayar_user").html("<img src='/assets/img/qris.png' style='width:200px;vertical-align: bottom;margin-top: 2px;'>");
       $("#div_bank").hide();
       $("#div_password").hide();
     }else{
@@ -858,8 +858,14 @@ function modal_bayar(itu){
       $("#modal_bayar_aksi").show();
       $("#metode_bayar_user").hide();
       $("#metode_bayar_admin").show();
-      $("#div_bank").show();
       $("#div_password").show();
+      if(metode_bayar == "1"){
+        $("#cr_transfer").prop("checked",true);
+        $("#div_bank").show();
+      }else{
+        $("#cr_cash").prop("checked",true);
+        $("#div_bank").hide();
+      }
       $("#cr_transfer").attr("disabled","disabled");
       $("#cr_cash").attr("disabled","disabled");
       $("#bank").attr("disabled","disabled");
@@ -878,6 +884,7 @@ function modal_bayar(itu){
     $("#cr_transfer").removeAttr("disabled","disabled");
     $("#cr_cash").removeAttr("disabled","disabled");
     $("#bank").removeAttr("disabled");
+    $("#cr_transfer").prop("checked",true);
     $("#btn_submit").removeClass("btn-danger");
     $("#btn_submit").addClass("btn-primary");
     $("#btn_submit").html("Simpan");
