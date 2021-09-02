@@ -287,7 +287,6 @@ module.exports = function(app){
                     res.send(JSON.stringify(data));
                     res.end();
                   }
-
               });
             }).catch((err) => {
               var data = {is_error:true,msg:err.message};

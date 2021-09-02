@@ -159,49 +159,55 @@ module.exports = function(app){
   });
   app.post(['/ajax/ppp_secret_simpan.html'],(req, res) => {
     if(req.session.is_login){
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password,
-          keepalive: true
-      });
-      api.connect().then((client) => {
-        client.menu("/ppp secret").get().then((result) => {
-            var server_id = req.session.server_id;
-            pool.getConnection(function(err, connection) {
-              var sql_delete = "update ppp_secret set is_ada=0 where server_id=?";
-              var query_delete = connection.query(sql_delete, [server_id], function (err, results_update, fields) {
-                if(err){
-                  connection.release();
-                  var data = {is_error:true,data:[],msg:"Gagal mengupdate ppp secret"};
-                  res.send(JSON.stringify(data));
-                  res.end();
-                }else{
-                  connection.release();
-                  ppp_function.Simpan_Secret(0,server_id,result.length,result,function(){
-                    var data = {is_error:false,data:[],msg:"Berhasil"};
-                    api.close();
+      try{
+        var host = req.session.host;
+        var port = req.session.port;
+        var user = req.session.user;
+        var password = req.session.password;
+        const api = new RouterOSClient({
+            host: host,
+            port: port,
+            user: user,
+            password: password,
+            keepalive: true
+        });
+        api.connect().then((client) => {
+          client.menu("/ppp secret").get().then((result) => {
+              var server_id = req.session.server_id;
+              pool.getConnection(function(err, connection) {
+                var sql_delete = "update ppp_secret set is_ada=0 where server_id=?";
+                var query_delete = connection.query(sql_delete, [server_id], function (err, results_update, fields) {
+                  if(err){
+                    connection.release();
+                    var data = {is_error:true,data:[],msg:"Gagal mengupdate ppp secret"};
                     res.send(JSON.stringify(data));
                     res.end();
-                  });
-                }
+                  }else{
+                    connection.release();
+                    ppp_function.Simpan_Secret(0,server_id,result.length,result,function(){
+                      var data = {is_error:false,data:[],msg:"Berhasil"};
+                      api.close();
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    });
+                  }
+                });
               });
-            });
+          }).catch((err) => {
+            var data = {is_error:true,msg:err.message};
+            res.send(JSON.stringify(data));
+            res.end();
+          });
         }).catch((err) => {
           var data = {is_error:true,msg:err.message};
           res.send(JSON.stringify(data));
           res.end();
         });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
+      }catch(err){
+        var data = {is_error:true,data:[],msg:"Koneksi timeout, silahkan refresh"};
         res.send(JSON.stringify(data));
         res.end();
-      });
+      }
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
       res.send(JSON.stringify(data));
@@ -210,49 +216,55 @@ module.exports = function(app){
   });
   app.post(['/ajax/ppp_active_connection_simpan.html'],(req, res) => {
     if(req.session.is_login){
-      var host = req.session.host;
-      var port = req.session.port;
-      var user = req.session.user;
-      var password = req.session.password;
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password,
-          keepalive: true
-      });
-      api.connect().then((client) => {
-        client.menu("/ppp active").get().then((result) => {
-            var server_id = req.session.server_id;
-            pool.getConnection(function(err, connection) {
-              var sql_delete = "delete from ppp_active_connection where server_id=?";
-              var query_delete = connection.query(sql_delete, [server_id], function (err, results_delete, fields) {
-                if(err){
-                  connection.release();
-                  var data = {is_error:true,data:[],msg:"Gagal hapus ppp active connection"};
-                  res.send(JSON.stringify(data));
-                  res.end();
-                }else{
-                  connection.release();
-                  ppp_function.Simpan_Active_Connection(0,server_id,result.length,result,function(){
-                    var data = {is_error:false,data:[],msg:"Berhasil"};
-                    api.close();
+      try{
+        var host = req.session.host;
+        var port = req.session.port;
+        var user = req.session.user;
+        var password = req.session.password;
+        const api = new RouterOSClient({
+            host: host,
+            port: port,
+            user: user,
+            password: password,
+            keepalive: true
+        });
+        api.connect().then((client) => {
+          client.menu("/ppp active").get().then((result) => {
+              var server_id = req.session.server_id;
+              pool.getConnection(function(err, connection) {
+                var sql_delete = "delete from ppp_active_connection where server_id=?";
+                var query_delete = connection.query(sql_delete, [server_id], function (err, results_delete, fields) {
+                  if(err){
+                    connection.release();
+                    var data = {is_error:true,data:[],msg:"Gagal hapus ppp active connection"};
                     res.send(JSON.stringify(data));
                     res.end();
-                  });
-                }
+                  }else{
+                    connection.release();
+                    ppp_function.Simpan_Active_Connection(0,server_id,result.length,result,function(){
+                      var data = {is_error:false,data:[],msg:"Berhasil"};
+                      api.close();
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    });
+                  }
+                });
               });
-            });
+          }).catch((err) => {
+            var data = {is_error:true,msg:err.message};
+            res.send(JSON.stringify(data));
+            res.end();
+          });
         }).catch((err) => {
           var data = {is_error:true,msg:err.message};
           res.send(JSON.stringify(data));
           res.end();
         });
-      }).catch((err) => {
-        var data = {is_error:true,msg:err.message};
+      }catch(err){
+        var data = {is_error:true,data:[],msg:"Koneksi timeout, silahkan refresh"};
         res.send(JSON.stringify(data));
         res.end();
-      });
+      }
     }else{
       var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
       res.send(JSON.stringify(data));
