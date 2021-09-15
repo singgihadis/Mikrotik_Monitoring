@@ -101,6 +101,7 @@ require('./routes/ajax_user')(app);
 require('./routes/ajax_umum')(app);
 require('./routes/ajax_master_paket')(app);
 require('./routes/ajax_laporan')(app);
+require('./routes/ajax_pendaftaran')(app);
 
 //server listening
 var server = app.listen(3002, () => {

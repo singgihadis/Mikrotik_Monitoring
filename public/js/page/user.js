@@ -52,6 +52,7 @@ function tambah(){
   var nama = $("#nama").val();
   var user = $("#user").val();
   var level = $("#level").val();
+  var status = $("#status").val();
   var password = $("#hidden_password").val();
   var parent_user_id = "0";
   if(level == "3" || level == "4"){
@@ -65,6 +66,7 @@ function tambah(){
   data.append("nama",nama);
   data.append("user",user);
   data.append("level",level);
+  data.append("status",status);
   data.append("parent_user_id",parent_user_id);
   data.append("nik",nik);
   data.append("email",email);
@@ -118,11 +120,13 @@ function edit(){
   if(level == "3" || level == "4"){
     parent_user_id = $("#parent_user_id").val();
   }
+  var status = $("#status").val();
   var data = new FormData();
   data.append("id",id);
   data.append("nama",nama);
   data.append("user",user);
   data.append("level",level);
+  data.append("status",status);
   data.append("password",password);
   data.append("parent_user_id",parent_user_id);
   data.append("nik",nik);
@@ -249,6 +253,7 @@ function modal_tambah(){
   $("#div_file_ktp").show();
   $("#div_user").show();
   $("#div_level").show();
+  $("#div_status").show();
   $("#div_parent_user_id").hide();
   $("#img_npwp").attr("src","");
   $("#img_ktp").attr("src","");
@@ -262,6 +267,7 @@ function modal_edit(itu){
   var nama = $(itu).attr("data-nama");
   var user = $(itu).attr("data-user");
   var level = $(itu).attr("data-level");
+  var status = $(itu).attr("data-status");
   var parent_user_id = $(itu).attr("data-parent-user-id");
   var nik = $(itu).attr("data-nik");
   var email = $(itu).attr("data-email");
@@ -278,10 +284,12 @@ function modal_edit(itu){
   $("#div_file_ktp").show();
   $("#div_user").show();
   $("#div_level").show();
+  $("#div_status").show();
   $("#id").val(id);
   $("#nama").val(nama);
   $("#user").val(user);
   $("#level").val(level);
+  $("#status").val(status);
   $("#nik").val(nik);
   $("#email").val(email);
   $("#alamat").val(alamat);
@@ -307,6 +315,7 @@ function modal_password(itu){
   $("#div_nama").hide();
   $("#div_user").hide();
   $("#div_level").hide();
+  $("#div_status").hide();
   $("#div_nik").hide();
   $("#div_email").hide();
   $("#div_alamat").hide();
@@ -350,14 +359,21 @@ function load_data(){
             }else if(v['level'] == "4"){
               level = "Teknisi";
             }
+            var status = "";
+            if(v['status'] == "1"){
+              status = "<span class='badge badge-success'>Aktif</span>";
+            }else{
+              status = "<span class='badge badge-dark'>Tidak Aktif</span>";
+            }
             html += "<tr>";
             html += "<td>" + no + "</td>";
             html += "<td>" + v['nama'] + "</td>";
             html += "<td>" + v['user'] + "</td>";
             html += "<td>" + level + "</td>";
+            html += "<td>" + status + "</td>";
             html += "<td>";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='modal_password(this);' class='btn btn-primary'><span class='fa fa-key'></span></a> ";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-file-npwp='" + v['file_npwp'] + "' data-file-ktp='" + v['file_ktp'] + "' data-nik='" + v['nik'] + "' data-email='" + v['email'] + "' data-alamat='" + v['alamat'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' data-parent-user-id='" + v['parent_user_id'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
+            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-status='" + v['status'] + "' data-nama='" + v['nama'] + "' data-file-npwp='" + v['file_npwp'] + "' data-file-ktp='" + v['file_ktp'] + "' data-nik='" + v['nik'] + "' data-email='" + v['email'] + "' data-alamat='" + v['alamat'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' data-parent-user-id='" + v['parent_user_id'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a>";
             html += "</td>";
             html += "</tr>";

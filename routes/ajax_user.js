@@ -24,6 +24,10 @@ module.exports = function(app){
           if(fields.hasOwnProperty("level")){
             level = fields.level;
           }
+          var status = "";
+          if(fields.hasOwnProperty("status")){
+            status = fields.status;
+          }
           var parent_user_id = "";
           if(fields.hasOwnProperty("parent_user_id")){
             parent_user_id = fields.parent_user_id;
@@ -60,8 +64,8 @@ module.exports = function(app){
               var cur_file_ktp = results[0]['file_ktp'];
               user_function.Simpan_Gambar(cur_file_npwp,file_npwp,function(npwp_file_name){
                 user_function.Simpan_Gambar(cur_file_ktp,file_ktp,function(ktp_file_name){
-                  var sql_insert = "update user set nama=?,user=?,level=?,parent_user_id=?,nik=?,email=?,alamat=?,file_npwp=?,file_ktp=? where id=?";
-                  var query_insert = connection.query(sql_insert,[nama,user,level,parent_user_id,nik,email,alamat,npwp_file_name,ktp_file_name,id], function (err, results, fields) {
+                  var sql_insert = "update user set nama=?,user=?,level=?,status=?,parent_user_id=?,nik=?,email=?,alamat=?,file_npwp=?,file_ktp=? where id=?";
+                  var query_insert = connection.query(sql_insert,[nama,user,level,status,parent_user_id,nik,email,alamat,npwp_file_name,ktp_file_name,id], function (err, results, fields) {
                     if (!err){
                       connection.release();
                       var data = {is_error:false,msg:"Berhasil mengubah"};
@@ -165,10 +169,15 @@ module.exports = function(app){
           var password = "";
           if(fields.hasOwnProperty("password")){
             password = fields.password;
+            password = crypto.createHash('sha1').update(password).digest("hex");
           }
           var level = "";
           if(fields.hasOwnProperty("level")){
             level = fields.level;
+          }
+          var status = "";
+          if(fields.hasOwnProperty("status")){
+            status = fields.status;
           }
           var parent_user_id = "";
           if(fields.hasOwnProperty("parent_user_id")){
@@ -196,8 +205,8 @@ module.exports = function(app){
           }
           user_function.Simpan_Gambar("",file_npwp,function(npwp_file_name){
             user_function.Simpan_Gambar("",file_ktp,function(ktp_file_name){
-              var sql_insert = "insert into user(nama,user,level,password,parent_user_id,nik,email,alamat,file_npwp,file_ktp) values(?,?,?,?,?,?,?,?,?,?)";
-              var query_insert = connection.query(sql_insert,[nama,user,level,password,parent_user_id,nik,email,alamat,npwp_file_name,ktp_file_name], function (err, results, fields) {
+              var sql_insert = "insert into user(nama,user,level,status,password,parent_user_id,nik,email,alamat,file_npwp,file_ktp) values(?,?,?,?,?,?,?,?,?,?,?)";
+              var query_insert = connection.query(sql_insert,[nama,user,level,status,password,parent_user_id,nik,email,alamat,npwp_file_name,ktp_file_name], function (err, results, fields) {
                 if (!err){
                   connection.release();
                   var data = {is_error:false,msg:"Berhasil menambahkan"};

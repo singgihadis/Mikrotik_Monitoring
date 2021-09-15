@@ -13,7 +13,7 @@ module.exports = function(app){
       password = crypto.createHash('sha1').update(password).digest("hex");
     }
     pool.getConnection(function(err, connection) {
-      var sql_login = "SELECT * from user where user=? and password=?";
+      var sql_login = "SELECT * from user where user=? and password=? and status=1";
       var query_login = connection.query(sql_login,[user,password], function (err, results, fields) {
         if(results.length > 0){
           req.session.is_login = true;

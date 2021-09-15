@@ -41,7 +41,7 @@
                 <h5><b>LOGIN</b></h5>
               </div>
               <br>
-              <form id="form_login">
+              <form id="form_login" class="text-left">
                 <div class="form-group">
                   <input type="text" class="form-control" id="user" name="user" placeholder="User" required />
                 </div>
@@ -50,16 +50,100 @@
                   <input type="hidden" id="hidden_password" name="hidden_password" />
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">LOGIN</button>
+                <a href="javascript:void(0);" onclick="modal_tambah();" class="btn btn-success btn-block">PENDAFTARAN</a>
               </form>
               <br>
               <div class="text-center">
-                @2020
+                @2021
               </div>
             </div>
           </div>
         </div>
       </div>
-    </body>
+      <div class="modal" id="modal_form">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modal_form_title">Pendaftaran</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form id="form_data">
+              <div class="modal-body">
+                <input type="hidden" id="id" name="id" />
+                <div class="form-group" id="div_nama">
+                  <label class="control-label">
+                    Nama
+                  </label>
+                  <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama User" required />
+                </div>
+                <div class="form-group" id="div_email">
+                  <label class="control-label">
+                    Email
+                  </label>
+                  <input type="email" id="email" name="email" class="form-control" placeholder="Email" required />
+                </div>
+                <div class="form-group" id="div_alamat">
+                  <label class="control-label">
+                    Alamat
+                  </label>
+                  <textarea id="alamat" name="alamat" class="form-control" placeholder="Alamat" required></textarea>
+                </div>
+                <div class="form-group" id="div_file_npwp">
+                  <label class="control-label">
+                    File NPWP
+                  </label>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="file_npwp" name="file_npwp" accept="image/jpeg, image/png">
+                          <label class="custom-file-label" for="icon_website">Pilih Gambar</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <img id="img_npwp" name="img_npwp" style="max-width:100%;width:auto;" />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group" id="div_file_ktp">
+                  <label class="control-label">
+                    File KTP
+                  </label>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="file_ktp" name="file_ktp" accept="image/jpeg, image/png">
+                          <label class="custom-file-label" for="icon_website">Pilih Gambar</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <img id="img_ktp" name="img_ktp" style="max-width:100%;width:auto;" />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label">
+                    Username
+                  </label>
+                  <input type="text" id="user_pendaftaran" name="user_pendaftaran" class="form-control" placeholder="Username" required />
+                </div>
+                <div class="form-group">
+                  <label class="control-label">
+                    Password
+                  </label>
+                  <input type="password" id="password_pendaftaran" name="password_pendaftaran" class="form-control" placeholder="Password User" required />
+                  <input type="hidden" id="hidden_password_pendaftaran" name="hidden_password_pendaftaran" />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     <script src="/assets/js/jquery.min.js" type="text/javascript"></script>
     <script src="/assets/js/bootstrap.bundle.min.js" type="text/javascript"></script>
     <script src="/assets/js/jquery.validate.js" type="text/javascript"></script>
