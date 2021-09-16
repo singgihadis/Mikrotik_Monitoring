@@ -31,6 +31,12 @@
   <div class="list-group list-group-flush">
       {{#ifEqualsOR2 level "1"  level "2" level "3"}}
       <a href="/dashboard.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "dashboard"}}font-weight-bolder{{/ifEquals}}">Dashboard</a>
+      <a href="#administrasi" data-toggle="collapse" class="list-group-item menu-item list-group-item-action bg-white {{#ifNotEquals menu "monitoring"}}collapsed{{/ifNotEquals}}">
+        Administrasi <span class="fa float-right mt-1"></span>
+      </a>
+      <div id="administrasi" class="list-group sub-menu collapse {{#ifEquals menu "administrasi"}}show{{/ifEquals}}">
+        <a href="/mou.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "mou"}}font-weight-bolder{{/ifEquals}}">MoU</a>
+      </div>
       <a href="/laporan.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "laporan"}}font-weight-bolder{{/ifEquals}}">Laporan</a>
       <a href="/pembayaran.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "pembayaran"}}font-weight-bolder{{/ifEquals}}">Pembayaran</a>
       <a href="/member.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "member"}}font-weight-bolder{{/ifEquals}}">Member</a>

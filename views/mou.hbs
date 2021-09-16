@@ -1,0 +1,181 @@
+<html>
+  {{> head}}
+  <style type="text/css">
+    a[aria-expanded=true] .fa-chevron-down {
+       display: none;
+    }
+    a[aria-expanded=false] .fa-chevron-up {
+       display: none;
+    }
+  </style>
+  <body class="dns">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-6">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      MoU
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Data MoU
+                    <a data-toggle="collapse" aria-expanded="false" href="#collapsedata" class="btn btn-light float-right">
+                      <span class="fa fa-chevron-down"></span>
+                      <span class="fa fa-chevron-up"></span>
+                    </a>
+                  </div>
+                  <div id="collapsedata" class="card-body collapse">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <form id="form_data" class="text-left">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Nomor MoU
+                                </label>
+                                <input id="nomor" name="nomor" type="text" class="form-control" placeholder="Nomor MoU" />
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Tanggal
+                                </label>
+                                <input id="tgl" name="tgl" type="date" class="form-control" placeholder="Tanggal" />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Nama Perusahaan Pihak 2
+                                </label>
+                                <input type="text" id="nama_perusahaan" name="nama_perusahaan" class="form-control" placeholder="Nama Pihak 1" />
+                              </div>
+                              <hr>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Nama Pihak 1
+                                </label>
+                                <input type="text" id="nama_pihak1" name="nama_pihak1" class="form-control" placeholder="Nama Pihak 1" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  NIK Pihak 1
+                                </label>
+                                <input type="text" id="nik_pihak1" name="nik_pihak1" class="form-control" placeholder="NIK Pihak 1" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Jabatan Pihak 1
+                                </label>
+                                <input type="text" id="jabatan_pihak1" name="jabatan_pihak1" class="form-control" placeholder="Nama Jabatan Pihak 1" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Jabatan Pihak 1 di bawah Tanda Tangan
+                                </label>
+                                <input type="text" id="jabatan_ttd_pihak1" name="jabatan_ttd_pihak1" class="form-control" placeholder="Nama Jabatan Pihak 1" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Alamat Pihak 1
+                                </label>
+                                <textarea id="alamat_pihak1" name="alamat_pihak1" class="form-control" placeholder="Alamat Pihak 1" rows="4"></textarea>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Nama Pihak 2
+                                </label>
+                                <input type="text" id="nama_pihak2" name="nama_pihak2" class="form-control" placeholder="Nama Pihak 2" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  NIK Pihak 2
+                                </label>
+                                <input type="text" id="nik_pihak2" name="nik_pihak2" class="form-control" placeholder="NIK Pihak 2" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Jabatan Pihak 2
+                                </label>
+                                <input type="text" id="jabatan_pihak2" name="jabatan_pihak2" class="form-control" placeholder="Nama Jabatan Pihak 2" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Jabatan Pihak 2 di bawah Tanda Tangan
+                                </label>
+                                <input type="text" id="jabatan_ttd_pihak2" name="jabatan_ttd_pihak2" class="form-control" placeholder="Nama Jabatan Pihak 2" />
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Alamat Pihak 2
+                                </label>
+                                <textarea id="alamat_pihak2" name="alamat_pihak2" class="form-control" placeholder="Alamat Pihak 2" rows="4"></textarea>
+                              </div>
+                            </div>
+                            <div class="col-md-12"><hr /></div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Penjualan Aktif Internet Paling Cepat
+                                </label>
+                                <input id="penjualan_paling_cepat" name="penjualan_paling_cepat" type="date" class="form-control" placeholder="Tanggal" />
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label class="control-label">
+                                  Penjualan Aktif Internet Paling Lambat
+                                </label>
+                                <input id="penjualan_paling_lambat" name="penjualan_paling_lambat" type="date" class="form-control" placeholder="Tanggal" />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="text-right">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+
+              </div>
+            </div>
+          <br><br>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/mou.js"></script>
+  </body>
+</html>
