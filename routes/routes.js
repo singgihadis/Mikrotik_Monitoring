@@ -691,36 +691,4 @@ module.exports = function(app){
       }
     }
   });
-  app.get(['/mou_pdf_viewer.html'],(req, res) => {
-    if(!req.session.is_login){
-      res.redirect("/login.html");
-    }else{
-      var website_config = req.website_config;
-      var level = req.session.level;
-      var nama_user = req.session.nama;
-      var title = "";
-      if(website_config['title'] != ""){
-        title = "Mou - " + website_config['title'];
-      }else{
-        title = "Mou";
-      }
-      var server_id = "";
-      if(req.session.server_id){
-        server_id = req.session.server_id;
-      }
-      if(level == "4"){
-        res.redirect("/pilih_router.html");
-      }else{
-        res.render("mou_pdf_viewer",{
-          title:title,
-          favicon:website_config['favicon'],
-          logo:website_config['logo'],
-          level:level,
-          server_id:server_id,
-          with_server:0,
-          nama_user:nama_user
-        });
-      }
-    }
-  });
 }

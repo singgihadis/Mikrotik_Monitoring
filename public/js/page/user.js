@@ -46,6 +46,67 @@ $(document).ready(function(){
       $("#div_parent_user_id").hide();
     }
   });
+  $("#form_mou").validate({
+    submitHandler:function(){
+      $("#form_mou").loading();
+      var id = $("#id").val();
+      var nomor = $("#nomor").val();
+      var tgl = $("#tgl").val();
+      var nama_perusahaan = $("#nama_perusahaan").val();
+      var nama_pihak1 = $("#nama_pihak1").val();
+      var nik_pihak1 = $("#nik_pihak1").val();
+      var jabatan_pihak1 = $("#jabatan_pihak1").val();
+      var jabatan_ttd_pihak1 = $("#jabatan_ttd_pihak1").val();
+      var alamat_pihak1 = $("#alamat_pihak1").val();
+      var nama_pihak2 = $("#nama_pihak2").val();
+      var nik_pihak2 = $("#nik_pihak2").val();
+      var jabatan_pihak2 = $("#jabatan_pihak2").val();
+      var jabatan_ttd_pihak2 = $("#jabatan_ttd_pihak2").val();
+      var alamat_pihak2 = $("#alamat_pihak2").val();
+      var penjualan_paling_cepat = $("#penjualan_paling_cepat").val();
+      var penjualan_paling_lambat = $("#penjualan_paling_lambat").val();
+      $.ajax({
+        type:'post',
+        url:'/ajax/mou_simpan.html',
+        data:{
+          id:id,
+          nomor:nomor,
+          tgl:tgl,
+          nama_perusahaan:nama_perusahaan,
+          nama_pihak1:nama_pihak1,
+          nik_pihak1:nik_pihak1,
+          jabatan_pihak1:jabatan_pihak1,
+          jabatan_ttd_pihak1:jabatan_ttd_pihak1,
+          alamat_pihak1:alamat_pihak1,
+          nama_pihak2:nama_pihak2,
+          nik_pihak2:nik_pihak2,
+          jabatan_pihak2:jabatan_pihak2,
+          jabatan_ttd_pihak2:jabatan_ttd_pihak2,
+          alamat_pihak2:alamat_pihak2,
+          penjualan_paling_cepat:penjualan_paling_cepat,
+          penjualan_paling_lambat:penjualan_paling_lambat
+        },
+        success:function(resp){
+          $("#form_mou").loading("stop");
+          var res = JSON.parse(resp);
+          var html = "";
+          if(res.is_error){
+            if(res.must_login){
+              window.location = "/login.html";
+            }else{
+              toastr["error"](res.msg);
+            }
+          }else{
+            toastr["success"]("Berhasil simpan data");
+
+          }
+        },error:function(){
+          $("#form_mou").loading("stop");
+          toastr["error"]("Silahkan periksa koneksi internet anda");
+        }
+      });
+    }
+  });
 });
 function tambah(){
   $("#form_data").loading();
@@ -305,6 +366,82 @@ function modal_edit(itu){
     dropdown_user(parent_user_id);
   }
 }
+function modal_mou(itu){
+  $("#form_mou").trigger("reset");
+  var id = $(itu).attr("data-id");
+  var nama = $(itu).attr("data-nama");
+  $("#modal_title_mou").html("MoU " + nama);
+  $("#modal_mou").modal("show");
+  $("#id").val(id);
+  get_mou_data(id);
+}
+function generate_pdf(){
+  $("#form_mou").loading();
+  var id = $("#id").val();
+  $.ajax({
+    type:'post',
+    url:'/ajax/mou_generate_pdf.html',
+    data:{id:id},
+    success:function(resp){
+      $("#form_mou").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"]("Silahkan lengkapi data MoU");
+        }
+      }else{
+        var data = res.output;
+        window.open(data,"_blank");
+      }
+    },error:function(){
+      $("#form_mou").loading("stop");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function get_mou_data(id){
+  $("#form_mou").loading();
+  $.ajax({
+    type:'post',
+    url:'/ajax/mou.html',
+    data:{id:id},
+    success:function(resp){
+      $("#form_mou").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+
+        }
+      }else{
+        var data = res.data[0];
+        $("#nomor").val(data['nomor']);
+        $("#tgl").val(data['tgl']);
+        $("#nama_perusahaan").val(data['nama_perusahaan']);
+        $("#nama_pihak1").val(data['nama_pihak1']);
+        $("#nik_pihak1").val(data['nama_pihak1']);
+        $("#jabatan_pihak1").val(data['nama_pihak1']);
+        $("#jabatan_ttd_pihak1").val(data['jabatan_ttd_pihak1']);
+        $("#alamat_pihak1").val(data['alamat_pihak1']);
+        $("#nama_pihak2").val(data['nama_pihak2']);
+        $("#nik_pihak2").val(data['nik_pihak2']);
+        $("#jabatan_pihak2").val(data['jabatan_pihak2']);
+        $("#jabatan_ttd_pihak2").val(data['jabatan_ttd_pihak2']);
+        $("#alamat_pihak2").val(data['alamat_pihak2']);
+        $("#penjualan_paling_cepat").val(data['penjualan_paling_cepat']);
+        $("#penjualan_paling_lambat").val(data['penjualan_paling_lambat']);
+      }
+    },error:function(){
+      $("#form_mou").loading("stop");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
 function modal_password(itu){
   is_edit = true;
   is_edit_password = true;
@@ -374,7 +511,10 @@ function load_data(){
             html += "<td>";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='modal_password(this);' class='btn btn-primary'><span class='fa fa-key'></span></a> ";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-status='" + v['status'] + "' data-nama='" + v['nama'] + "' data-file-npwp='" + v['file_npwp'] + "' data-file-ktp='" + v['file_ktp'] + "' data-nik='" + v['nik'] + "' data-email='" + v['email'] + "' data-alamat='" + v['alamat'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' data-parent-user-id='" + v['parent_user_id'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
-            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a>";
+            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a> ";
+            if(v['level'] == "1"){
+              html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' onclick='modal_mou(this);' class='btn btn-light'><span class='fa fa-handshake-o'></span></a> ";
+            }
             html += "</td>";
             html += "</tr>";
           }

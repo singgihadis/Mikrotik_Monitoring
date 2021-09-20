@@ -2,40 +2,20 @@ $(document).ready(function(){
   $("#form_data").validate({
     submitHandler:function(){
       $("#form_data").loading();
-      var nomor = $("#nomor").val();
-      var tgl = $("#tgl").val();
-      var nama_perusahaan = $("#nama_perusahaan").val();
-      var nama_pihak1 = $("#nama_pihak1").val();
-      var nik_pihak1 = $("#nik_pihak1").val();
-      var jabatan_pihak1 = $("#jabatan_pihak1").val();
-      var jabatan_ttd_pihak1 = $("#jabatan_ttd_pihak1").val();
-      var alamat_pihak1 = $("#alamat_pihak1").val();
       var nama_pihak2 = $("#nama_pihak2").val();
       var nik_pihak2 = $("#nik_pihak2").val();
       var jabatan_pihak2 = $("#jabatan_pihak2").val();
       var jabatan_ttd_pihak2 = $("#jabatan_ttd_pihak2").val();
       var alamat_pihak2 = $("#alamat_pihak2").val();
-      var penjualan_paling_cepat = $("#penjualan_paling_cepat").val();
-      var penjualan_paling_lambat = $("#penjualan_paling_lambat").val();
       $.ajax({
         type:'post',
         url:'/ajax/mou_simpan.html',
         data:{
-          nomor:nomor,
-          tgl:tgl,
-          nama_perusahaan:nama_perusahaan,
-          nama_pihak1:nama_pihak1,
-          nik_pihak1:nik_pihak1,
-          jabatan_pihak1:jabatan_pihak1,
-          jabatan_ttd_pihak1:jabatan_ttd_pihak1,
-          alamat_pihak1:alamat_pihak1,
           nama_pihak2:nama_pihak2,
           nik_pihak2:nik_pihak2,
           jabatan_pihak2:jabatan_pihak2,
           jabatan_ttd_pihak2:jabatan_ttd_pihak2,
-          alamat_pihak2:alamat_pihak2,
-          penjualan_paling_cepat:penjualan_paling_cepat,
-          penjualan_paling_lambat:penjualan_paling_lambat
+          alamat_pihak2:alamat_pihak2
         },
         success:function(resp){
           $("#form_data").loading("stop");
@@ -119,7 +99,7 @@ function generate_pdf(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-
+          toastr["error"]("Silahkan kontak admin untuk mengecek kelengkapan data MoU anda");
         }
       }else{
         var data = res.output;

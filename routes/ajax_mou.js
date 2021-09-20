@@ -1,4 +1,3 @@
-const RouterOSClient = require('routeros-client').RouterOSClient;
 var mou_function = require("../function/mou_function.js");
 const fs = require('fs');
 const formidable = require('formidable');
@@ -9,9 +8,15 @@ var pdf = require("html-pdf");
 module.exports = function(app){
   app.post(['/ajax/mou.html'],(req, res) => {
     if(req.session.is_login){
+      var id = req.session.user_id;
+      if(req.session.level == "2"){
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+      }
       pool.getConnection(function(err, connection) {
         var arr_query = [];
-        arr_query.push("user_id='" + req.session.user_id + "'");
+        arr_query.push("user_id='" + id + "'");
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
@@ -39,7 +44,13 @@ module.exports = function(app){
   });
   app.post(['/ajax/mou_simpan.html'],(req, res) => {
     if(req.session.is_login){
-      mou_function.GetData(req.session.user_id,"",function(results){
+      var id = req.session.user_id;
+      if(req.session.level == "2"){
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+      }
+      mou_function.GetData(id,"",function(results){
         var data_json = [];
         if(results != null){
           data_json = results;
@@ -104,6 +115,17 @@ module.exports = function(app){
         if(req.body.penjualan_paling_lambat != undefined){
           penjualan_paling_lambat = req.body.penjualan_paling_lambat;
         }
+        if(req.session.level != "2"){
+          nomor = data_json['nomor'];
+          tgl = data_json['tgl'];
+          nama_pihak1 = data_json['nama_pihak1'];
+          nik_pihak1 = data_json['nik_pihak1'];
+          jabatan_pihak1 = data_json['jabatan_pihak1'];
+          jabatan_ttd_pihak1 = data_json['jabatan_ttd_pihak1'];
+          alamat_pihak1 = data_json['alamat_pihak1'];
+          penjualan_paling_cepat = data_json['penjualan_paling_cepat'];
+          penjualan_paling_lambat = data_json['penjualan_paling_lambat'];
+        }
         pool.getConnection(function(err, connection) {
           if(data_json.length > 0){
             var sql_update = "update mou set nomor=?,tgl=?,nama_pihak1=?,nik_pihak1=?,jabatan_pihak1=?,jabatan_ttd_pihak1=?,alamat_pihak1=?,nama_pihak2=?,nik_pihak2=?,jabatan_pihak2=?,jabatan_ttd_pihak2=?,alamat_pihak2=?,nama_perusahaan=?,penjualan_paling_cepat=?,penjualan_paling_lambat=? where user_id=?";
@@ -144,8 +166,14 @@ module.exports = function(app){
   app.post(['/ajax/mou_generate_pdf.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
+        var id = req.session.user_id;
+        if(req.session.level == "2"){
+          if(req.body.id != undefined){
+            id = req.body.id;
+          }
+        }
         var arr_query = [];
-        arr_query.push("user_id='" + req.session.user_id + "'");
+        arr_query.push("user_id='" + id + "'");
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
@@ -159,13 +187,13 @@ module.exports = function(app){
             res.end();
           }else{
             connection.release();
-            var html = __dirname + '/../invoice.html';
+            var html = __dirname + '/../mou.html';
             fs.readFile(html, 'utf8', function(err, data) {
                 if (err) throw err;
                 if (!fs.existsSync("./public/pdf/" + req.session.user_id)){
                     fs.mkdirSync("./public/pdf/" + req.session.user_id);
                 }
-                var options = { format: 'A6' };
+                var options = { format: 'Legal'};
                 pdf.create(data,options).toStream(function(err, stream){
                   stream.pipe(fs.createWriteStream('./public/pdf/' + req.session.user_id + '/mou.pdf'));
                   var data = {is_error:false,data:[],msg:"sukses",output:config['main_url'] + '/assets/pdf/' + req.session.user_id + '/mou.pdf'};
