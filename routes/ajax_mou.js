@@ -1,9 +1,11 @@
 var mou_function = require("../function/mou_function.js");
+var public_function = require("../function/public_function.js");
 const fs = require('fs');
 const formidable = require('formidable');
 var uniqid = require('uniqid');
 const pool = require('../db');
 const config = require('../config');
+var moment = require("moment");
 var pdf = require("html-pdf");
 module.exports = function(app){
   app.post(['/ajax/mou.html'],(req, res) => {
@@ -123,13 +125,14 @@ module.exports = function(app){
           jabatan_pihak1 = data_json['jabatan_pihak1'];
           jabatan_ttd_pihak1 = data_json['jabatan_ttd_pihak1'];
           alamat_pihak1 = data_json['alamat_pihak1'];
+          nama_perusahaan = data_json['nama_perusahaan'];
           penjualan_paling_cepat = data_json['penjualan_paling_cepat'];
           penjualan_paling_lambat = data_json['penjualan_paling_lambat'];
         }
         pool.getConnection(function(err, connection) {
           if(data_json.length > 0){
             var sql_update = "update mou set nomor=?,tgl=?,nama_pihak1=?,nik_pihak1=?,jabatan_pihak1=?,jabatan_ttd_pihak1=?,alamat_pihak1=?,nama_pihak2=?,nik_pihak2=?,jabatan_pihak2=?,jabatan_ttd_pihak2=?,alamat_pihak2=?,nama_perusahaan=?,penjualan_paling_cepat=?,penjualan_paling_lambat=? where user_id=?";
-            var query_update = connection.query(sql_update,[nomor,tgl,nama_pihak1,nik_pihak1,jabatan_pihak1,jabatan_ttd_pihak1,alamat_pihak1,nama_pihak2,nik_pihak2,jabatan_pihak2,jabatan_ttd_pihak2,alamat_pihak2,nama_perusahaan,penjualan_paling_cepat,penjualan_paling_lambat,req.session.user_id], function (err, results, fields) {
+            var query_update = connection.query(sql_update,[nomor,tgl,nama_pihak1,nik_pihak1,jabatan_pihak1,jabatan_ttd_pihak1,alamat_pihak1,nama_pihak2,nik_pihak2,jabatan_pihak2,jabatan_ttd_pihak2,alamat_pihak2,nama_perusahaan,penjualan_paling_cepat,penjualan_paling_lambat,id], function (err, results, fields) {
               if (err){
                 var data = {is_error:true,msg:"Gagal menyimpan"};
                 res.send(JSON.stringify(data));
@@ -142,7 +145,7 @@ module.exports = function(app){
             });
           }else{
             var sql_insert = "insert into mou(user_id,nomor,tgl,nama_pihak1,nik_pihak1,jabatan_pihak1,jabatan_ttd_pihak1,alamat_pihak1,nama_pihak2,nik_pihak2,jabatan_pihak2,jabatan_ttd_pihak2,alamat_pihak2,nama_perusahaan,penjualan_paling_cepat,penjualan_paling_lambat) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            var query_insert = connection.query(sql_insert,[req.session.user_id,nomor,tgl,nama_pihak1,nik_pihak1,jabatan_pihak1,jabatan_ttd_pihak1,alamat_pihak1,nama_pihak2,nik_pihak2,jabatan_pihak2,jabatan_ttd_pihak2,alamat_pihak2,nama_perusahaan,penjualan_paling_cepat,penjualan_paling_lambat], function (err, results, fields) {
+            var query_insert = connection.query(sql_insert,[id,nomor,tgl,nama_pihak1,nik_pihak1,jabatan_pihak1,jabatan_ttd_pihak1,alamat_pihak1,nama_pihak2,nik_pihak2,jabatan_pihak2,jabatan_ttd_pihak2,alamat_pihak2,nama_perusahaan,penjualan_paling_cepat,penjualan_paling_lambat], function (err, results, fields) {
               if (err){
                 var data = {is_error:true,msg:"Gagal menyimpan"};
                 res.send(JSON.stringify(data));
@@ -186,6 +189,7 @@ module.exports = function(app){
             res.send(JSON.stringify(data));
             res.end();
           }else{
+            var data_mou = results[0];
             connection.release();
             var html = __dirname + '/../mou.html';
             fs.readFile(html, 'utf8', function(err, data) {
@@ -193,7 +197,42 @@ module.exports = function(app){
                 if (!fs.existsSync("./public/pdf/" + req.session.user_id)){
                     fs.mkdirSync("./public/pdf/" + req.session.user_id);
                 }
-                var options = { format: 'Legal'};
+                var tgl = data_mou['tgl'];
+                var moment_tgl = moment(tgl,"YYYY-MM-DD");
+                var tgl_formated = moment_tgl.format("DD") + " " + public_function.NamaBulan(moment_tgl.format("M")) + " " + moment_tgl.format("YYYY");
+                var tgl_desc = "";
+                tgl_desc += public_function.NamaHari(moment_tgl.format("E"));
+                tgl_desc += " tanggal " + moment_tgl.format("D");
+                tgl_desc += " bulan " + public_function.NamaBulan(moment_tgl.format("M"));
+                tgl_desc += " Tahun " + public_function.TahunAngkaToText(moment_tgl.format("YYYY"));
+                tgl_desc += " ( " + moment_tgl.format("DD-MM-YYYY") + " )";
+                data = data.replace(/{{tgl_desc}}/g,tgl_desc);
+                data = data.replace(/{{tgl}}/g,tgl_formated);
+                data = data.replace(/{{nama_perusahaan}}/g,data_mou['nama_perusahaan']);
+                data = data.replace(/{{nomor}}/g,data_mou['nomor']);
+                data = data.replace(/{{nama_pihak1}}/g,data_mou['nama_pihak1']);
+                data = data.replace(/{{nik_pihak1}}/g,data_mou['nik_pihak1']);
+                data = data.replace(/{{jabatan_pihak1}}/g,data_mou['jabatan_pihak1']);
+                data = data.replace(/{{alamat_pihak1}}/g,data_mou['alamat_pihak1']);
+                data = data.replace(/{{nama_pihak2}}/g,data_mou['nama_pihak2']);
+                data = data.replace(/{{nik_pihak2}}/g,data_mou['nik_pihak2']);
+                data = data.replace(/{{jabatan_pihak2}}/g,data_mou['jabatan_pihak2']);
+                data = data.replace(/{{alamat_pihak2}}/g,data_mou['alamat_pihak2']);
+                data = data.replace(/{{jabatan_ttd_pihak1}}/g,data_mou['jabatan_ttd_pihak1']);
+                data = data.replace(/{{jabatan_ttd_pihak2}}/g,data_mou['jabatan_ttd_pihak2']);
+                var penjualan_paling_cepat = data_mou['penjualan_paling_cepat'];
+                var penjualan_paling_lambat = data_mou['penjualan_paling_lambat'];
+                var penjualan_paling_cepat_moment = moment(penjualan_paling_cepat,"YYYY-MM-DD");
+                var penjualan_paling_cepat_formated = penjualan_paling_cepat_moment.format("DD") + " " + public_function.NamaBulan(penjualan_paling_cepat_moment.format("M")) + " " + penjualan_paling_cepat_moment.format("YYYY");
+                data = data.replace(/{{penjualan_paling_cepat}}/g,penjualan_paling_cepat_formated);
+                var penjualan_paling_cepat = data_mou['penjualan_paling_cepat'];
+                var penjualan_paling_lambat = data_mou['penjualan_paling_lambat'];
+                var penjualan_paling_lambat_moment = moment(penjualan_paling_lambat,"YYYY-MM-DD");
+                var penjualan_paling_lambat_formated = penjualan_paling_lambat_moment.format("DD") + " " + public_function.NamaBulan(penjualan_paling_lambat_moment.format("M")) + " " + penjualan_paling_lambat_moment.format("YYYY");
+                data = data.replace(/{{penjualan_paling_lambat}}/g,penjualan_paling_lambat_formated);
+                var options = {
+                  format: 'Legal'
+                };
                 pdf.create(data,options).toStream(function(err, stream){
                   stream.pipe(fs.createWriteStream('./public/pdf/' + req.session.user_id + '/mou.pdf'));
                   var data = {is_error:false,data:[],msg:"sukses",output:config['main_url'] + '/assets/pdf/' + req.session.user_id + '/mou.pdf'};

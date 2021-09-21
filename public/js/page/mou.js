@@ -77,7 +77,6 @@ function get_data(){
         $("#alamat_pihak2").val(data['alamat_pihak2']);
         $("#penjualan_paling_cepat").val(data['penjualan_paling_cepat']);
         $("#penjualan_paling_lambat").val(data['penjualan_paling_lambat']);
-        generate_pdf();
       }
     },error:function(){
       $("#form_data").loading("stop");
@@ -103,6 +102,7 @@ function generate_pdf(){
         }
       }else{
         var data = res.output;
+        window.open(data,"_blank");
       }
     },error:function(){
       $("#form_data").loading("stop");

@@ -424,8 +424,8 @@ function get_mou_data(id){
         $("#tgl").val(data['tgl']);
         $("#nama_perusahaan").val(data['nama_perusahaan']);
         $("#nama_pihak1").val(data['nama_pihak1']);
-        $("#nik_pihak1").val(data['nama_pihak1']);
-        $("#jabatan_pihak1").val(data['nama_pihak1']);
+        $("#nik_pihak1").val(data['nik_pihak1']);
+        $("#jabatan_pihak1").val(data['jabatan_pihak1']);
         $("#jabatan_ttd_pihak1").val(data['jabatan_ttd_pihak1']);
         $("#alamat_pihak1").val(data['alamat_pihak1']);
         $("#nama_pihak2").val(data['nama_pihak2']);
@@ -512,7 +512,7 @@ function load_data(){
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='modal_password(this);' class='btn btn-primary'><span class='fa fa-key'></span></a> ";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-status='" + v['status'] + "' data-nama='" + v['nama'] + "' data-file-npwp='" + v['file_npwp'] + "' data-file-ktp='" + v['file_ktp'] + "' data-nik='" + v['nik'] + "' data-email='" + v['email'] + "' data-alamat='" + v['alamat'] + "' data-user='" + v['user'] + "' data-level='" + v['level'] + "' data-parent-user-id='" + v['parent_user_id'] + "' onclick='modal_edit(this);' class='btn btn-light'><span class='fa fa-edit'></span></a> ";
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a> ";
-            if(v['level'] == "1"){
+            if(v['level'] == "1" || v['level'] == "2"){
               html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' onclick='modal_mou(this);' class='btn btn-light'><span class='fa fa-handshake-o'></span></a> ";
             }
             html += "</td>";
