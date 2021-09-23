@@ -9,7 +9,7 @@ $(document).ready(function(){
     system_identity();
     global_system_resources();
   }
-  
+
   router_load();
 });
 function router_load(){
@@ -146,6 +146,34 @@ function global_system_resources(){
         },1000);
       }
     },error:function(){
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function download_database(itu){
+  $(itu).loading();
+  $.ajax({
+    type:'post',
+    url:'/ajax/download_database.html',
+    data:{},
+    success:function(resp){
+      $(itu).loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          if(res.msg != ""){
+            toastr["error"](res.msg);
+          }
+        }
+      }else{
+        var output = res.output;
+        window.open(output,"_blank");
+      }
+    },error:function(){
+      $(itu).loading("stop");
       toastr["error"]("Silahkan periksa koneksi internet anda");
     }
   });

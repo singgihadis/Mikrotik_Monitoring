@@ -682,7 +682,41 @@ module.exports = function(app){
           favicon:website_config['favicon'],
           logo:website_config['logo'],
           menu:"administrasi",
-          sub_menu:"mou",
+          sub_menu:"file",
+          level:level,
+          server_id:server_id,
+          with_server:0,
+          nama_user:nama_user
+        });
+      }
+    }
+  });
+  app.get(['/file.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      var website_config = req.website_config;
+      var level = req.session.level;
+      var nama_user = req.session.nama;
+      var title = "";
+      if(website_config['title'] != ""){
+        title = "File - " + website_config['title'];
+      }else{
+        title = "File";
+      }
+      var server_id = "";
+      if(req.session.server_id){
+        server_id = req.session.server_id;
+      }
+      if(level == "4"){
+        res.redirect("/pilih_router.html");
+      }else{
+        res.render("file",{
+          title:title,
+          favicon:website_config['favicon'],
+          logo:website_config['logo'],
+          menu:"administrasi",
+          sub_menu:"file",
           level:level,
           server_id:server_id,
           with_server:0,

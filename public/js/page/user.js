@@ -1,12 +1,17 @@
 var page = 1;
 var is_edit = false;
 var is_edit_password = false;
+var page_file = 1;
 $(document).ready(function(){
   $('#file_npwp').on('change',function(){
     var fileName = $(this).val();
     $(this).next('.custom-file-label').html(fileName);
   });
   $('#file_ktp').on('change',function(){
+    var fileName = $(this).val();
+    $(this).next('.custom-file-label').html(fileName);
+  });
+  $('#file_file').on('change',function(){
     var fileName = $(this).val();
     $(this).next('.custom-file-label').html(fileName);
   });
@@ -17,15 +22,9 @@ $(document).ready(function(){
     }
   });
   load_data();
-  $("#password").keyup(function(){
-    $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
-  });
-  $("#password").blur(function(){
-    $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
-  });
-  $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
   $("#form_data").validate({
     submitHandler:function(){
+      $("#hidden_password").val(CryptoJS.MD5($("#password").val()));
       if(is_edit){
         if(is_edit_password){
           edit_password();
@@ -107,7 +106,54 @@ $(document).ready(function(){
       });
     }
   });
+  $("#form_file").validate({
+    submitHandler:function(){
+      tambah_data_file();
+      return false;
+    }
+  });
 });
+function tambah_data_file(){
+  $("#form_file").loading();
+  var id = $("#id").val();
+  var nama = $("#nama_file").val();
+  var data = new FormData();
+  data.append("id",id);
+  data.append("nama",nama);
+  if($('#file_file')[0].files.length > 0){
+    data.append('file', $('#file_file')[0].files[0]);
+    $.ajax({
+      type:'post',
+      url:'/ajax/file_tambah.html',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data:data,
+      success:function(resp){
+        $("#form_file").loading("stop");
+        var res = JSON.parse(resp);
+        var html = "";
+        if(res.is_error){
+          if(res.must_login){
+            window.location = "/login.html";
+          }else{
+            toastr["error"](res.msg);
+          }
+        }else{
+          toastr["success"]("Berhasil menambahkan");
+          page_file = 1;
+          load_data_file();
+        }
+      },error:function(){
+        $("#form_file").loading("stop");
+        toastr["error"]("Silahkan periksa koneksi internet anda");
+      }
+    });
+  }else{
+    $("#form_file").loading("stop");
+    toastr["error"]("File belum dipilih");
+  }
+}
 function tambah(){
   $("#form_data").loading();
   var nama = $("#nama").val();
@@ -128,6 +174,7 @@ function tambah(){
   data.append("user",user);
   data.append("level",level);
   data.append("status",status);
+  data.append("password",password);
   data.append("parent_user_id",parent_user_id);
   data.append("nik",nik);
   data.append("email",email);
@@ -375,6 +422,17 @@ function modal_mou(itu){
   $("#id").val(id);
   get_mou_data(id);
 }
+function modal_file(itu){
+  $("#form_file").trigger("reset");
+  $("#form_file").find(".custom-file-label").html("Pilih File");
+  var id = $(itu).attr("data-id");
+  var nama = $(itu).attr("data-nama");
+  $("#modal_file_title").html("File <b>" + nama + "</b>");
+  $("#id").val(id);
+  $("#modal_file").modal("show");
+  page_file = 1;
+  load_data_file();
+}
 function generate_pdf(){
   $("#form_mou").loading();
   var id = $("#id").val();
@@ -514,6 +572,7 @@ function load_data(){
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a> ";
             if(v['level'] == "1" || v['level'] == "2"){
               html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' onclick='modal_mou(this);' class='btn btn-light'><span class='fa fa-handshake-o'></span></a> ";
+              html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-nama='" + v['nama'] + "' onclick='modal_file(this);' class='btn btn-light'><span class='fa fa-file-o'></span></a> ";
             }
             html += "</td>";
             html += "</tr>";
@@ -614,5 +673,179 @@ function dropdown_user(parent_user_id){
       $("#div_parent_user_id").loading("stop");
       toastr["error"]("Silahkan periksa koneksi internet anda");
     }
+  });
+}
+function load_data_file(){
+  var user_id = $("#id").val();
+  $("#pagination_file").html("");
+  $("#listdata_file").loading();
+  var keyword = $("#keyword_file").val();
+  $.ajax({
+    type:'post',
+    url:'/ajax/file_data.html',
+    data:{user_id:user_id,keyword:keyword,page:page_file},
+    success:function(resp){
+      $("#listdata_file").loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          $("#listdata_file").html("<tr><td colspan='4'>" + res.msg + "</td></tr>");
+        }
+      }else{
+        var html = "";
+        var no = page_file * 10 - 10;
+        $.each(res.data,function(k,v){
+          if(k < 10){
+            no++;
+            html += "<tr>";
+            html += "<td>" + no + "</td>";
+            html += "<td><form onsubmit='edit_file(this);return false;' data-id='" + v['id'] + "'><div class='input-group input-group-sm nama_input'><input type='text' class='form-control' value='" + v['nama'] + "' placeholder='Nama File'><div class='input-group-append'><button class='btn btn-primary' type='submit'><span class='fa fa-save'></span></button></div></div></form></td>";
+            html += "<td><a href='" + v['file'] + "' target='_blank'>Lihat File</a></td>";
+            html += "<td>";
+            html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus_file(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a> ";
+            html += "</td>";
+            html += "</tr>";
+          }
+        });
+        $("#listdata_file").html(html);
+        html_pagination_file(res.data.length);
+      }
+    },error:function(){
+      $("#listdata_file").loading("stop");
+      $("#listdata_file").html("<tr><td colspan='4'>Silahkan periksa koneksi internet anda</td></tr>");
+    }
+  });
+}
+function edit_file(itu){
+  $(itu).loading();
+  var id = $(itu).attr("data-id");
+  var nama = $(itu).find("input").val();
+  $.ajax({
+    type:'post',
+    url:'/ajax/file_edit.html',
+    data:{id:id,nama:nama},
+    success:function(resp){
+      $(itu).loading("stop");
+      var res = JSON.parse(resp);
+      var html = "";
+      if(res.is_error){
+        if(res.must_login){
+          window.location = "/login.html";
+        }else{
+          toastr["error"](res.msg);
+        }
+      }else{
+        $("#modal_form").modal("hide");
+        toastr["success"]("Berhasil mengubah");
+      }
+    },error:function(){
+      $(itu).loading("stop");
+      toastr["error"]("Silahkan periksa koneksi internet anda");
+    }
+  });
+}
+function hapus_file(itu){
+  $.confirm({
+    title: 'Konfirmasi',
+    content: 'Apa anda yakin menghapus data file tersebut ?',
+    buttons: {
+        cancel: {
+          text: 'Batal',
+          btnClass: 'btn-light',
+          action: function(){
+
+          }
+        },
+        confirm: {
+          text: 'Konfirmasi',
+          btnClass: 'btn-blue',
+          action: function(){
+            $(itu).parent().loading();
+            var id = $(itu).attr("data-id");
+            $.ajax({
+              type:'post',
+              url:'/ajax/file_hapus.html',
+              data:{id:id},
+              success:function(resp){
+                $(itu).parent().loading("stop");
+                var res = JSON.parse(resp);
+                var html = "";
+                if(res.is_error){
+                  if(res.must_login){
+                    window.location = "/login.html";
+                  }else{
+                    toastr["error"](res.msg);
+                  }
+                }else{
+                  page_file = 1;
+                  load_data_file();
+                }
+              },error:function(){
+                $(itu).parent().loading("stop");
+                toastr["error"]("Silahkan periksa koneksi internet anda");
+              }
+            });
+          }
+        }
+    }
+  });
+
+}
+function html_pagination_file(jmldata){
+  var html_pagination = "";
+  html_pagination += "<div class='d-inline-block'>";
+  html_pagination += "  <ul class='pagination'>";
+
+  if(page_file == 1){
+    //Isprev false
+    html_pagination += "    <li class='page-item disabled'>";
+    html_pagination += "      <a class='page-link text-secondary' href='javascript:void(0);'>";
+    html_pagination += "        <span class='fa fa-chevron-left text-secondary'>&nbsp;</span> Sebelumnya";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }else{
+    //Isprev true
+    html_pagination += "    <li class='page-item'>";
+    html_pagination += "      <a class='page-link text-body prevpage_file' data-page='" + (parseInt(page_file) - 1) + "' href='javascript:void(0);'>";
+    html_pagination += "        <span class='fa fa-chevron-left text-body'>&nbsp;</span> Sebelumnya";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }
+  html_pagination += "    <li class='page-item disabled'><a class='page-link text-body' href='javascript:void(0);'>" + page_file + "</a></li>";
+  if(jmldata > 10){
+    //Isnext true
+    html_pagination += "    <li class='page-item'>";
+    html_pagination += "      <a class='page-link text-body nextpage_file' data-page='" + (parseInt(page_file) + 1) + "' href='javascript:void(0);'>";
+    html_pagination += "        Selanjutnya <span class='fa fa-chevron-right text-body'>&nbsp;</span>";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }else{
+    //Isnext false
+    html_pagination += "    <li class='page-item disabled'>";
+    html_pagination += "      <a class='page-link text-secondary' href='javascript:void(0);'>";
+    html_pagination += "        Selanjutnya <span class='fa fa-chevron-right text-secondary'>&nbsp;</span>";
+    html_pagination += "      </a>";
+    html_pagination += "    </li>";
+  }
+  html_pagination += "  </ul>";
+  html_pagination += "</div>";
+  $("#pagination_file").html(html_pagination);
+  trigger_pagination_file();
+}
+function trigger_pagination_file(){
+  $(".prevpage_file").click(function(e){
+    e.preventDefault();
+    var get_page  = $(this).attr("data-page");
+    page_file = get_page;
+    load_data_file();
+  });
+  $(".nextpage_file").click(function(e){
+    e.preventDefault();
+    var get_page  = $(this).attr("data-page");
+    page_file = get_page;
+    load_data_file();
   });
 }

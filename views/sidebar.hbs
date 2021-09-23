@@ -35,7 +35,7 @@
         Administrasi <span class="fa float-right mt-1"></span>
       </a>
       <div id="administrasi" class="list-group sub-menu collapse {{#ifEquals menu "administrasi"}}show{{/ifEquals}}">
-        <a href="/mou.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "mou"}}font-weight-bolder{{/ifEquals}}">MoU</a>
+        <a href="/file.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "file"}}font-weight-bolder{{/ifEquals}}">File</a>
       </div>
       <a href="/laporan.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "laporan"}}font-weight-bolder{{/ifEquals}}">Laporan</a>
       <a href="/pembayaran.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals menu "pembayaran"}}font-weight-bolder{{/ifEquals}}">Pembayaran</a>
@@ -58,4 +58,12 @@
       </a>
       {{/ifEquals}}
   </div>
+  {{#ifEquals level "2"}}
+  <hr>
+  <div class="text-center">
+    <a onclick="download_database(this);" href="javascript:void(0);" class="btn btn-primary">
+      <span class="fa fa-database"></span> Download
+    </a>
+  </div>
+  {{/ifEquals}}
 </div>

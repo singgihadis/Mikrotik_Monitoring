@@ -1,0 +1,71 @@
+<html>
+  {{> head}}
+  <body class="dns">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+            <div class="row mt-4">
+              <div class="col-sm-12">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      File
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Data File
+                  </div>
+                  <div class="card-body">
+                    <form id="form_search" class="text-left">
+                      <div class="d-inline-block">
+                        <div class="input-group mb-3">
+                          <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Nama Paket">
+                          <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span></button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>File</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="listdata">
+
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="text-center" id="pagination">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <br><br>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/file.js"></script>
+  </body>
+</html>
