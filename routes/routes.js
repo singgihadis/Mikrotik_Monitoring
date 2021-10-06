@@ -573,7 +573,7 @@ module.exports = function(app){
       }else{
         title = "User";
       }
-      if(level == "2"){
+      if(level == "1" || level == "2"){
         res.render("user",{
           title:title,
           favicon:website_config['favicon'],

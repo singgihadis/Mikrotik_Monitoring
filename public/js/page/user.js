@@ -3,6 +3,10 @@ var is_edit = false;
 var is_edit_password = false;
 var page_file = 1;
 $(document).ready(function(){
+  var user_level = $("#user_level").val();
+  if(user_level == "1"){
+    $("#level").find("option[value='2']").remove();
+  }
   $('#file_npwp').on('change',function(){
     var fileName = $(this).val();
     $(this).next('.custom-file-label').html(fileName);

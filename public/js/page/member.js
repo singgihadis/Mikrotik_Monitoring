@@ -113,12 +113,16 @@ function load_data(){
             html += "<td>" + v['nama_server'] + "</td>";
             html += "<td>" + v['name'] + "</td>";
             html += "<td>" + v['profile'] + "</td>";
-            html += "<td class='" + color_belum_update + "'>" + v['nama'] + "</td>";
-            html += "<td class='" + color_belum_update + "'>" + v['alamat'] + "</td>";
-            html += "<td class='" + color_belum_update + "'>";
-            html += "Rp. " + FormatAngka(v['nominal_pembayaran']) + "";
-            html += "</td>";
-            html += "<td class='" + color_belum_update + "'>" + is_berlangganan + "</td>";
+            if(v['awal_tagihan_bulan'] == null){
+              html += "<td class='" + color_belum_update + "' colspan='4'>Silahkan update data ini dengan klik tombol edit di samping kanan anda</td>";
+            }else{
+              html += "<td class='" + color_belum_update + "'>" + v['nama'] + "</td>";
+              html += "<td class='" + color_belum_update + "'>" + v['alamat'] + "</td>";
+              html += "<td class='" + color_belum_update + "'>";
+              html += "Rp. " + FormatAngka(v['nominal_pembayaran']) + "";
+              html += "</td>";
+              html += "<td class='" + color_belum_update + "'>" + is_berlangganan + "</td>";
+            }
             html += "<td class='text-center'>";
             html += "<a onclick='modal_update(this)' data-master-paket-id='" + v['master_paket_id'] + "' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-awal-tagihan-bulan='" + (v['awal_tagihan_bulan']!=null?v['awal_tagihan_bulan']:"") + "' data-awal-tagihan-tahun='" + (v['awal_tagihan_tahun']!=null?v['awal_tagihan_tahun']:'') + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-is-berhenti-langganan='" + v['is_berhenti_langganan'] + "' data-bulan-berhenti-langganan='" + v['bulan_berhenti_langganan'] + "' data-tahun-berhenti-langganan='" + v['tahun_berhenti_langganan'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
             html += " <a href='/member/detail/" + v['id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-list'></span></a>";

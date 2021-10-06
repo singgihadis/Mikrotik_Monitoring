@@ -38,7 +38,7 @@ function load_data(){
             html += "<td><a href='" + v['file'] + "' target='_blank'>Lihat File</a></td>";
             html += "<td>";
             if(v['is_mou'] == "1"){
-              html += "<a href='/mou.html' class='btn btn-default'><span class='fa fa-handshake-o'></span></a>";
+              html += "<a href='/mou.html' class='btn btn-light'><span class='fa fa-handshake-o'></span></a>";
             }
             html += "</td>";
             html += "</tr>";
