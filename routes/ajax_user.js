@@ -59,7 +59,15 @@ module.exports = function(app){
             if(files.hasOwnProperty("file_ktp")){
               file_ktp = files.file_ktp;
             }
-            var sql_data = "select * from user where id=?";
+            var user_level = req.session.level;
+            var user_id = req.session.user_id;
+            var filter_query = "";
+            if(user_level == "1"){
+              if(user_id != id){
+                filter_query = " and parent_user_id=" + user_id;
+              }
+            }
+            var sql_data = "select * from user where id=?" + filter_query;
             var query_data = connection.query(sql_data,[id], function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -113,7 +121,15 @@ module.exports = function(app){
           password = req.body.password;
           password = crypto.createHash('sha1').update(password).digest("hex");
         }
-        var sql_insert = "update user set password=? where id=?";
+        var user_level = req.session.level;
+        var user_id = req.session.user_id;
+        var filter_query = "";
+        if(user_level == "1"){
+          if(user_id != id){
+            filter_query = " and parent_user_id=" + user_id;
+          }
+        }
+        var sql_insert = "update user set password=? where id=?" + filter_query;
         var query_insert = connection.query(sql_insert,[password,id], function (err, results, fields) {
           if (!err){
             connection.release();
@@ -141,7 +157,15 @@ module.exports = function(app){
         if(req.body.id != undefined){
           id = req.body.id;
         }
-        var sql_insert = "delete from user where id=?";
+        var user_level = req.session.level;
+        var user_id = req.session.user_id;
+        var filter_query = "";
+        if(user_level == "1"){
+          if(user_id != id){
+            filter_query = " and parent_user_id=" + user_id;
+          }
+        }
+        var sql_insert = "delete from user where id=?" + filter_query;
         var query_insert = connection.query(sql_insert,[id], function (err, results, fields) {
           if (!err){
             connection.release();
@@ -268,10 +292,11 @@ module.exports = function(app){
         if(keyword != ""){
           arr_query.push("concat(nama) like '%" + keyword + "%'");
         }
+        if(level != ""){
+          arr_query.push("level = " + level + "");
+        }
         if(level_user == "2"){
-          if(level != ""){
-            arr_query.push("level = " + level + "");
-          }
+
         }else if(level_user == "1"){
           var user_id = req.session.user_id;
           var parent_user_id = req.session.parent_user_id;
@@ -290,7 +315,6 @@ module.exports = function(app){
           query_limit = " limit " + limit + ",11";
         }
         var sql_data = "select * from user " + filter_query + " order by tgl_insert desc" + query_limit;
-        console.log(sql_data);
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();
