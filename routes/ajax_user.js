@@ -150,6 +150,46 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/user_edit_omset_persentase.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var id = "";
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+        var omset_mitra_persentase = "";
+        if(req.body.omset_mitra_persentase != undefined){
+          omset_mitra_persentase = req.body.omset_mitra_persentase;
+        }
+        var user_level = req.session.level;
+        var user_id = req.session.user_id;
+        var filter_query = "";
+        if(user_level == "1"){
+          if(user_id != id){
+            filter_query = " and parent_user_id=" + user_id;
+          }
+        }
+        var sql_insert = "update user set omset_mitra_persentase=? where id=?" + filter_query;
+        var query_insert = connection.query(sql_insert,[omset_mitra_persentase,id], function (err, results, fields) {
+          if (!err){
+            connection.release();
+            var data = {is_error:false,msg:"Berhasil mengubah persentase omset mitra"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:true,msg:"Tidak dapat mengubah  persentase omset mitra"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
   app.post(['/ajax/user_hapus.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {

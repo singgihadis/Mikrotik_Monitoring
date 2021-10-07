@@ -110,6 +110,40 @@ $(document).ready(function(){
       });
     }
   });
+  $("#form_omset").validate({
+    submitHandler:function(){
+      $("#form_omset").loading();
+      var id = $("#id").val();
+      var omset_mitra_persentase = $("#omset_mitra_persentase").val();
+      $.ajax({
+        type:'post',
+        url:'/ajax/user_edit_omset_persentase.html',
+        data:{id:id,omset_mitra_persentase:omset_mitra_persentase},
+        success:function(resp){
+          $("#form_omset").loading("stop");
+          var res = JSON.parse(resp);
+          var html = "";
+          if(res.is_error){
+            if(res.must_login){
+              window.location = "/login.html";
+            }else{
+              toastr["error"](res.msg);
+            }
+          }else{
+            $("#modal_omset").modal("hide");
+            toastr["success"]("Berhasil mengubah");
+            load_data();
+          }
+        },error:function(){
+          $("#form_omset").loading("stop");
+          toastr["error"]("Silahkan periksa koneksi internet anda");
+        }
+      });
+    },
+    errorPlacement: function(error, element) {
+        error.insertAfter(element.parent());
+    }
+  });
   $("#form_file").validate({
     submitHandler:function(){
       tambah_data_file();
@@ -576,9 +610,8 @@ function load_data(){
             html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a> ";
             var user_level = $("#user_level").val();
             if(user_level == "2"){
-              if(v['level'] == "1" || v['level'] == "2"){
-                html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' onclick='modal_mou(this);' class='btn btn-light'><span class='fa fa-handshake-o'></span></a> ";
-                html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-nama='" + v['nama'] + "' onclick='modal_file(this);' class='btn btn-light'><span class='fa fa-file-o'></span></a> ";
+              if(v['level'] == "1"){
+                html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-omset-mitra-persentase='" + v['omset_mitra_persentase'] + "' onclick='modal_omset_mitra_persentase(this);' class='btn btn-light'><span class='fa fa-hand-grab-o'></span></a> ";
               }
             }
             html += "</td>";
@@ -594,6 +627,14 @@ function load_data(){
       $("#listdata").html("<tr><td colspan='6'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
+}
+
+function modal_omset_mitra_persentase(itu){
+  var id = $(itu).attr("data-id");
+  var omset_mitra_persentase = $(itu).attr("data-omset-mitra-persentase");
+  $("#id").val(id);
+  $("#omset_mitra_persentase").val(omset_mitra_persentase);
+  $("#modal_omset").modal("show");
 }
 function html_pagination(jmldata){
   var html_pagination = "";

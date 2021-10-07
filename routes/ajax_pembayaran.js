@@ -1,4 +1,3 @@
-const RouterOSClient = require('routeros-client').RouterOSClient;
 var ppp_function = require("../function/ppp_function.js");
 var member_function = require("../function/member_function.js");
 const pool = require('../db');
@@ -99,8 +98,8 @@ module.exports = function(app){
           password = req.body.password;
           password = crypto.createHash('sha1').update(password).digest("hex");
         }
-        var sql_cek_pwd = "select * from user where id=? and password=?";
-        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,password], function (err, results, fields) {
+        var sql_cek_pwd = "select * from user where (id=? or id=?) and password=?";
+        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,req.session.parent_user_id,password], function (err, results, fields) {
           if(results.length == 0){
             connection.release();
             var data = {is_error:true,msg:"Password user salah"};
@@ -169,6 +168,35 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/pembayaran_get_omset_mitra_persentase.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var password = "";
+        if(req.body.password != undefined){
+          password = req.body.password;
+          password = crypto.createHash('sha1').update(password).digest("hex");
+        }
+        var sql_cek_pwd = "select * from user where (id=? or id=?) and password=?";
+        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,req.session.parent_user_id,password], function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,msg:"Password user salah"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,msg:"",output:results[0]['omset_mitra_persentase']};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
   app.post(['/ajax/total_tagihan.html'],(req, res) => {
     if(req.session.is_login){
       var bulan = "";
@@ -181,7 +209,7 @@ module.exports = function(app){
       }
       pool.getConnection(function(err, connection) {
         var arr_query = [];
-        arr_query.push("d.user_id=" + req.session.user_id);
+        arr_query.push("(d.user_id=" + req.session.user_id + " or d.user_id=" + req.session.parent_user_id + ")");
         arr_query.push("((a.awal_tagihan_tahun = " + tahun + " and " + bulan + " >= a.awal_tagihan_bulan) or (" + tahun + " > a.awal_tagihan_tahun))");
         arr_query.push("(a.is_berhenti_langganan != 1 or (a.is_berhenti_langganan = 0 AND (a.tahun_berhenti_langganan = " + tahun + " and " + bulan + " < a.bulan_berhenti_langganan) or (" + tahun + " < a.awal_tagihan_tahun)))");
         var filter_query = "";
@@ -234,7 +262,7 @@ module.exports = function(app){
       }
       pool.getConnection(function(err, connection) {
         var arr_query = [];
-        arr_query.push("d.user_id=" + req.session.user_id);
+        arr_query.push("(d.user_id=" + req.session.user_id + " or d.user_id=" + req.session.parent_user_id + ")");
         arr_query.push("a.tahun=" + tahun);
         var filter_query = "";
         if(arr_query.length > 0){
@@ -425,8 +453,8 @@ module.exports = function(app){
           password = req.body.password;
           password = crypto.createHash('sha1').update(password).digest("hex");
         }
-        var sql_cek_pwd = "select * from user where id=? and password=?";
-        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,password], function (err, results, fields) {
+        var sql_cek_pwd = "select * from user where (id=? or id=?) and password=?";
+        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,req.session.parent_user_id,password], function (err, results, fields) {
           if(results.length == 0){
             connection.release();
             var data = {is_error:true,msg:"Password user salah"};
@@ -494,8 +522,8 @@ module.exports = function(app){
           password = req.body.password;
           password = crypto.createHash('sha1').update(password).digest("hex");
         }
-        var sql_cek_pwd = "select * from user where id=? and password=?";
-        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,password], function (err, results, fields) {
+        var sql_cek_pwd = "select * from user where (id=? or id=?) and password=?";
+        var query_cek = connection.query(sql_cek_pwd,[req.session.user_id,req.session.parent_user_id,password], function (err, results, fields) {
           if(results.length == 0){
             connection.release();
             var data = {is_error:true,msg:"Password user salah"};

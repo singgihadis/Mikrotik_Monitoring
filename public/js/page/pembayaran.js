@@ -5,6 +5,10 @@ var cur_thn = 0;
 var data_statistik_total = [];
 var statistik_chart_render = null;
 var new_data_statistik_total = [];
+var total_belum_dibayar = 0;
+var total_tagihan = 0;
+var total_dibayar = 0;
+var total_tagihan_ppn = 0;
 $(document).ready(function(){
   cur_thn = parseInt(moment().format("YYYY"));
   cur_bln = parseInt(moment().format("M"));
@@ -118,6 +122,43 @@ $(document).ready(function(){
 
     }
   });
+  $("#form_password_total_tagihan").validate({
+    submitHandler:function(){
+      $("#hidden_password_total_tagihan").val(CryptoJS.MD5($("#password_total_tagihan").val()));
+      var password = $("#hidden_password_total_tagihan").val();
+      $("#form_password_total_tagihan").loading();
+      $.ajax({
+        type:'post',
+        url:'/ajax/pembayaran_get_omset_mitra_persentase.html',
+        data:{password:password},
+        success:function(resp){
+          $("#form_password_total_tagihan").loading("stop");
+          var res = JSON.parse(resp);
+          var html = "";
+          if(res.is_error){
+            if(res.must_login){
+              window.location = "/login.html";
+            }else{
+              toastr["error"](res.msg);
+            }
+          }else{
+            var omset_mitra_persentase = res.output;
+            $("#modal_password_total_tagihan").modal("hide");
+            var total_tagihan_bersih = total_tagihan - total_tagihan_ppn;
+            var total_tagihan_bersih_mitra = Math.round(total_tagihan_bersih * (parseInt(omset_mitra_persentase) / 100));
+            var total_tagihan_bersih_isp = total_tagihan_bersih - total_tagihan_bersih_mitra;
+            $("#total_tagihan_bersih").html(FormatAngka(total_tagihan_bersih));
+            $("#total_tagihan_bersih_isp").html(FormatAngka(total_tagihan_bersih_isp));
+            $("#total_tagihan_bersih_mitra").html(FormatAngka(total_tagihan_bersih_mitra));
+            $(".widget-password").show();
+          }
+        },error:function(){
+          $("#form_password_total_tagihan").loading("stop");
+          toastr["error"]("Silahkan periksa koneksi internet anda");
+        }
+      });
+    }
+  });
   dropdown_bank();
   $("input[name='cr_metode_bayar']").change(function(){
     if($(this).attr("id") == "cr_transfer"){
@@ -183,11 +224,21 @@ function widget_total(){
   $(".bulan").html("(" + IndexToMonth(parseInt(bulan) - 1) + " " + $("#tahun").val() + ")");
   $.each(new_data_statistik_total,function(k,v){
     if(bulan == (k + 1)){
+      total_tagihan = v['total_tagihan'];
+      total_belum_dibayar = v['total_belum_dibayar'];
+      total_dibayar = v['total_dibayar'];
       $("#total_belum_dibayar").html("Rp. " + FormatAngka(v['total_belum_dibayar']));
       $("#total").html("Rp. " + FormatAngka(v['total_tagihan']));
       $("#total_dibayar").html("Rp. " + FormatAngka(v['total_dibayar']));
+      var harga_belum_ppn = Math.round(100 / 110 * parseInt(total_tagihan));
+      total_tagihan_ppn = total_tagihan - harga_belum_ppn;
+      $("#total_tagihan_ppn").html("Rp. " + FormatAngka(total_tagihan_ppn));
     }
   });
+}
+function tampilkan_widget_lainnya(){
+  $("#form_password_total_tagihan").trigger("reset");
+  $("#modal_password_total_tagihan").modal("show");
 }
 function build_tahun(){
   var html = "";

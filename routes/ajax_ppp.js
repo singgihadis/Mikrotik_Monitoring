@@ -179,14 +179,16 @@ module.exports = function(app){
                 var query_delete = connection.query(sql_delete, [server_id], function (err, results_update, fields) {
                   if(err){
                     connection.release();
+                    api.close();
                     var data = {is_error:true,data:[],msg:"Gagal mengupdate ppp secret"};
                     res.send(JSON.stringify(data));
                     res.end();
                   }else{
                     connection.release();
+                    api.close();
                     ppp_function.Simpan_Secret(0,server_id,result.length,result,function(){
                       var data = {is_error:false,data:[],msg:"Berhasil"};
-                      api.close();
+
                       res.send(JSON.stringify(data));
                       res.end();
                     });
@@ -235,15 +237,17 @@ module.exports = function(app){
                 var sql_delete = "delete from ppp_active_connection where server_id=?";
                 var query_delete = connection.query(sql_delete, [server_id], function (err, results_delete, fields) {
                   if(err){
+                    api.close();
                     connection.release();
                     var data = {is_error:true,data:[],msg:"Gagal hapus ppp active connection"};
                     res.send(JSON.stringify(data));
                     res.end();
                   }else{
                     connection.release();
+                    api.close();
                     ppp_function.Simpan_Active_Connection(0,server_id,result.length,result,function(){
                       var data = {is_error:false,data:[],msg:"Berhasil"};
-                      api.close();
+
                       res.send(JSON.stringify(data));
                       res.end();
                     });

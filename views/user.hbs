@@ -396,8 +396,39 @@
          </div>
        </div>
     </div>
+    <div class="modal" id="modal_omset">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form id="form_omset" class="text-left">
+            <div class="modal-header">
+              <h5 class="modal-title">Persentase Omset Mitra</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label class="control-label">
+                  Persentase Omset yang didapatkan Mitra
+                </label>
+                <div class="input-group mb-3">
+                   <input type="text" id="omset_mitra_persentase" min="0" max="100" name="omset_mitra_persentase" class="form-control" placeholder="">
+                   <div class="input-group-append">
+                     <span class="input-group-text">%</span>
+                   </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- /#wrapper -->
     {{> foot}}
-    <script type="text/javascript" src="/assets/js/page/user.js?v=1.1"></script>
+    <script type="text/javascript" src="/assets/js/page/user.js?v=1.2"></script>
   </body>
 </html>

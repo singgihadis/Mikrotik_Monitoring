@@ -110,15 +110,12 @@ module.exports = {
                 },60000);
               }
             }catch(err){
-              torch.stop();
-              api.close();
               setTimeout(function(){
                 module.exports.Traffic();
               },60000);
             }
         });
       }).catch((err) => {
-        api.close();
         index++;
         if(index == jml){
           setTimeout(function(){
