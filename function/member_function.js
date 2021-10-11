@@ -2,10 +2,141 @@ const RouterOSClient = require('routeros-client').RouterOSClient;
 const pool = require('../db');
 var moment = require('moment');
 module.exports = {
-  Cek_Akses_Member: function(member_id,parent_member_id,callback){
+  BuatTagihanBulanan: function(){
+    pool.getConnection(function(err, connection) {
+      var select_member = "select * from member";
+      var query_member = connection.query(select_member, function (err, results_member, fields) {
+        connection.release();
+        if(results_member.length == 0){
+          setTimeout(function(){
+            module.exports.BuatTagihanBulanan();
+          },5000);
+        }else{
+          module.exports.BuatTagihanBulanan_ProsesData(0,results_member,function(){
+            setTimeout(function(){
+              module.exports.BuatTagihanBulanan();
+            },5000);
+          });
+        }
+      });
+    });
+  },
+  BuatTagihanBulanan_ProsesData: function(index,data_member,callback){
+    pool.getConnection(function(err, connection) {
+      var jml_member = data_member.length;
+      if(index < jml_member){
+        var data_member_item = data_member[index];
+        var member_id = data_member_item['id'];
+        var awal_tagihan_bulan = data_member_item['awal_tagihan_bulan'];
+        var awal_tagihan_tahun = data_member_item['awal_tagihan_tahun'];
+        var is_berhenti_langganan = data_member_item['is_berhenti_langganan'];
+        var bulan_berhenti_langganan = data_member_item['bulan_berhenti_langganan'];
+        var tahun_berhenti_langganan = data_member_item['tahun_berhenti_langganan'];
+
+        var sql_delete_member = "delete from pembayaran where member_id=? and is_bayar=0";
+        var query_delete_member = connection.query(sql_delete_member,[member_id], function (err, results_pembayaran, fields) {
+          var akhir_tagihan_bulan = parseInt(moment().format("M"));
+          var akhir_tagihan_tahun = parseInt(moment().format("YYYY"));
+          if(is_berhenti_langganan == "1"){
+            akhir_tagihan_bulan = bulan_berhenti_langganan;
+            if(akhir_tagihan_bulan == 1){
+              akhir_tagihan_bulan = 12;
+            }else{
+              akhir_tagihan_bulan = akhir_tagihan_bulan - 1;
+            }
+            akhir_tagihan_tahun = tahun_berhenti_langganan;
+          }
+          var filter_query = " and ";
+          filter_query += " (((bulan >= " + awal_tagihan_bulan + " and tahun =" + awal_tagihan_tahun + ") and (bulan <= " + akhir_tagihan_bulan + " and tahun = " + akhir_tagihan_tahun + "))";
+          filter_query += " or (tahun > " + awal_tagihan_tahun + " or tahun < " + akhir_tagihan_tahun + "))";
+          var select_pembayaran = "select * from pembayaran where member_id=? " + filter_query;
+          var query_pembayaran = connection.query(select_pembayaran,[member_id], function (err, results_pembayaran, fields) {
+            var data_exits = [];
+            results_pembayaran.forEach((item, i) => {
+              data_exits.push({
+                bulan:item['bulan'],tahun:item['tahun']
+              });
+            });
+            var data = [];
+            for(var i=awal_tagihan_tahun;i<=akhir_tagihan_tahun;i++){
+              if(awal_tagihan_tahun == akhir_tagihan_tahun){
+                for(var a=awal_tagihan_bulan;a<=akhir_tagihan_bulan;a++){
+                  data.push({bulan:a,tahun:i});
+                }
+              }else{
+                if(i == awal_tagihan_tahun){
+                  for(var a=awal_tagihan_bulan;a<=12;a++){
+                    data.push({bulan:a,tahun:i});
+                  }
+                }else if(i == akhir_tagihan_tahun){
+                  for(var a=1;a<=akhir_tagihan_bulan;a++){
+                    data.push({bulan:a,tahun:i});
+                  }
+                }else{
+                  for(var a=1;a<=12;a++){
+                    data.push({bulan:a,tahun:i});
+                  }
+                }
+              }
+            }
+            var data_final = data;
+            data.forEach((item, i) => {
+              data_exits.forEach((item2, i2) => {
+                if(item['bulan'] == item2['bulan'] && item['tahun'] == item2['tahun']){
+                  data_final = data_final.filter(function( obj ) {
+                    if(obj.bulan == item2['bulan'] && obj.tahun == item2['tahun']){
+                      return false;
+                    }else{
+                      return true;
+                    }
+                  });
+                }
+              });
+            });
+            if(data_final.length > 0){
+              connection.release();
+              module.exports.BuatTagihanBulanan_Insert(0,data_member_item,data_final,function(){
+                index++;
+                module.exports.BuatTagihanBulanan_ProsesData(index,data_member,callback);
+              });
+            }else{
+              connection.release();
+              callback();
+            }
+          });
+        });
+      }else{
+        connection.release();
+        callback();
+      }
+    });
+  },
+  BuatTagihanBulanan_Insert : function(index,data_member_item,data,callback){
+    pool.getConnection(function(err, connection) {
+      if(data.length > 0){
+        var data_item = data[index];
+        var sql_insert = "insert into pembayaran(member_id,bulan,tahun,metode_bayar,bank_id,nominal_pembayaran,reference,is_bayar) values(?,?,?,?,?,?,?,?)";
+        var query_insert = connection.query(sql_insert,[data_member_item['id'],data_item['bulan'],data_item['tahun'],"0","0",data_member_item['nominal_pembayaran'],"","0"], function (err, results_pembayaran, fields) {
+          connection.release();
+          if(index < (data.length - 1)){
+            index++;
+            module.exports.BuatTagihanBulanan_Insert(index,data_member_item,data,callback);
+          }else{
+            connection.release();
+            callback();
+          }
+        });
+      }else{
+        connection.release();
+        callback();
+      }
+    });
+
+  },
+  Cek_Akses_Member: function(user_id,parent_user_id,callback){
     pool.getConnection(function(err, connection) {
       var sql_cek = "select a.id from member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id inner join user d on c.user_id=d.id where d.id=? or d.id=?";
-      var query_cek = connection.query(sql_cek,[member_id,parent_member_id], function (err, results_cek, fields) {
+      var query_cek = connection.query(sql_cek,[user_id,parent_user_id], function (err, results_cek, fields) {
         if(results_cek.length == 0){
           connection.release();
           callback(false)
@@ -103,8 +234,6 @@ module.exports = {
                   });
                 });
               }else{
-                torch.stop();
-                api.close();
                 setTimeout(function(){
                   module.exports.Traffic();
                 },60000);

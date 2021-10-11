@@ -155,10 +155,14 @@ module.exports = function(app){
                 var sql = "insert into member(ppp_secret_id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id) values(?,?,?,?,?,?,?,?,?,?,?,?)";
                 var query = connection.query(sql,[id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id], function (err, results, fields) {
                   if (!err){
-                    connection.release();
-                    var data = {is_error:false,msg:"Berhasil menyimpan"};
-                    res.send(JSON.stringify(data));
-                    res.end();
+                    var member_id = results.insertId;
+                    var sql_log = "insert into member_nominal_pembayaran_log(member_id,nominal_pembayaran,deskripsi) values(?,?,?)";
+                    var query_log = connection.query(sql_log,[member_id,nominal_pembayaran,"Set baru nominal pembayaran Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
+                      connection.release();
+                      var data = {is_error:false,msg:"Berhasil menyimpan"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    });
                   }else{
                     connection.release();
                     var data = {is_error:true,msg:"Gagal menyimpan"};
@@ -167,13 +171,25 @@ module.exports = function(app){
                   }
                 });
               }else{
+                var last_nominal_pembayaran = results[0]['nominal_pembayaran'];
+                var member_id = results[0]['id'];
                 var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=?,is_berhenti_langganan=?,bulan_berhenti_langganan=?,tahun_berhenti_langganan=?,master_paket_id=? where ppp_secret_id=?";
                 var query = connection.query(sql,[nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id,id], function (err, results, fields) {
                   if (!err){
-                    connection.release();
-                    var data = {is_error:false,msg:"Berhasil menyimpan"};
-                    res.send(JSON.stringify(data));
-                    res.end();
+                    if(nominal_pembayaran == last_nominal_pembayaran){
+                      connection.release();
+                      var data = {is_error:false,msg:"Berhasil menyimpan"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    }else{
+                      var sql_log = "insert into member_nominal_pembayaran_log(member_id,nominal_pembayaran,deskripsi) values(?,?,?)";
+                      var query_log = connection.query(sql_log,[member_id,nominal_pembayaran,"Update nominal pembayaran Rp. " + public_function.FormatAngka(last_nominal_pembayaran) + " menjadi Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
+                        connection.release();
+                        var data = {is_error:false,msg:"Berhasil menyimpan"};
+                        res.send(JSON.stringify(data));
+                        res.end();
+                      });
+                    }
                   }else{
                     connection.release();
                     var data = {is_error:true,msg:"Gagal menyimpan"};

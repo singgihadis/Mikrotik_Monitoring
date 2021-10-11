@@ -112,5 +112,6 @@ var server = app.listen(3002, () => {
   ping_function.Ping();
   var member_function = require("./function/member_function.js");
   member_function.Traffic();
+  member_function.BuatTagihanBulanan();
   console.log('Server is running at port 3002');
 });

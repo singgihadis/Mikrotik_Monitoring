@@ -153,8 +153,16 @@
                 </select>
               </div>
               <div class="form-group">
+                <label class="control-label">Harga Paket</label>
+                <input id="harga_paket" name="harga_paket" type="text" class="form-control" required placeholder="Harga Paket" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">PPN</label>
+                <input id="ppn" name="ppn" type="text" class="form-control" required placeholder="PPN" readonly />
+              </div>
+              <div class="form-group">
                 <label class="control-label">Nominal Pembayaran</label>
-                <input id="nominal_pembayaran" name="nominal_pembayaran" type="text" class="form-control" required placeholder="Nominal Pembayaran" />
+                <input id="nominal_pembayaran" name="nominal_pembayaran" type="text" class="form-control" required placeholder="Nominal Pembayaran" readonly />
               </div>
               <div class="form-group">
                 <label class="control-label">Tagihan Dimulai Pada</label>
@@ -226,6 +234,6 @@
     </div>
     <!-- /#wrapper -->
     {{> foot}}
-    <script type="text/javascript" src="/assets/js/page/member.js?v=1"></script>
+    <script type="text/javascript" src="/assets/js/page/member.js?v=1.1"></script>
   </body>
 </html>

@@ -64,12 +64,21 @@ $(document).ready(function(){
   });
   $("#master_paket_id").change(function(){
     var harga = $("#master_paket_id option:selected").attr("data-harga");
-    $("#nominal_pembayaran").val(FormatAngka(harga));
+    $("#harga_paket").val(FormatAngka(harga));
+    trigger_nominal_pembayaran_total();
   });
-  $("#nominal_pembayaran").keyup(function(){
-    $("#nominal_pembayaran").val(FormatAngka($("#nominal_pembayaran").val()));
+  $("#harga_paket").keyup(function(){
+    $("#harga_paket").val(FormatAngka($("#harga_paket").val()));
+    trigger_nominal_pembayaran_total();
   });
 });
+function trigger_nominal_pembayaran_total(){
+  var nominal_pembayaran = StrToNumber($("#harga_paket").val());
+  var ppn = (10 / 100) * nominal_pembayaran;
+  var nominal_pembayaran_total = nominal_pembayaran + ppn;
+  $("#ppn").val(FormatAngka(ppn));
+  $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran_total));
+}
 function load_data(){
   $("#pagination").html("");
   $("#listdata").loading();
@@ -189,6 +198,10 @@ function modal_update(itu){
   $("#no_wa").val(no_wa);
   $("#email").val(email);
   $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran));
+  var harga_paket = (100/110) * nominal_pembayaran;
+  var ppn = nominal_pembayaran - harga_paket;
+  $("#ppn").val(FormatAngka(ppn));
+  $("#harga_paket").val(FormatAngka(harga_paket));
   $("#awal_tagihan_bulan").val(awal_tagihan_bulan);
   $("#awal_tagihan_tahun").val(awal_tagihan_tahun);
   if(is_berhenti_langganan == "1"){
@@ -202,6 +215,8 @@ function modal_update(itu){
     $("#bulan_berhenti_langganan").val("");
     $("#tahun_berhenti_langganan").val("");
   }
+  $("#nominal_pembayaran_ppn").val("");
+  $("#nominal_pembayaran_total").val("");
   dropdown_paket(master_paket_id);
   $("#modal_update").modal("show");
 }

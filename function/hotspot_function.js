@@ -1,4 +1,3 @@
-const RouterOSClient = require('routeros-client').RouterOSClient;
 const pool = require('../db');
 var moment = require('moment');
 module.exports = {
