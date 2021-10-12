@@ -10,12 +10,12 @@ module.exports = {
         if(results_member.length == 0){
           setTimeout(function(){
             module.exports.BuatTagihanBulanan();
-          },3600000);
+          },60000);
         }else{
           module.exports.BuatTagihanBulanan_ProsesData(0,results_member,function(){
             setTimeout(function(){
               module.exports.BuatTagihanBulanan();
-            },3600000);
+            },60000);
           });
         }
       });
@@ -27,7 +27,6 @@ module.exports = {
       if(index < jml_member){
         var data_member_item = data_member[index];
         var member_id = data_member_item['id'];
-        console.log(member_id);
         var awal_tagihan_bulan = data_member_item['awal_tagihan_bulan'];
         var awal_tagihan_tahun = data_member_item['awal_tagihan_tahun'];
         var is_berhenti_langganan = data_member_item['is_berhenti_langganan'];
@@ -102,7 +101,8 @@ module.exports = {
               });
             }else{
               connection.release();
-              callback();
+              index++;
+              module.exports.BuatTagihanBulanan_ProsesData(index,data_member,callback);
             }
           });
         });
@@ -117,7 +117,6 @@ module.exports = {
       if(data.length > 0){
         var data_item = data[index];
         var sql_insert = "insert into pembayaran(member_id,bulan,tahun,metode_bayar,bank_id,nominal_pembayaran,reference,is_bayar) values(?,?,?,?,?,?,?,?)";
-        console.log("bulan " + data_item['bulan'] + " " + data_item['tahun']);
         var query_insert = connection.query(sql_insert,[data_member_item['id'],data_item['bulan'],data_item['tahun'],"0","0",data_member_item['nominal_pembayaran'],"","0"], function (err, results_pembayaran, fields) {
           connection.release();
           if(index < (data.length - 1)){
@@ -220,7 +219,9 @@ module.exports = {
                   hasil = JSON.stringify(hasil_arr);
                 }
                 torch.stop();
-                api.close();
+                if(api['rosApi']['closing'] == false){
+                  api.close();
+                }
                 pool.getConnection(function(err, connection) {
                   var sql_update = "update member_traffic_data set hasil=?,filled=1 where member_id=? and tgl=CURDATE()";
                   var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {

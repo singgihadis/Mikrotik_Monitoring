@@ -290,12 +290,13 @@ function load_data(){
           if(k < 5){
             var bulan = v['bulan'];
             var arr_bulan = bulan.split(",");
+            var arr_is_bayar = v['is_bayar'].split(",");
             var awal_tagihan_tahun = parseInt(v['awal_tagihan_tahun']);
             var awal_tagihan_bulan = parseInt(v['awal_tagihan_bulan']);
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
 
             var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
             var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];
@@ -326,10 +327,21 @@ function load_data(){
                   berhenti_langganan = false;
                 }
               }
-              var is_bayar = "<span class='fa fa-times-circle text-danger'></span>";
-              if(arr_bulan.indexOf((a + 1).toString()) != -1){
-                is_bayar = "<span class='fa fa-check text-success'></span>";
+              var aa = "";
+              arr_bulan.forEach((item, i) => {
+                if(item == (a + 1)){
+                  aa = i;
+                }
+              });
+              var is_bayar = "";
+              if(aa !== ""){
+                if(arr_is_bayar[aa] == "1"){
+                  is_bayar = "<span class='fa fa-check text-success'></span>";
+                }else{
+                  is_bayar = "<span class='fa fa-times-circle text-danger'></span>";
+                }
               }
+
               if(belum_waktunya == true || berhenti_langganan == true){
                 is_bayar = "";
               }else{

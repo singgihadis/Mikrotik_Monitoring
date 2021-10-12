@@ -25,13 +25,14 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='5'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='6'>" + res.msg + "</td></tr>");
         }
       }else{
         var html = "";
         var no = page * 10 - 10;
         $.each(res.data,function(k,v){
           if(k < 10){
+            var tgl = moment(v['tgl_insert'],"YYYY-MM-DD HH:mm:ss");
             no++;
             html += "<tr>";
             html += "<td>" + no + "</td>";
@@ -39,6 +40,7 @@ function load_data(){
             html += "<td>" + v['nama_member'] + "</td>";
             html += "<td>Rp. " + FormatAngka(v['nominal_pembayaran']) + "</td>";
             html += "<td>" + v['deskripsi'] + "</td>";
+            html += "<td>" + tgl.format("HH:mm DD/MM/YYYY") + "</td>";
             html += "</tr>";
           }
         });

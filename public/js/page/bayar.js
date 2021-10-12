@@ -150,42 +150,46 @@ function load_data(){
       }else{
         var data = res.data;
         var html = "";
-        var no = (page * 10) - 9;
+        var no = (page * 5) - 4;
         var first = no;
         $.each(data,function(k,v){
-          if(k < 10){
+          if(k < 5){
             var arr_metode_bayar = v['metode_bayar'].split(",");
             var arr_nominal_pembayaran = v['nominal_pembayaran'].split(",");
             var bulan = v['bulan'];
             var arr_bulan = bulan.split(",");
+            var arr_is_bayar = v['is_bayar'].split(",");
             var awal_tagihan_tahun = parseInt(v['awal_tagihan_tahun']);
             var awal_tagihan_bulan = parseInt(v['awal_tagihan_bulan']);
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "'>" + v['nama'] + "</a></td>";
             var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
             var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];
             for(var a=0;a<12;a++){
+              var aa = "";
+              arr_bulan.forEach((item, i) => {
+                if(item == (a + 1)){
+                  aa = i;
+                }
+              });
               var html_switch = "";
-              if(arr_bulan.indexOf((a + 1).toString()) != -1){
-                var aa = 0;
-                arr_bulan.forEach((item, i) => {
-                  if(item == (a + 1)){
-                    aa = i;
-                  }
-                });
-                html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='" + arr_metode_bayar[aa] + "' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + arr_nominal_pembayaran[aa] + "' data-nominal-pembayaran-dibayar='" + arr_nominal_pembayaran[aa] + "' id='customSwitch" + k + " " + a + "' checked>";
-                html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
-                html_switch += "</div>";
-                aa++;
-              }else{
-                html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + arr_nominal_pembayaran[aa] + "' data-nominal-pembayaran-dibayar='" + arr_nominal_pembayaran[aa] + "' id='customSwitch" + k + " " + a + "'>";
-                html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
-                html_switch += "</div>";
+              if(aa !== ""){
+                if(arr_is_bayar[aa] == "1"){
+                  html_switch += "<div class='custom-control custom-switch'>";
+                  html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='" + arr_metode_bayar[aa] + "' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + arr_nominal_pembayaran[aa] + "' data-nominal-pembayaran-dibayar='" + arr_nominal_pembayaran[aa] + "' id='customSwitch" + k + " " + a + "' checked>";
+                  html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
+                  html_switch += "</div>";
+                  aa++;
+                }else{
+                  html_switch += "<div class='custom-control custom-switch'>";
+                  html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + arr_nominal_pembayaran[aa] + "' data-nominal-pembayaran-dibayar='" + arr_nominal_pembayaran[aa] + "' id='customSwitch" + k + " " + a + "'>";
+                  html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
+                  html_switch += "</div>";
+                }
               }
+
 
               var belum_waktunya = false;
               if(tahun < cur_thn){
