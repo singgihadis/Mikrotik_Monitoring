@@ -1,4 +1,3 @@
-const RouterOSClient = require('routeros-client').RouterOSClient;
 var pengaturan_function = require("../function/pengaturan_function.js");
 const fs = require('fs');
 const formidable = require('formidable');

@@ -49,6 +49,14 @@
         User
       </a>
       {{/ifEqualsOR}}
+      {{#ifEquals level "2"}}
+      <a href="#log_user" data-toggle="collapse" class="list-group-item menu-item list-group-item-action bg-white {{#ifNotEquals menu "log_user"}}collapsed{{/ifNotEquals}}">
+        Log User <span class="fa float-right mt-1"></span>
+      </a>
+      <div id="log_user" class="list-group sub-menu collapse {{#ifEquals menu "log_user"}}show{{/ifEquals}}">
+        <a href="/log_user_nominal_pembayaran.html" class="list-group-item sub-item list-group-item-action bg-white {{#ifEquals sub_menu "log_user_nominal_pembayaran"}}font-weight-bolder{{/ifEquals}}">Log Nominal Pembayaran User</a>
+      </div>
+      {{/ifEquals}}
   </div>
   {{#ifEquals level "2"}}
   <hr>

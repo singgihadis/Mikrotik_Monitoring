@@ -85,15 +85,12 @@ module.exports = {
               });
             });
           }catch(err){
-            // torch.stop();
-            // api.close();
             setTimeout(function(){
               module.exports.Ping();
             },60000);
           }
         });
       }).catch((err) => {
-        // api.close();
         index++;
         if(index == jml){
           setTimeout(function(){

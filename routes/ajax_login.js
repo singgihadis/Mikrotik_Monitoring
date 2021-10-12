@@ -1,4 +1,3 @@
-const RouterOSClient = require('routeros-client').RouterOSClient;
 const pool = require('../db');
 const crypto = require('crypto');
 module.exports = function(app){

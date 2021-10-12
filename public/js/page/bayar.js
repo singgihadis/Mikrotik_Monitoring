@@ -155,6 +155,7 @@ function load_data(){
         $.each(data,function(k,v){
           if(k < 10){
             var arr_metode_bayar = v['metode_bayar'].split(",");
+            var arr_nominal_pembayaran = v['nominal_pembayaran'].split(",");
             var bulan = v['bulan'];
             var arr_bulan = bulan.split(",");
             var awal_tagihan_tahun = parseInt(v['awal_tagihan_tahun']);
@@ -175,13 +176,13 @@ function load_data(){
                   }
                 });
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='" + arr_metode_bayar[aa] + "' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "' checked>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='" + arr_metode_bayar[aa] + "' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + arr_nominal_pembayaran[aa] + "' data-nominal-pembayaran-dibayar='" + arr_nominal_pembayaran[aa] + "' id='customSwitch" + k + " " + a + "' checked>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
                 aa++;
               }else{
                 html_switch += "<div class='custom-control custom-switch'>";
-                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-nominal-pembayaran-dibayar='" + v['nominal_pembayaran_dibayar'] + "' id='customSwitch" + k + " " + a + "'>";
+                html_switch += "  <input type='checkbox' class='custom-control-input cbk-bayar' data-metode-bayar='' data-id='" + v['id'] + "' data-bulan='" + (a + 1) + "' data-nama='" + v['nama'] + "' data-profile='" + v['profile'] +  "' data-nominal-pembayaran='" + arr_nominal_pembayaran[aa] + "' data-nominal-pembayaran-dibayar='" + arr_nominal_pembayaran[aa] + "' id='customSwitch" + k + " " + a + "'>";
                 html_switch += "  <label class='custom-control-label' data-bulan='" + (a + 1) + "' for='customSwitch" + k + " " + a + "'></label>";
                 html_switch += "</div>";
               }

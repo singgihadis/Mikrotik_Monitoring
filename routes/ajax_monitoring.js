@@ -1,4 +1,3 @@
-const RouterOSClient = require('routeros-client').RouterOSClient;
 const pool = require('../db');
 module.exports = function(app){
   app.post(['/ajax/monitoring_tambah.html'],(req, res) => {

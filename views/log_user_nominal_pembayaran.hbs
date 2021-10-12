@@ -1,0 +1,84 @@
+<html>
+  {{> head}}
+  <body class="dashboard">
+    <div class="d-flex" id="wrapper">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        {{> navbar}}
+        <div class="container-fluid">
+          <input type="hidden" id="user_level" name="user_level" value="{{level}}" class="form-control" />
+            <div class="row mt-4">
+              <div class="col-sm-6">
+                <div class="breadcrumb-custom">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li class="active">
+                      Log Nominal Pembayaran User
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card stat-card">
+                  <div class="card-header bg-gradient-primary text-white">
+                    Data Log Nominal Pembayaran User
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <form id="form_search" class="text-left">
+                          <div class="d-inline-block">
+                            <div class="input-group mb-3">
+                              <input type="text" id="nama_user" name="nama_user" class="form-control" placeholder="Nama User">
+                              <input type="text" id="nama_member" name="nama_member" class="form-control" placeholder="Nama Member">
+                              <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span></button>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div class="col-md-6 text-right">
+                      </div>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>User</th>
+                            <th>Member</th>
+                            <th>Nominal Pembayaran</th>
+                            <th>Deskripsi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="listdata">
+
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="text-center" id="pagination">
+                    </div>
+                    <br>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+          <br><br>
+        </div>
+      </div>
+    </div>
+    <!-- /#wrapper -->
+    {{> foot}}
+    <script type="text/javascript" src="/assets/js/page/log_user_nominal_pembayaran.js"></script>
+  </body>
+</html>

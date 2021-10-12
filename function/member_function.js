@@ -10,12 +10,12 @@ module.exports = {
         if(results_member.length == 0){
           setTimeout(function(){
             module.exports.BuatTagihanBulanan();
-          },5000);
+          },3600000);
         }else{
           module.exports.BuatTagihanBulanan_ProsesData(0,results_member,function(){
             setTimeout(function(){
               module.exports.BuatTagihanBulanan();
-            },5000);
+            },3600000);
           });
         }
       });
@@ -27,6 +27,7 @@ module.exports = {
       if(index < jml_member){
         var data_member_item = data_member[index];
         var member_id = data_member_item['id'];
+        console.log(member_id);
         var awal_tagihan_bulan = data_member_item['awal_tagihan_bulan'];
         var awal_tagihan_tahun = data_member_item['awal_tagihan_tahun'];
         var is_berhenti_langganan = data_member_item['is_berhenti_langganan'];
@@ -116,6 +117,7 @@ module.exports = {
       if(data.length > 0){
         var data_item = data[index];
         var sql_insert = "insert into pembayaran(member_id,bulan,tahun,metode_bayar,bank_id,nominal_pembayaran,reference,is_bayar) values(?,?,?,?,?,?,?,?)";
+        console.log("bulan " + data_item['bulan'] + " " + data_item['tahun']);
         var query_insert = connection.query(sql_insert,[data_member_item['id'],data_item['bulan'],data_item['tahun'],"0","0",data_member_item['nominal_pembayaran'],"","0"], function (err, results_pembayaran, fields) {
           connection.release();
           if(index < (data.length - 1)){

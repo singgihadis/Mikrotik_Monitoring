@@ -343,7 +343,6 @@ function load_data(){
                   }
                 }
               }
-
               html += "<td class='text-center'>" + is_bayar + "</td>";
             }
             html += "</tr>";
