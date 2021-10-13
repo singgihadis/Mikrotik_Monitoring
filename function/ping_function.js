@@ -3,6 +3,7 @@ const pool = require('../db');
 var moment = require('moment');
 module.exports = {
   Ping: function(){
+    console.log("Ping");
     pool.getConnection(function(err, connection) {
       var sql_data = "select a.*,b.host,b.port,b.user,b.password,c.hasil,c.filled from monitoring a inner join server b on a.server_id=b.id left join ping_data c on a.id=c.monitoring_id and c.tgl=CURDATE() where a.is_run=1";
       var query_data = connection.query(sql_data, function (err, results, fields) {

@@ -107,6 +107,7 @@ require('./routes/ajax_download_database')(app);
 
 //server listening
 var server = app.listen(3002, () => {
+  console.log("mulai");
   var ping_function = require("./function/ping_function.js");
   ping_function.Ping();
   var member_function = require("./function/member_function.js");
