@@ -56,6 +56,8 @@ function load_data(){
             $.each(data_khusus,function(k2,v2){
               if(v['metode_bayar'] == v2['metode_bayar']){
                 data_khusus_match.push(v2['metode_bayar']);
+                var total_pembayaran = 0;
+                var total_pembayaran_khusus = 0;
                 new_data.push({
                   metode_bayar:v['metode_bayar'],
                   jml_transaksi:parseInt(v['jml_transaksi']) + parseInt(v2['jml_transaksi']),

@@ -107,11 +107,10 @@ require('./routes/ajax_download_database')(app);
 
 //server listening
 var server = app.listen(3002, () => {
-  console.log("mulai");
+  console.log('Server is running at port 3002');
   var ping_function = require("./function/ping_function.js");
   ping_function.Ping();
   var member_function = require("./function/member_function.js");
   member_function.Traffic();
   member_function.BuatTagihanBulanan();
-  console.log('Server is running at port 3002');
 });

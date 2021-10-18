@@ -1,10 +1,12 @@
 const RouterOSClient = require('routeros-client').RouterOSClient;
 const pool = require('../db');
 var moment = require('moment');
+var request = require('request');
 var fs = require('fs');
+var is_traffic_running = "0";
+var request_function = require("../function/request_function.js");
 module.exports = {
   BuatTagihanBulanan: function(){
-    console.log("BuatTagihanBulanan");
     pool.getConnection(function(err, connection) {
       var select_member = "select * from member";
       var query_member = connection.query(select_member, function (err, results_member, fields) {
@@ -150,63 +152,40 @@ module.exports = {
       });
     });
   },
-  Traffic_set : function(is_traffic_running,callback){
-    fs.readFile(__dirname + '/../variable.json', 'utf8', function(err, data) {
-      var parsed_data = JSON.parse(data);
-      parsed_data['is_traffic_running'] = is_traffic_running;
-      var new_data = JSON.stringify(parsed_data);
-      fs.writeFile(__dirname + '/../variable.json',new_data, (err) => {
-        callback();
-      });
-    });
-  },
-  Traffic_get : function(callback){
-    fs.readFile(__dirname + '/../variable.json', 'utf8', function(err, data) {
-      var parsed_data = JSON.parse(data);
-      var is_traffic_running = parsed_data['is_traffic_running'];
-      callback(is_traffic_running);
-    });
-  },
   Traffic: function(){
-    module.exports.Traffic_get(function(is_traffic_running){
-      if(is_traffic_running == "0"){
-        module.exports.Traffic_set("1",function(){
-          console.log("Traffic " + moment().format("HH:mm"));
-          pool.getConnection(function(err, connection) {
-            var sql_data = "SELECT a.id, a.nama, b.`name`, c.`host`, c.`password`, c.`port`, c.`user`, d.hasil, d.filled FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id LEFT JOIN member_traffic_data d ON a.id = d.member_id and d.tgl=CURDATE()";
-            var query_data = connection.query(sql_data, function (err, results, fields) {
-              if(results.length == 0){
+    pool.getConnection(function(err, connection) {
+      var sql_data = "SELECT a.id, a.nama, b.`name`, c.`host`, c.`password`, c.`port`, c.`user`, d.hasil, d.filled FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id LEFT JOIN member_traffic_data d ON a.id = d.member_id and d.tgl=CURDATE()";
+      var query_data = connection.query(sql_data, function (err, results, fields) {
+        if(results.length == 0){
+          connection.release();
+          is_traffic_running = "0";
+          setTimeout(function(){
+            module.exports.Traffic();
+          },60000);
+        }else{
+          var arr_data_insert = [];
+          results.forEach((item, i) => {
+            if(item['filled'] == null){
+              arr_data_insert.push("(" + item['id'] + ",CURDATE(),'')");
+            }
+          });
+          if(arr_data_insert.length > 0){
+            var sql_insert = "insert into member_traffic_data(member_id,tgl,hasil) values " + arr_data_insert.join(",");
+            var query_data = connection.query(sql_insert, function (err, results3, fields) {
+              if (!err){
                 connection.release();
-                setTimeout(function(){
-                  module.exports.Traffic();
-                },60000);
+                module.exports.Traffic_Proses(0,results.length,results);
               }else{
-                var arr_data_insert = [];
-                results.forEach((item, i) => {
-                  if(item['filled'] == null){
-                    arr_data_insert.push("(" + item['id'] + ",CURDATE(),'')");
-                  }
-                });
-                if(arr_data_insert.length > 0){
-                  var sql_insert = "insert into member_traffic_data(member_id,tgl,hasil) values " + arr_data_insert.join(",");
-                  var query_data = connection.query(sql_insert, function (err, results3, fields) {
-                    if (!err){
-                      connection.release();
-                      module.exports.Traffic_Proses(0,results.length,results);
-                    }else{
-                      connection.release();
-                      module.exports.Traffic_Proses(0,results.length,results);
-                    }
-                  });
-                }else{
-                  connection.release();
-                  module.exports.Traffic_Proses(0,results.length,results);
-                }
+                connection.release();
+                module.exports.Traffic_Proses(0,results.length,results);
               }
             });
-          });
-        });
-      }
+          }else{
+            connection.release();
+            module.exports.Traffic_Proses(0,results.length,results);
+          }
+        }
+      });
     });
   },
   Traffic_Proses: function(index,jml,results){
@@ -217,91 +196,53 @@ module.exports = {
       var user = item['user'];
       var password = item['password'];
       var name = item['name'];
-      const api = new RouterOSClient({
-          host: host,
-          port: port,
-          user: user,
-          password: password
-      });
-      api.connect().then((client) => {
-        var torch = client.menu("/interface monitor-traffic").where({interface:"<pppoe-" + name + ">"}).stream((err, get_data, stream) => {
-            try{
-              var data = get_data[0];
-              if(data != undefined){
-                var hasil_arr = [];
-                if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
-                  hasil_arr = JSON.parse(item['hasil']);
-                }
-                var sekarang = moment().unix();
-                var tx = "";
-                if(data.hasOwnProperty("txBitsPerSecond")){
-                  tx = data['txBitsPerSecond'];
-                }
-                var rx = "";
-                if(data.hasOwnProperty("rxBitsPerSecond")){
-                  rx = data['rxBitsPerSecond'];
-                }
-                hasil_arr.push({"s":sekarang,"tx":tx,"rx":rx});
-                var hasil = "";
-                if(hasil_arr.length > 0){
-                  hasil = JSON.stringify(hasil_arr);
-                }
-                torch.stop();
-                if(api['rosApi']['closing'] == false){
-                  api.close();
-                }
-                pool.getConnection(function(err, connection) {
-                  console.log("Traffic_Proses_Update");
-                  var sql_update = "update member_traffic_data set hasil=?,filled=1 where member_id=? and tgl=CURDATE()";
-                  var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {
-                    connection.release();
-                    index++;
-                    if(index == jml){
-                      console.log("1");
-                      setTimeout(function(){
-                        module.exports.Traffic();
-                      },60000);
-                    }else{
-                      module.exports.Traffic_Proses(index,results.length,results);
-                    }
-                  });
-                });
-              }else{
-                torch.stop();
-                if(api['rosApi']['closing'] == false){
-                  api.close();
-                }
-                console.log("2");
+      var param = {
+        'host':host,
+        'port':port,
+        'user':user,
+        'password':password,
+        'name':name};
+      request_function.Post("/ajax/get_traffic_data_service.html",param,function(response){
+        var data = JSON.parse(response);
+        if(data.is_error){
+          index++;
+          if(index == jml){
+            setTimeout(function(){
+              module.exports.Traffic();
+            },60000);
+          }else{
+            module.exports.Traffic_Proses(index,results.length,results);
+          }
+        }else{
+          var hasil_arr = [];
+          if(item['filled'] != null && item['filled'] != 0 && item['hasil'] != null){
+            hasil_arr = JSON.parse(item['hasil']);
+          }
+          var sekarang = data.sekarang;
+          var tx = data.tx;
+          var rx = data.rx;
+          hasil_arr.push({"s":sekarang,"tx":tx,"rx":rx});
+          var hasil = "";
+          if(hasil_arr.length > 0){
+            hasil = JSON.stringify(hasil_arr);
+          }
+          pool.getConnection(function(err, connection) {
+            var sql_update = "update member_traffic_data set hasil=?,filled=1 where member_id=? and tgl=CURDATE()";
+            var query_update = connection.query(sql_update,[hasil,item['id']], function (err, results3, fields) {
+              connection.release();
+              index++;
+              if(index == jml){
                 setTimeout(function(){
-                  console.log("21");
                   module.exports.Traffic();
                 },60000);
+              }else{
+                module.exports.Traffic_Proses(index,results.length,results);
               }
-            }catch(err){
-              torch.stop();
-              if(api['rosApi']['closing'] == false){
-                api.close();
-              }
-              console.log(err);
-              console.log("3");
-              setTimeout(function(){
-                module.exports.Traffic();
-              },60000);
-            }
-        });
-      }).catch((err) => {
-        index++;
-        if(index == jml){
-          console.log("4");
-          setTimeout(function(){
-            module.exports.Traffic();
-          },60000);
-        }else{
-          module.exports.Traffic_Proses(index,results.length,results);
+            });
+          });
         }
       });
     }else{
-      console.log("5");
       setTimeout(function(){
         module.exports.Traffic();
       },60000);

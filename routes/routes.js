@@ -47,7 +47,7 @@ module.exports = function(app){
         }
 
       }else{
-        window.location = "/router.html"
+        res.redirect("/router.html");
       }
     }
   });
@@ -83,7 +83,7 @@ module.exports = function(app){
           });
         }
       }else{
-        window.location = "/router.html"
+        res.redirect("/router.html");
       }
 
     }
@@ -121,7 +121,7 @@ module.exports = function(app){
         }
 
       }else{
-        window.location = "/router.html"
+        res.redirect("/router.html");
       }
 
     }
@@ -159,7 +159,7 @@ module.exports = function(app){
         }
 
       }else{
-        window.location = "/router.html"
+        res.redirect("/router.html");
       }
     }
   });
@@ -239,7 +239,7 @@ module.exports = function(app){
         }
 
       }else{
-        window.location = "/router.html"
+        res.redirect("/router.html");
       }
 
     }
@@ -277,7 +277,7 @@ module.exports = function(app){
         }
 
       }else{
-        window.location = "/router.html"
+        res.redirect("/router.html");
       }
 
     }

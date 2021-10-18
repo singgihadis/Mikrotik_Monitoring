@@ -258,11 +258,11 @@ function load_data(){
             }
             if($("#level").val() == "2"){
               html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' data-nama-user='" + v['nama_user'] + "' data-user-id='" + v['user_id'] + "' onclick='modal_alihkan(this);' class='btn btn-primary'><span class='fa fa-exchange'></span></a> ";
+              html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='hapus(this);' class='btn btn-danger'><span class='fa fa-trash'></span></a> ";
             }
             html += "</td>";
             html += "</tr>";
           }
-
         });
         $("#listdata").html(html);
         html_pagination(res.data.length);
@@ -327,4 +327,29 @@ function trigger_pagination(){
     page = get_page;
     load_data();
   });
+}
+function hapus(itu){
+  var r = confirm("Apa anda yakin ingin menghapus router tersebut ?");
+  if(r){
+    var id = $(itu).attr("data-id");
+    $.ajax({
+      type:'post',
+      url:'/ajax/router_delete.html',
+      data:{id:id},
+      success:function(resp){
+        var res = JSON.parse(resp);
+        var html = "";
+        if(res.is_error){
+          if(res.must_login){
+            window.location = "/login.html";
+          }else{
+            toastr["error"](res.msg);
+          }
+        }else{
+          toastr["success"](res.msg);
+          load_data();
+        }
+      }
+    });
+  }
 }

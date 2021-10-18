@@ -28,7 +28,17 @@ $(document).ready(function(){
     }
   });
   load_data();
+  $("#harga").keyup(function(){
+    trigger_nominal_pembayaran_total();
+  });
 });
+function trigger_nominal_pembayaran_total(){
+  var harga_paket = StrToNumber($("#harga").val());
+  var ppn = parseInt((10 / 100) * harga_paket);
+  var nominal_pembayaran_total = harga_paket + ppn;
+  $("#ppn").val(FormatAngka(ppn));
+  $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran_total));
+}
 function modal_tambah(){
   is_edit = false;
   $("#form_data").trigger("reset");
@@ -201,6 +211,7 @@ function modal_edit(itu){
   $("#kapasitas").val(kapasitas);
   $("#harga").val(FormatAngka(harga));
   $("#modal_form").modal("show");
+  trigger_nominal_pembayaran_total();
 }
 function html_pagination(jmldata){
   var html_pagination = "";

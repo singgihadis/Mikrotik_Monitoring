@@ -41,6 +41,79 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/get_ping_data_service.html'],(req, res) => {
+    var host = "";
+    if(req.body.host != undefined){
+      host = req.body.host;
+    }
+    var port = "";
+    if(req.body.port != undefined){
+      port = req.body.port;
+    }
+    var user = "";
+    if(req.body.user != undefined){
+      user = req.body.user;
+    }
+    var password = "";
+    if(req.body.password != undefined){
+      password = req.body.password;
+    }
+    var client_ip = "";
+    if(req.body.client_ip != undefined){
+      client_ip = req.body.client_ip;
+    }
+    const api = new RouterOSClient({
+        host: host,
+        port: port,
+        user: user,
+        password: password
+    });
+    api.connect().then((client) => {
+      var torch = client.menu("/ping").where({address:client_ip}).stream((err, data, stream) => {
+        try{
+          var sekarang = moment().unix();
+          var time = "";
+          if(data.hasOwnProperty("time")){
+            time = data['time'];
+          }
+          torch.stop();
+          if(api['rosApi']['closing'] == false){
+            api.close();
+          }
+          var output = {
+            is_error:false,
+            data:{
+              sekarang:sekarang,
+              time:time
+            }
+          };
+          if(res.headersSent == false){
+            res.send(JSON.stringify(output));
+            res.end();
+          }
+        }catch(err){
+          torch.stop();
+          if(api['rosApi']['closing'] == false){
+            api.close();
+          }
+          var output = {
+            is_error:true,
+            data:{}
+          };
+          if(res.headersSent == false){
+            res.send(JSON.stringify(output));
+            res.end();
+          }
+        }
+      });
+    }).catch((err) => {
+      var output = {is_error:true,data:{}};
+      if(res.headersSent == false){
+        res.send(JSON.stringify(output));
+        res.end();
+      }
+    });
+  });
   app.post(['/ajax/ping_data.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {

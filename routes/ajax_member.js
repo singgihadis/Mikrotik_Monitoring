@@ -318,6 +318,106 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/get_traffic_data_service.html'],(req, res) => {
+    var host = "";
+    if(req.body.host != undefined){
+      host = req.body.host;
+    }
+    var port = "";
+    if(req.body.port != undefined){
+      port = req.body.port;
+    }
+    var user = "";
+    if(req.body.user != undefined){
+      user = req.body.user;
+    }
+    var password = "";
+    if(req.body.password != undefined){
+      password = req.body.password;
+    }
+    var name = "";
+    if(req.body.name != undefined){
+      name = req.body.name;
+    }
+    const api = new RouterOSClient({
+        host: host,
+        port: port,
+        user: user,
+        password: password
+    });
+    api.connect().then((client) => {
+      var torch = client.menu("/interface monitor-traffic").where({interface:"<pppoe-" + name + ">"}).stream((err, get_data, stream) => {
+          try{
+            if(get_data != null){
+              var data = get_data[0];
+              if(data != undefined){
+                var sekarang = moment().unix();
+                var tx = "";
+                if(data.hasOwnProperty("txBitsPerSecond")){
+                  tx = data['txBitsPerSecond'];
+                }
+                var rx = "";
+                if(data.hasOwnProperty("rxBitsPerSecond")){
+                  rx = data['rxBitsPerSecond'];
+                }
+                torch.stop();
+                if(api['rosApi']['closing'] == false){
+                  api.close();
+                }
+                var output = {
+                  is_error:false,
+                  data:{
+                    sekarang:sekarang,
+                    tx:tx,
+                    rx:rx
+                  }
+                };
+                if(res.headersSent == false){
+                  res.send(JSON.stringify(output));
+                  res.end();
+                }
+              }else{
+                torch.stop();
+                if(api['rosApi']['closing'] == false){
+                  api.close();
+                }
+                var output = {is_error:true,data:{}};
+                if(res.headersSent == false){
+                  res.send(JSON.stringify(output));
+                  res.end();
+                }
+              }
+            }else{
+              torch.stop();
+              if(api['rosApi']['closing'] == false){
+                api.close();
+              }
+              var output = {is_error:true,data:{}};
+              if(res.headersSent == false){
+                res.send(JSON.stringify(output));
+                res.end();
+              }
+            }
+          }catch(err){
+            torch.stop();
+            if(api['rosApi']['closing'] == false){
+              api.close();
+            }
+            var output = {is_error:true,data:{}};
+            if(res.headersSent == false){
+              res.send(JSON.stringify(output));
+              res.end();
+            }
+          }
+      });
+    }).catch((err) => {
+      var output = {is_error:true,data:{}};
+      if(res.headersSent == false){
+        res.send(JSON.stringify(output));
+        res.end();
+      }
+    });
+  });
   app.post(['/ajax/member_traffic_data.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {

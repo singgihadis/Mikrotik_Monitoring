@@ -305,4 +305,49 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/router_delete.html'],(req, res) => {
+    if(req.session.is_login){
+      var id = "";
+      if(req.body.id != undefined){
+        id = req.body.id;
+      }
+      var user_level = req.session.level;
+      if(user_level == "2"){
+        pool.getConnection(function(err, connection) {
+          var sql_insert = "insert into server_deleted select d.* from server d where d.id=?";
+          var query_insert = connection.query(sql_insert,[id], function (err, results, fields) {
+            if(!err){
+              var sql_delete = "delete from server where id=?";
+              var query_delete = connection.query(sql_delete,[id], function (err, results, fields) {
+                if(!err){
+                  connection.release();
+                  var data = {is_error:false,msg:"Berhasil menghapus router"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }else{
+                  connection.release();
+                  var data = {is_error:true,msg:"Gagal menghapus router"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }
+              });
+            }else{
+              connection.release();
+              var data = {is_error:true,msg:"Gagal menghapus router"};
+              res.send(JSON.stringify(data));
+              res.end();
+            }
+          });
+        });
+      }else{
+        var data = {is_error:true,msg:"Anda tidak mempunyai akses",must_login:true};
+        res.send(JSON.stringify(data));
+        res.end();
+      }
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
 }

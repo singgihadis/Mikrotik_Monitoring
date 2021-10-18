@@ -74,7 +74,7 @@ $(document).ready(function(){
 });
 function trigger_nominal_pembayaran_total(){
   var nominal_pembayaran = StrToNumber($("#harga_paket").val());
-  var ppn = (10 / 100) * nominal_pembayaran;
+  var ppn = parseInt((10 / 100) * nominal_pembayaran);
   var nominal_pembayaran_total = nominal_pembayaran + ppn;
   $("#ppn").val(FormatAngka(ppn));
   $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran_total));
@@ -198,7 +198,7 @@ function modal_update(itu){
   $("#no_wa").val(no_wa);
   $("#email").val(email);
   $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran));
-  var harga_paket = (100/110) * nominal_pembayaran;
+  var harga_paket = parseInt((100/110) * nominal_pembayaran);
   var ppn = nominal_pembayaran - harga_paket;
   $("#ppn").val(FormatAngka(ppn));
   $("#harga_paket").val(FormatAngka(harga_paket));
