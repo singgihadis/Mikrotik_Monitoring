@@ -57,14 +57,13 @@ function load_data(){
               if(v['metode_bayar'] == v2['metode_bayar']){
                 data_khusus_match.push(v2['metode_bayar']);
                 var total_pembayaran = 0;
-                var total_pembayaran_khusus = 0;
                 new_data.push({
                   metode_bayar:v['metode_bayar'],
                   jml_transaksi:parseInt(v['jml_transaksi']) + parseInt(v2['jml_transaksi']),
                   jml_pembayaran:parseInt(v['jml_pembayaran']) + parseInt(v2['jml_pembayaran']),
                   biaya_layanan:parseInt(v['biaya_layanan']) + parseInt(v2['biaya_layanan']),
                   biaya_layanan_duitku:parseInt(v['biaya_layanan_duitku']) + parseInt(v2['biaya_layanan_duitku']),
-                  total_pembayaran:parseInt(v['total_pembayaran']) + parseInt(v2['total_pembayaran'])
+                  total_pembayaran:parseInt(v['jml_pembayaran']) + parseInt(v2['jml_pembayaran']) + parseInt(v['biaya_layanan']) + parseInt(v2['biaya_layanan']) + parseInt(v['biaya_layanan_duitku']) + parseInt(v2['biaya_layanan_duitku'])
                 });
                 is_match = true;
               }
@@ -86,9 +85,27 @@ function load_data(){
             });
           }
         }else if(data.length > 0){
-          new_data = data;
+          $.each(data,function(k,v){
+            new_data.push({
+              metode_bayar:v['metode_bayar'],
+              jml_transaksi:parseInt(v['jml_transaksi']),
+              jml_pembayaran:parseInt(v['jml_pembayaran']),
+              biaya_layanan:parseInt(v['biaya_layanan']),
+              biaya_layanan_duitku:parseInt(v['biaya_layanan_duitku']),
+              total_pembayaran:parseInt(v['jml_pembayaran']) + parseInt(v['biaya_layanan']) + parseInt(v['biaya_layanan_duitku'])
+            });
+          });
         }else if(data_khusus.length > 0){
-          new_data = data_khusus;
+          $.each(data_khusus,function(k,v){
+            new_data.push({
+              metode_bayar:v['metode_bayar'],
+              jml_transaksi:parseInt(v['jml_transaksi']),
+              jml_pembayaran:parseInt(v['jml_pembayaran']),
+              biaya_layanan:parseInt(v['biaya_layanan']),
+              biaya_layanan_duitku:parseInt(v['biaya_layanan_duitku']),
+              total_pembayaran:parseInt(v['jml_pembayaran']) + parseInt(v['biaya_layanan']) + parseInt(v['biaya_layanan_duitku'])
+            });
+          });
         }
         var total_jml_transaksi = 0;
         var total_jml_pembayaran = 0;
