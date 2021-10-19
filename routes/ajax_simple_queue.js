@@ -18,7 +18,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("(concat(a.name,a.target) like '%" + keyword + "%' or b.address like '%" + keyword + "%')");
+          arr_query.push("(concat(a.name,a.target) like '%" + keyword + "%')");
         }
         arr_query.push("a.server_id=" + req.session.server_id);
         var filter_query = "";
