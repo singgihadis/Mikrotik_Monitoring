@@ -279,7 +279,42 @@ module.exports = function(app){
       }else{
         res.redirect("/router.html");
       }
-
+    }
+  });
+  app.get(['/simple_queue.html'],(req, res) => {
+    if(!req.session.is_login){
+      res.redirect("/login.html");
+    }else{
+      var server_id = "";
+      if(req.session.server_id){
+        server_id = req.session.server_id;
+        var website_config = req.website_config;
+        var level = req.session.level;
+        var nama_user = req.session.nama;
+        var title = "";
+        if(website_config['title'] != ""){
+          title = "Simple Queue - " + website_config['title'];
+        }else{
+          title = "Simple Queue";
+        }
+        if(level == "3"){
+          res.redirect("/dashboard.html");
+        }else{
+          res.render("simple_queue",{
+            title:title,
+            favicon:website_config['favicon'],
+            logo:website_config['logo'],
+            menu:"user_manager",
+            sub_menu:"simple_queue",
+            server_id:server_id,
+            level:level,
+            with_server:1,
+            nama_user:nama_user
+          });
+        }
+      }else{
+        res.redirect("/router.html");
+      }
     }
   });
   app.get(['/member.html'],(req, res) => {

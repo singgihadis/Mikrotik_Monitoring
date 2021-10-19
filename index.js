@@ -91,6 +91,7 @@ require('./routes/ajax_monitoring')(app);
 require('./routes/ajax_ping')(app);
 require('./routes/ajax_dns')(app);
 require('./routes/ajax_ppp')(app);
+require('./routes/ajax_simple_queue')(app);
 require('./routes/ajax_hotspot')(app);
 require('./routes/ajax_dashboard')(app);
 require('./routes/ajax_member')(app);
