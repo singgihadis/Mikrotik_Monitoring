@@ -82,13 +82,13 @@
                           <tr>
                             <th rowspan="2" class="align-middle border-right">No</th>
                             <th rowspan="2" class="align-middle border-right">Router</th>
-                            <th colspan="2" class="text-center border-right border-bottom-0">PPP</th>
+                            <th colspan="2" class="text-center border-right border-bottom-0">Name</th>
                             <th colspan="4" class="text-center border-right border-bottom-0">Member</th>
                             <th rowspan="2" class="text-center align-middle">Aksi</th>
                           </tr>
                           <tr>
-                            <th>Name</th>
-                            <th class="border-right">Profile</th>
+                            <th>PPP</th>
+                            <th class="border-right">Simple Queue</th>
                             <th>Nama</th>
                             <th>Alamat</th>
                             <th>Nominal Pembayaran</th>
@@ -122,7 +122,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Data Member</h5>
+            <h5 class="modal-title">Data Member (PPP)</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -220,6 +220,127 @@
                   </select>
                   <div class="input-group-append">
                     <input required id="tahun_berhenti_langganan" name="tahun_berhenti_langganan" type="text" class="form-control" placeholder="Tahun" />
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="modal_sq">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Data Member (Simple Queue)</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="form_member_sq">
+              <input type="hidden" id="id_sq" name="id_sq" />
+              <div class="form-group">
+                <label class="control-label">Nama</label>
+                <input id="nama_sq" name="nama_sq" type="text" class="form-control" placeholder="Nama Member" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Alamat</label>
+                <textarea id="alamat_sq" name="alamat_sq" class="form-control" placeholder="Alamat Member"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="control-label">No Whatsapp</label>
+                <input id="no_wa_sq" name="no_wa_sq" type="text" class="form-control" placeholder="No Whatsapp Member" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Email</label>
+                <input id="email_sq" name="email_sq" type="text" class="form-control" placeholder="Email Member" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Username</label>
+                <input id="username_sq" name="username_sq" type="text" class="form-control" placeholder="Username" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Password</label>
+                <input id="password_sq" name="password_sq" type="password" class="form-control" placeholder="Password" required />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Paket</label>
+                <select id="master_paket_id_sq" name="master_paket_id_sq" class="form-control" required>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Harga Paket</label>
+                <input id="harga_paket_sq" name="harga_paket_sq" type="text" class="form-control" required placeholder="Harga Paket" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">PPN</label>
+                <input id="ppn_sq" name="ppn_sq" type="text" class="form-control" required placeholder="PPN" readonly />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Nominal Pembayaran</label>
+                <input id="nominal_pembayaran_sq" name="nominal_pembayaran_sq" type="text" class="form-control" required placeholder="Nominal Pembayaran" readonly />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Tagihan Dimulai Pada</label>
+                <div class="input-group mb-3">
+                  <select required id="awal_tagihan_bulan_sq" name="awal_tagihan_bulan_sq" class="custom-select" id="inputGroupSelect02">
+                    <option value="">Pilih Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                  <div class="input-group-append">
+                    <input required id="awal_tagihan_tahun_sq" name="awal_tagihan_tahun_sq" type="text" class="form-control" placeholder="Tahun" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Berhenti Berlangganan</label>
+                <div class="form-group">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" checked type="radio" name="is_berhenti_langganan_sq" id="is_berhenti_langganan_tidak_sq" value="0">
+                    <label class="form-check-label" for="is_berhenti_langganan_tidak_sq">Tidak</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="is_berhenti_langganan_sq" id="is_berhenti_langganan_ya_sq" value="1">
+                    <label class="form-check-label" for="is_berhenti_langganan_ya_sq">Ya</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" id="fg_berhenti_langganan_sq" style="display:none;">
+                <label class="control-label">Berhenti Berlanggan Mulai Dari</label>
+                <div class="input-group mb-3">
+                  <select required id="bulan_berhenti_langganan_sq" name="bulan_berhenti_langganan_sq" class="custom-select">
+                    <option value="">Pilih Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                  <div class="input-group-append">
+                    <input required id="tahun_berhenti_langganan_sq" name="tahun_berhenti_langganan_sq" type="text" class="form-control" placeholder="Tahun" />
                   </div>
                 </div>
               </div>

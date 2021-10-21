@@ -20,15 +20,15 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("(concat(a.name,a.password,a.profile,a.local_address,a.remote_address) like '%" + keyword + "%' or b.nama like '%" + keyword + "%')");
+          arr_query.push("(concat(a.name,b.name) like '%" + keyword + "%')");
         }
-        arr_query.push("c.user_id=" + req.session.user_id);
+        arr_query.push("(c.user_id=" + req.session.user_id + " or c.user_id=" + req.session.parent_user_id + ")");
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 10) - 10;
-        var sql_data_total = "select count(a.id) as total from ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query;
+        var sql_data_total = "SELECT count(a.type) as total FROM ( SELECT id as ppp_secret_id, null as simple_queue_id, NAME AS NAME, server_id, 1 AS type FROM ppp_secret UNION SELECT null as ppp_secret_id, id as simple_queue_id, NAME AS NAME, server_id, 2 FROM simple_queue )AS a LEFT JOIN member b ON a.ppp_secret_id = b.ppp_secret_id OR a.simple_queue_id = b.simple_queue_id INNER JOIN `server` c ON a.server_id = c.id OR a.server_id = c.id " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -37,7 +37,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,b.awal_tagihan_bulan,b.awal_tagihan_tahun,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.email,'') as email,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.is_berhenti_langganan,b.bulan_berhenti_langganan,b.tahun_berhenti_langganan,b.master_paket_id,c.nama as nama_server,c.host,c.port,c.user,c.password FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id " + filter_query + " limit " + limit + ",11";
+            var sql_data = "SELECT a.type, a.ppp_secret_id, a.simple_queue_id, a.server_id, a.NAME AS resource_name, IFNULL(b.simple_queue_username,'') as simple_queue_username, IFNULL(b.simple_queue_password,'') as simple_queue_password, IFNULL(b.nama, '')AS nama, IFNULL(b.alamat, '')AS alamat, b.awal_tagihan_bulan, b.awal_tagihan_tahun, IFNULL(b.no_wa, '')AS no_wa, IFNULL(b.email, '')AS email, IFNULL(b.nominal_pembayaran, '0')AS nominal_pembayaran, b.is_berhenti_langganan, b.bulan_berhenti_langganan, b.tahun_berhenti_langganan, b.master_paket_id, c.nama AS nama_server, c.`host`, c.`port`, c.`port`, c.`password` FROM ( SELECT id as ppp_secret_id, null as simple_queue_id, NAME AS NAME, server_id, 1 AS type FROM ppp_secret UNION SELECT null as ppp_secret_id, id as simple_queue_id, NAME AS NAME, server_id, 2 FROM simple_queue )AS a LEFT JOIN member b ON a.ppp_secret_id = b.ppp_secret_id OR a.simple_queue_id = b.simple_queue_id INNER JOIN `server` c ON a.server_id = c.id OR a.server_id = c.id " + filter_query + " limit " + limit + ",11";
             var query_data = connection.query(sql_data, function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -191,6 +191,134 @@ module.exports = function(app){
                       });
                     }
                   }else{
+                    connection.release();
+                    var data = {is_error:true,msg:"Gagal menyimpan"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }
+                });
+              }
+            });
+          }else{
+            connection.release();
+            var data = {is_error:true,msg:"Anda tidak mempunyai akses"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/member_simpan_sq.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var simple_queue_id = "";
+        if(req.body.simple_queue_id != undefined){
+          simple_queue_id = req.body.simple_queue_id;
+        }
+        var nama = "";
+        if(req.body.nama != undefined){
+          nama = req.body.nama;
+        }
+        var alamat = "";
+        if(req.body.alamat != undefined){
+          alamat = req.body.alamat;
+        }
+        var no_wa = "";
+        if(req.body.no_wa != undefined){
+          no_wa = req.body.no_wa;
+        }
+        var email = "";
+        if(req.body.email != undefined){
+          email = req.body.email;
+        }
+        var username = "";
+        if(req.body.username != undefined){
+          username = req.body.username;
+        }
+        var password = "";
+        if(req.body.password != undefined){
+          password = req.body.password;
+        }
+        var nominal_pembayaran = "";
+        if(req.body.nominal_pembayaran != undefined){
+          nominal_pembayaran = req.body.nominal_pembayaran;
+        }
+        var awal_tagihan_bulan = "";
+        if(req.body.awal_tagihan_bulan != undefined){
+          awal_tagihan_bulan = req.body.awal_tagihan_bulan;
+        }
+        var awal_tagihan_tahun = "";
+        if(req.body.awal_tagihan_tahun != undefined){
+          awal_tagihan_tahun = req.body.awal_tagihan_tahun;
+        }
+        var is_berhenti_langganan = "";
+        if(req.body.is_berhenti_langganan != undefined){
+          is_berhenti_langganan = req.body.is_berhenti_langganan;
+        }
+        var bulan_berhenti_langganan = "";
+        if(req.body.bulan_berhenti_langganan != undefined){
+          bulan_berhenti_langganan = req.body.bulan_berhenti_langganan;
+        }
+        var tahun_berhenti_langganan = "";
+        if(req.body.tahun_berhenti_langganan != undefined){
+          tahun_berhenti_langganan = req.body.tahun_berhenti_langganan;
+        }
+        var master_paket_id = "";
+        if(req.body.master_paket_id != undefined){
+          master_paket_id = req.body.master_paket_id;
+        }
+        var sql_cek_akses = "select a.* from simple_queue a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var query_cek_akses = connection.query(sql_cek_akses,[simple_queue_id,req.session.user_id], function (err, results, fields) {
+          if(results.length > 0 || req.session.level == 2){
+            var sql_cek = "select * from member where simple_queue_id=?";
+            var query_cek = connection.query(sql_cek,[simple_queue_id], function (err, results, fields) {
+              if(results.length == 0){
+                var sql = "insert into member(simple_queue_id,nama,alamat,no_wa,email,simple_queue_username,simple_queue_password,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                var query = connection.query(sql,[simple_queue_id,nama,alamat,no_wa,email,username,password,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id], function (err, results, fields) {
+                  if (!err){
+                    var member_id = results.insertId;
+                    var sql_log = "insert into member_nominal_pembayaran_log(user_id,member_id,nominal_pembayaran,deskripsi) values(?,?,?,?)";
+                    var query_log = connection.query(sql_log,[req.session.user_id,member_id,nominal_pembayaran,"Set baru nominal pembayaran Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
+                      connection.release();
+                      var data = {is_error:false,msg:"Berhasil menyimpan"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    });
+                  }else{
+                    console.log(err);
+                    connection.release();
+                    var data = {is_error:true,msg:"Gagal menyimpan"};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  }
+                });
+              }else{
+                var last_nominal_pembayaran = results[0]['nominal_pembayaran'];
+                var member_id = results[0]['id'];
+                var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,simple_queue_username=?,simple_queue_password=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=?,is_berhenti_langganan=?,bulan_berhenti_langganan=?,tahun_berhenti_langganan=?,master_paket_id=? where simple_queue_id=?";
+                var query = connection.query(sql,[nama,alamat,no_wa,email,username,password,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id,simple_queue_id], function (err, results, fields) {
+                  if (!err){
+                    if(nominal_pembayaran == last_nominal_pembayaran){
+                      connection.release();
+                      var data = {is_error:false,msg:"Berhasil menyimpan"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    }else{
+                      var sql_log = "insert into member_nominal_pembayaran_log(user_id,member_id,nominal_pembayaran,deskripsi) values(?,?,?,?)";
+                      var query_log = connection.query(sql_log,[req.session.user_id,member_id,nominal_pembayaran,"Update nominal pembayaran Rp. " + public_function.FormatAngka(last_nominal_pembayaran) + " menjadi Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
+                        connection.release();
+                        var data = {is_error:false,msg:"Berhasil menyimpan"};
+                        res.send(JSON.stringify(data));
+                        res.end();
+                      });
+                    }
+                  }else{
+                    console.log(err);
                     connection.release();
                     var data = {is_error:true,msg:"Gagal menyimpan"};
                     res.send(JSON.stringify(data));

@@ -53,6 +53,68 @@ $(document).ready(function(){
       });
     }
   });
+  $("#form_member_sq").validate({
+    submitHandler : function(){
+      $("#form_member_sq").loading();
+      var id = $("#id_sq").val();
+      var nama = $("#nama_sq").val();
+      var alamat = $("#alamat_sq").val();
+      var no_wa = $("#no_wa_sq").val();
+      var email = $("#email_sq").val();
+      var username = $("#username_sq").val();
+      var password = $("#password_sq").val();
+      var nominal_pembayaran = StrToNumber($("#nominal_pembayaran_sq").val());
+      var awal_tagihan_bulan = $("#awal_tagihan_bulan_sq").val();
+      var awal_tagihan_tahun = $("#awal_tagihan_tahun_sq").val();
+      var is_berhenti_langganan = $("input[name='is_berhenti_langganan_sq']:checked").val();
+      var bulan_berhenti_langganan = "0";
+      var tahun_berhenti_langganan = "0";
+      if(is_berhenti_langganan == "1"){
+        bulan_berhenti_langganan = $("#bulan_berhenti_langganan_sq").val();
+        tahun_berhenti_langganan = $("#tahun_berhenti_langganan_sq").val();
+      }
+      var master_paket_id = $("#master_paket_id_sq").val();
+      $.ajax({
+        type:'post',
+        url:'/ajax/member_simpan_sq.html',
+        data:{
+          simple_queue_id:id,
+          nama:nama,
+          alamat:alamat,
+          no_wa:no_wa,
+          email:email,
+          username:username,
+          password:password,
+          nominal_pembayaran:nominal_pembayaran,
+          awal_tagihan_bulan:awal_tagihan_bulan,
+          awal_tagihan_tahun:awal_tagihan_tahun,
+          is_berhenti_langganan:is_berhenti_langganan,
+          bulan_berhenti_langganan:bulan_berhenti_langganan,
+          tahun_berhenti_langganan:tahun_berhenti_langganan,
+          master_paket_id:master_paket_id
+        },
+        success:function(resp){
+          $("#form_member_sq").loading("stop");
+          var res = JSON.parse(resp);
+          var html = "";
+          if(res.is_error){
+            if(res.must_login){
+              window.location = "/login.html";
+            }else{
+              toastr["error"](res.msg);
+            }
+          }else{
+            $("#modal_sq").modal("hide");
+            toastr["success"]("Berhasil menambahkan");
+            load_data();
+          }
+        },error:function(){
+          $("#form_member_sq").loading("stop");
+          toastr["error"]("Silahkan periksa koneksi internet anda");
+        }
+      });
+    }
+  });
   $("input[name='is_berhenti_langganan']").change(function(){
     if($(this).val() == "1"){
       $("#fg_berhenti_langganan").show();
@@ -60,6 +122,15 @@ $(document).ready(function(){
       $("#tahun_berhenti_langganan").val("");
     }else{
       $("#fg_berhenti_langganan").hide();
+    }
+  });
+  $("input[name='is_berhenti_langganan_sq']").change(function(){
+    if($(this).val() == "1"){
+      $("#fg_berhenti_langganan_sq").show();
+      $("#bulan_berhenti_langganan_sq").val("");
+      $("#tahun_berhenti_langganan_sq").val("");
+    }else{
+      $("#fg_berhenti_langganan_sq").hide();
     }
   });
   $("#master_paket_id").change(function(){
@@ -71,6 +142,15 @@ $(document).ready(function(){
     $("#harga_paket").val(FormatAngka($("#harga_paket").val()));
     trigger_nominal_pembayaran_total();
   });
+  $("#master_paket_id_sq").change(function(){
+    var harga = $("#master_paket_id_sq option:selected").attr("data-harga");
+    $("#harga_paket_sq").val(FormatAngka(harga));
+    trigger_nominal_pembayaran_total_sq();
+  });
+  $("#harga_paket_sq").keyup(function(){
+    $("#harga_paket_sq").val(FormatAngka($("#harga_paket_sq").val()));
+    trigger_nominal_pembayaran_total_sq();
+  });
 });
 function trigger_nominal_pembayaran_total(){
   var nominal_pembayaran = StrToNumber($("#harga_paket").val());
@@ -78,6 +158,13 @@ function trigger_nominal_pembayaran_total(){
   var nominal_pembayaran_total = nominal_pembayaran + ppn;
   $("#ppn").val(FormatAngka(ppn));
   $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran_total));
+}
+function trigger_nominal_pembayaran_total_sq(){
+  var nominal_pembayaran = StrToNumber($("#harga_paket_sq").val());
+  var ppn = parseInt((10 / 100) * nominal_pembayaran);
+  var nominal_pembayaran_total = nominal_pembayaran + ppn;
+  $("#ppn_sq").val(FormatAngka(ppn));
+  $("#nominal_pembayaran_sq").val(FormatAngka(nominal_pembayaran_total));
 }
 function load_data(){
   $("#pagination").html("");
@@ -116,12 +203,18 @@ function load_data(){
                 is_berlangganan = "<span class='badge badge-success'>Aktif</span>";
               }
             }
-
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" + v['nama_server'] + "</td>";
-            html += "<td>" + v['name'] + "</td>";
-            html += "<td>" + v['profile'] + "</td>";
+            if(v['type'] == "1"){
+              //PPP
+              html += "<td>" + v['resource_name'] + "</td>";
+              html += "<td></td>";
+            }else{
+              //Simple Queue
+              html += "<td></td>";
+              html += "<td>" + v['resource_name'] + "</td>";
+            }
             if(v['awal_tagihan_bulan'] == null){
               html += "<td class='" + color_belum_update + "' colspan='4'>Silahkan update data ini dengan klik tombol edit di samping kanan anda</td>";
             }else{
@@ -133,8 +226,18 @@ function load_data(){
               html += "<td class='" + color_belum_update + "'>" + is_berlangganan + "</td>";
             }
             html += "<td class='text-center'>";
-            html += "<a onclick='modal_update(this)' data-master-paket-id='" + v['master_paket_id'] + "' data-id='" + v['id'] + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-awal-tagihan-bulan='" + (v['awal_tagihan_bulan']!=null?v['awal_tagihan_bulan']:"") + "' data-awal-tagihan-tahun='" + (v['awal_tagihan_tahun']!=null?v['awal_tagihan_tahun']:'') + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-is-berhenti-langganan='" + v['is_berhenti_langganan'] + "' data-bulan-berhenti-langganan='" + v['bulan_berhenti_langganan'] + "' data-tahun-berhenti-langganan='" + v['tahun_berhenti_langganan'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
-            html += " <a href='/member/detail/" + v['id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-list'></span></a>";
+            var id = "";
+            if(v['type'] == "1"){
+              id = v['ppp_secret_id'];
+            }else{
+              id = v['simple_queue_id'];
+            }
+            html += "<a onclick='modal_update(this)' data-master-paket-id='" + v['master_paket_id'] + "' data-simple-queue-username='" + v['simple_queue_username'] +"' data-simple-queue-password='" + v['simple_queue_password'] + "' data-type='" + v['type'] + "' data-id='" + id + "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-awal-tagihan-bulan='" + (v['awal_tagihan_bulan']!=null?v['awal_tagihan_bulan']:"") + "' data-awal-tagihan-tahun='" + (v['awal_tagihan_tahun']!=null?v['awal_tagihan_tahun']:'') + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran'] + "' data-is-berhenti-langganan='" + v['is_berhenti_langganan'] + "' data-bulan-berhenti-langganan='" + v['bulan_berhenti_langganan'] + "' data-tahun-berhenti-langganan='" + v['tahun_berhenti_langganan'] + "' href='javascript:void(0);' class='btn btn-light'><span class='fa fa-edit'></span></a>";
+            if(v['type'] == "1"){
+              html += " <a href='/member/detail/1/" + v['ppp_secret_id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-list'></span></a>";
+            }else{
+              html += " <a href='/member/detail/2/" + v['simple_queue_id'] + "/" + v['server_id'] + ".html' class='btn btn-primary'><span class='fa fa-list'></span></a>";
+            }
             html += "</td>";
             html += "</tr>";
             no++;
@@ -180,6 +283,7 @@ function total_member(){
   });
 }
 function modal_update(itu){
+  var type = $(itu).attr("data-type");
   var id = $(itu).attr("data-id");
   var nama = $(itu).attr("data-nama");
   var alamat = $(itu).attr("data-alamat");
@@ -192,33 +296,69 @@ function modal_update(itu){
   var tahun_berhenti_langganan = $(itu).attr("data-tahun-berhenti-langganan");
   var master_paket_id = $(itu).attr("data-master-paket-id");
   var email = $(itu).attr("data-email");
-  $("#id").val(id);
-  $("#nama").val(nama);
-  $("#alamat").val(alamat);
-  $("#no_wa").val(no_wa);
-  $("#email").val(email);
-  $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran));
-  var harga_paket = parseInt((100/110) * nominal_pembayaran);
-  var ppn = nominal_pembayaran - harga_paket;
-  $("#ppn").val(FormatAngka(ppn));
-  $("#harga_paket").val(FormatAngka(harga_paket));
-  $("#awal_tagihan_bulan").val(awal_tagihan_bulan);
-  $("#awal_tagihan_tahun").val(awal_tagihan_tahun);
-  if(is_berhenti_langganan == "1"){
-    $("#fg_berhenti_langganan").show();
-    $("#is_berhenti_langganan_ya").prop("checked",true);
-    $("#bulan_berhenti_langganan").val(bulan_berhenti_langganan);
-    $("#tahun_berhenti_langganan").val(tahun_berhenti_langganan);
+  if(type == "1"){
+    $("#form_member").trigger("reset");
+    $("#id").val(id);
+    $("#nama").val(nama);
+    $("#alamat").val(alamat);
+    $("#no_wa").val(no_wa);
+    $("#email").val(email);
+    dropdown_paket(master_paket_id);
+    $("#nominal_pembayaran").val(FormatAngka(nominal_pembayaran));
+    var harga_paket = parseInt((100/110) * nominal_pembayaran);
+    var ppn = nominal_pembayaran - harga_paket;
+    $("#ppn").val(FormatAngka(ppn));
+    $("#harga_paket").val(FormatAngka(harga_paket));
+    $("#awal_tagihan_bulan").val(awal_tagihan_bulan);
+    $("#awal_tagihan_tahun").val(awal_tagihan_tahun);
+    if(is_berhenti_langganan == "1"){
+      $("#fg_berhenti_langganan").show();
+      $("#is_berhenti_langganan_ya").prop("checked",true);
+      $("#bulan_berhenti_langganan").val(bulan_berhenti_langganan);
+      $("#tahun_berhenti_langganan").val(tahun_berhenti_langganan);
+    }else{
+      $("#fg_berhenti_langganan").hide();
+      $("#is_berhenti_langganan_tidak").prop("checked",true);
+      $("#bulan_berhenti_langganan").val("");
+      $("#tahun_berhenti_langganan").val("");
+    }
+    $("#nominal_pembayaran_ppn").val("");
+    $("#nominal_pembayaran_total").val("");
+    $("#modal_update").modal("show");
   }else{
-    $("#fg_berhenti_langganan").hide();
-    $("#is_berhenti_langganan_tidak").prop("checked",true);
-    $("#bulan_berhenti_langganan").val("");
-    $("#tahun_berhenti_langganan").val("");
+    var simple_queue_username = $(itu).attr("data-simple-queue-username");
+    var simple_queue_password = $(itu).attr("data-simple-queue-password");
+    $("#form_member_sq").trigger("reset");
+    $("#id_sq").val(id);
+    $("#nama_sq").val(nama);
+    $("#alamat_sq").val(alamat);
+    $("#no_wa_sq").val(no_wa);
+    $("#email_sq").val(email);
+    $("#username_sq").val(simple_queue_username);
+    $("#password_sq").val(simple_queue_password);
+    dropdown_paket(master_paket_id,"master_paket_id_sq");
+    $("#nominal_pembayaran_sq").val(FormatAngka(nominal_pembayaran));
+    var harga_paket = parseInt((100/110) * nominal_pembayaran);
+    var ppn = nominal_pembayaran - harga_paket;
+    $("#ppn_sq").val(FormatAngka(ppn));
+    $("#harga_paket_sq").val(FormatAngka(harga_paket));
+    $("#awal_tagihan_bulan_sq").val(awal_tagihan_bulan);
+    $("#awal_tagihan_tahun_sq").val(awal_tagihan_tahun);
+    if(is_berhenti_langganan == "1"){
+      $("#fg_berhenti_langganan_sq").show();
+      $("#is_berhenti_langganan_ya_sq").prop("checked",true);
+      $("#bulan_berhenti_langganan_sq").val(bulan_berhenti_langganan);
+      $("#tahun_berhenti_langganan_sq").val(tahun_berhenti_langganan);
+    }else{
+      $("#fg_berhenti_langganan_sq").hide();
+      $("#is_berhenti_langganan_tidak_sq").prop("checked",true);
+      $("#bulan_berhenti_langganan_sq").val("");
+      $("#tahun_berhenti_langganan_sq").val("");
+    }
+    $("#nominal_pembayaran_ppn_sq").val("");
+    $("#nominal_pembayaran_total_sq").val("");
+    $("#modal_sq").modal("show");
   }
-  $("#nominal_pembayaran_ppn").val("");
-  $("#nominal_pembayaran_total").val("");
-  dropdown_paket(master_paket_id);
-  $("#modal_update").modal("show");
 }
 function html_pagination(jmldata){
   var html_pagination = "";
@@ -275,7 +415,7 @@ function trigger_pagination(){
     load_data(true);
   });
 }
-function dropdown_paket(id_paket){
+function dropdown_paket(id_paket,elm="master_paket_id"){
   $.ajax({
     type:'post',
     url:'/ajax/master_paket.html',
@@ -289,7 +429,7 @@ function dropdown_paket(id_paket){
         }else{
           // toastr["error"](res.msg);
           var html = "<option data-harga='0' value=''>Pilih Paket</option>";
-          $("#master_paket_id").html(html);
+          $("#" + elm).html(html);
         }
       }else{
         var html = "<option data-harga='0' value=''>Pilih Paket</option>";
@@ -300,8 +440,8 @@ function dropdown_paket(id_paket){
             html += "<option data-harga='" + v['harga'] + "' value='" + v['id'] + "'>" + v['nama'] + "</option>";
           }
         });
-        $("#master_paket_id").html(html);
-        $("#master_paket_id").select2({
+        $("#" + elm).html(html);
+        $("#" + elm).select2({
           theme: "bootstrap"
         });
       }

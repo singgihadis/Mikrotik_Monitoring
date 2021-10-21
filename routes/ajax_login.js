@@ -15,7 +15,6 @@ module.exports = function(app){
       var sql_login = "SELECT * from user where user=? and password=? and status=1";
       var query_login = connection.query(sql_login,[user,password], function (err, results, fields) {
         if(results.length > 0){
-          console.log(user);
           req.session.is_login = true;
           req.session.user_id = results[0]['id'];
           req.session.nama = results[0]['nama'];
