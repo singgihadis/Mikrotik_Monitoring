@@ -351,10 +351,11 @@ module.exports = function(app){
 
     }
   });
-  app.get(['/member/detail/:id/:server_id.html'],(req, res) => {
+  app.get(['/member/detail/:type/:id/:server_id.html'],(req, res) => {
     if(!req.session.is_login){
       res.redirect("/login.html");
     }else{
+      var type = req.params.type;
       var server_id_unselected = req.params.server_id;
       var website_config = req.website_config;
       var id = req.params.id;
@@ -383,7 +384,8 @@ module.exports = function(app){
           level:level,
           server_id:server_id,
           with_server:0,
-          nama_user:nama_user
+          nama_user:nama_user,
+          type:type
         });
       }
 

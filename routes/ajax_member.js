@@ -68,13 +68,13 @@ module.exports = function(app){
           id = req.body.id;
         }
         var arr_query = [];
-        arr_query.push("c.user_id=" + req.session.user_id);
-        arr_query.push("a.id=" + id);
+        arr_query.push("(c.user_id=" + req.session.user_id + " or c.user_id=" + req.session.parent_user_id + ")");
+        arr_query.push("(a.ppp_secret_id = " + id + " or a.simple_queue_id=" + id + ")");
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data = "SELECT a.*, IFNULL(b.nama,'') as nama,IFNULL(b.alamat,'') as alamat,b.awal_tagihan_bulan,b.awal_tagihan_tahun,IF(d.id_ppp is null,0,1) as is_active,IFNULL(b.no_wa,'') as no_wa,IFNULL(b.email,'') as email,IFNULL(b.nominal_pembayaran,'0') as nominal_pembayaran,b.id as member_id,b.is_berhenti_langganan,b.bulan_berhenti_langganan,b.tahun_berhenti_langganan,c.host,c.port,c.user FROM ppp_secret a LEFT JOIN member b ON a.id = b.ppp_secret_id INNER JOIN `server` c ON a.server_id=c.id left join ppp_active_connection d on a.`name`=d.`name` " + filter_query + "";
+        var sql_data = "SELECT a.*, IFNULL(b.nama, '')AS nama, IFNULL(b.alamat, '')AS alamat, b.awal_tagihan_bulan, b.awal_tagihan_tahun, IF(d.id_ppp IS NULL, 0, 1)AS is_active, IFNULL(b.no_wa, '')AS no_wa, IFNULL(b.email, '')AS email, IFNULL(b.nominal_pembayaran, '0')AS nominal_pembayaran, b.id AS member_id, b.is_berhenti_langganan, b.bulan_berhenti_langganan, b.tahun_berhenti_langganan, b.simple_queue_username, b.simple_queue_password, c. HOST, c. PORT, c. USER FROM ( SELECT id as ppp_secret_id, null as simple_queue_id, name, password, server_id, profile, remote_address, null as target, null as upload_max_limit, null as download_max_limit, 1 AS type FROM ppp_secret UNION SELECT null as ppp_secret_id, id as simple_queue_id, name, null as password, server_id, null as profile, null as remote_address, target, upload_max_limit, download_max_limit, 2 FROM simple_queue )AS a LEFT JOIN member b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN `server` c ON a.server_id = c.id LEFT JOIN ppp_active_connection d ON a.`name` = d.`name` " + filter_query + "";
         var query_data = connection.query(sql_data, function (err, results, fields) {
           if(results.length == 0){
             connection.release();

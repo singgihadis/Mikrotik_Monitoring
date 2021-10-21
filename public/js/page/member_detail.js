@@ -249,12 +249,10 @@ function load_data(){
           $("#data").html("<div class='alert alert-warning'>" + res.msg + "</div>");
         }
       }else{
+        var type = $("#type").val();
         var data = res.data[0];
         var name = data['name'];
         $("#member_id").val(data['member_id']);
-        $("#name").html(data['name']);
-        $("#password").html(data['password']);
-        $("#profile").html(data['profile']);
         $("#nama").html(data['nama']);
         $("#alamat").html(data['alamat']);
         $("#no_wa").html(data['no_wa']);
@@ -263,36 +261,60 @@ function load_data(){
           $("#awal_tagihan").html(IndexToMonth(parseInt(data['awal_tagihan_bulan']) - 1) + " " + data['awal_tagihan_tahun']);
         }
         $("#nominal_pembayaran").html("Rp. " + FormatAngka(data['nominal_pembayaran']));
-        if(data['is_active'] == "1"){
-          $("#widget_is_active").addClass("widget-success");
-          $("#widget_is_active").removeClass("widget-danger");
-          $("#is_active").html("ONLINE");
-          $("#widget_is_active").show();
-        }else{
-          $("#widget_is_active").addClass("widget-danger");
-          $("#widget_is_active").removeClass("widget-success");
-          $("#is_active").html("OFFLINE");
-          $("#widget_is_active").show();
-        }
-        $(".daterange").daterangepicker({
-          autoUpdateInput: false,
-          opens: 'left',
-          timePicker: true,
-          timePicker24Hour: true,
-        }, function (start, end, label) {
 
-        });
-        $(".clear").click(function(){
-          $(this).parent().parent().find("input").val("");
-          chart_graph.destroy();
-          chart_graph = null;
+        if(type == "1"){
+          if(data['is_active'] == "1"){
+            $("#widget_is_active").addClass("widget-success");
+            $("#widget_is_active").removeClass("widget-danger");
+            $("#is_active").html("ONLINE");
+            $("#widget_is_active").show();
+          }else{
+            $("#widget_is_active").addClass("widget-danger");
+            $("#widget_is_active").removeClass("widget-success");
+            $("#is_active").html("OFFLINE");
+            $("#widget_is_active").show();
+          }
+          $("#username_sq_div").hide();
+          $("#password_sq_div").hide();
+          $("#sq_div").hide();
+          $("#name").html(data['name']);
+          $("#password").html(data['password']);
+          $("#profile").html(data['profile']);
+          $("#remote_address").html(data['remote_address']);
+          $(".daterange").daterangepicker({
+            autoUpdateInput: false,
+            opens: 'left',
+            timePicker: true,
+            timePicker24Hour: true,
+          }, function (start, end, label) {
+
+          });
+          $(".clear").click(function(){
+            $(this).parent().parent().find("input").val("");
+            chart_graph.destroy();
+            chart_graph = null;
+            chart_data(name);
+          });
+          $('.daterange').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY HH:mm') + ':00 - ' + picker.endDate.format('DD/MM/YYYY HH:mm') + ":00");
+            chart_database(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'),picker.startDate.format('YYYY-MM-DD HH:mm') + ":00",picker.endDate.format('YYYY-MM-DD HH:mm') + ":00",name);
+          });
           chart_data(name);
-        });
-        $('.daterange').on('apply.daterangepicker', function(ev, picker) {
-          $(this).val(picker.startDate.format('DD/MM/YYYY HH:mm') + ':00 - ' + picker.endDate.format('DD/MM/YYYY HH:mm') + ":00");
-          chart_database(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'),picker.startDate.format('YYYY-MM-DD HH:mm') + ":00",picker.endDate.format('YYYY-MM-DD HH:mm') + ":00",name);
-        });
-        chart_data(name);
+        }else{
+          $("#widget_is_active").hide();
+          $("#ppp_div").hide();
+          $("#traffic").hide();
+          $("#li_traffic").hide();
+          $("#name_sq").html(data['name']);
+          $("#target_sq").html(data['target']);
+          var upload_max_limit_formated = BitToDigitalStorageUnit(data['upload_max_limit']);
+          var download_max_limit_formated = BitToDigitalStorageUnit(data['download_max_limit']);
+          $("#upload_max_limit_sq").html(upload_max_limit_formated['value'] + " " + upload_max_limit_formated['label']);
+          $("#download_max_limit_sq").html(download_max_limit_formated['value'] + " " + download_max_limit_formated['label']);
+          $("#username_sq").html(data['simple_queue_username']);
+          $("#password_sq").html(data['simple_queue_password']);
+          $("#tab_inventaris_alat").click();
+        }
       }
     },error:function(){
       $("#data").loading("stop");

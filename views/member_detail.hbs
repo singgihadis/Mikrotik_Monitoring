@@ -6,6 +6,7 @@
       <div id="page-content-wrapper">
         {{> navbar}}
         <div class="container-fluid">
+          <input type="hidden" id="type" name="type" value="{{type}}" />
             <div class="row mt-4">
               <div class="col-sm-6">
                 <div class="breadcrumb-custom">
@@ -53,7 +54,7 @@
                 <div class="card stat-card">
                   <div class="card-body">
                     <div class="row">
-                      <div class="col-md-5">
+                      <div class="col-md-5" id="ppp_div">
                         <h6 class="ml-1"><b>PPP</b></h6>
                         <div class="table-responsive">
                           <table class="table table-sm table-borderless">
@@ -71,6 +72,38 @@
                               <td>Profile</td>
                               <td> : </td>
                               <td id="profile"></td>
+                            </tr>
+                            <tr>
+                              <td>Remote Address</td>
+                              <td> : </td>
+                              <td id="remote_address"></td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="col-md-5" id="sq_div">
+                        <h6 class="ml-1"><b>PPP</b></h6>
+                        <div class="table-responsive">
+                          <table class="table table-sm table-borderless">
+                            <tr>
+                              <td>Name</td>
+                              <td> : </td>
+                              <td id="name_sq"></td>
+                            </tr>
+                            <tr>
+                              <td>Target</td>
+                              <td> : </td>
+                              <td id="target_sq"></td>
+                            </tr>
+                            <tr>
+                              <td>Upload Max Limit</td>
+                              <td> : </td>
+                              <td id="upload_max_limit_sq"></td>
+                            </tr>
+                            <tr>
+                              <td>Download Max Limit</td>
+                              <td> : </td>
+                              <td id="download_max_limit_sq"></td>
                             </tr>
                           </table>
                         </div>
@@ -105,6 +138,16 @@
                                 <td> : </td>
                                 <td id="awal_tagihan"></td>
                               </tr>
+                              <tr id="username_sq_div">
+                                <td>Username</td>
+                                <td> : </td>
+                                <td id="username_sq"></td>
+                              </tr>
+                              <tr id="password_sq_div">
+                                <td>Password</td>
+                                <td> : </td>
+                                <td id="password_sq"></td>
+                              </tr>
                             </table>
                           </div>
                         </div>
@@ -138,7 +181,7 @@
               </div>
               <div class="col-md-12">
                 <ul class="nav nav-tabs">
-                  <li class="nav-item" role="presentation">
+                  <li class="nav-item" role="presentation" id="li_traffic">
                     <a class="nav-link active" data-toggle="tab" href="#traffic">Traffic</a>
                   </li>
                   <li class="nav-item" role="presentation">
