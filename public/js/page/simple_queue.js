@@ -30,7 +30,7 @@ function load_data(with_loading){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='6'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='7'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
@@ -46,6 +46,7 @@ function load_data(with_loading){
             html += "<td>" +  no + "</td>";
             html += "<td>" + v['name'] + "</td>";
             html += "<td>" + v['id_simple_queue'] + "</td>";
+            html += "<td>" + v['nama'] + "</td>";
             html += "<td>" + v['target'] + "</td>";
             html += "<td>" + upload_max_limit_formated['value'] + " " + upload_max_limit_formated['label'] + "</td>";
             html += "<td>" + download_max_limit_formated['value'] + " " + upload_max_limit_formated['label'] + "</td>";
@@ -62,7 +63,7 @@ function load_data(with_loading){
         $("#listdata").loading("stop");
       }
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='6'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='7'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }

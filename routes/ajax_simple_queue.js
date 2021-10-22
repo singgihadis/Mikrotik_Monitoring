@@ -36,7 +36,7 @@ module.exports = function(app){
           if(results_total.length > 0){
             total = results_total[0]['total'];
           }
-          var sql_data = "select a.* from simple_queue a " + filter_query + limit_query;
+          var sql_data = "select a.*, IFNULL(b.nama,'') as nama from simple_queue a left join member b on a.id=b.simple_queue_id  " + filter_query + limit_query;
           var query_data = connection.query(sql_data, function (err, results, fields) {
             if(results.length == 0){
               connection.release();
