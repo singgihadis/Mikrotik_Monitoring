@@ -65,7 +65,7 @@ function member_chart_daily(data){
       labels.push((i + 1) + " " + IndexToMonth_Short(parseInt(cur_bln) - 1) + " " + cur_thn);
       var is_match = false;
       $.each(data,function(k,v){
-        if(v['tgl'] == i){
+        if(v['tgl'] == (i + 1)){
           datas.push(v['jml']);
           is_match = true;
           return false;
@@ -171,7 +171,7 @@ function member_chart_monthly(data){
       labels.push(IndexToMonth_Short(i));
       var is_match = false;
       $.each(data,function(k,v){
-        if(v['bln'] == i){
+        if(v['bln'] == (i + 1)){
           datas.push(v['jml']);
           is_match = true;
           return false;
