@@ -29,7 +29,7 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 5) - 5;
-        var sql_data_total = "select count(tb.id) as total from (SELECT a.id FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id) as tb";
+        var sql_data_total = "select count(tb.id) as total from (SELECT a.id FROM member a INNER JOIN (SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id) as tb";
         var query_data_total = connection.query(sql_data_total,[tahun], function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -38,7 +38,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.nominal_pembayaran as nominal_pembayaran_member,a.id,a.nama,a.alamat,IFNULL(a.no_wa,'') as no_wa,IFNULL(a.email,'') as email,a.ppp_secret_id,a.is_berhenti_langganan,a.bulan_berhenti_langganan,a.tahun_berhenti_langganan,a.tgl_insert,a.last_update,IFNULL(GROUP_CONCAT(c.nominal_pembayaran),'') as nominal_pembayaran,IFNULL(GROUP_CONCAT(c.is_bayar),'') as is_bayar,a.awal_tagihan_bulan,a.awal_tagihan_tahun,IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun, b.name, b.password, b.profile,IFNULL(GROUP_CONCAT(c.metode_bayar),'') as metode_bayar,d.nama as nama_server,d.host,d.port,d.user,d.password FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id limit " + limit + ",6";
+            var sql_data = "SELECT a.nominal_pembayaran as nominal_pembayaran_member,a.id,a.nama,a.alamat,IFNULL(a.no_wa,'') as no_wa,IFNULL(a.email,'') as email,a.ppp_secret_id,a.is_berhenti_langganan,a.bulan_berhenti_langganan,a.tahun_berhenti_langganan,a.tgl_insert,a.last_update,IFNULL(GROUP_CONCAT(c.nominal_pembayaran),'') as nominal_pembayaran,IFNULL(GROUP_CONCAT(c.is_bayar),'') as is_bayar,a.awal_tagihan_bulan,a.awal_tagihan_tahun,IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun,IFNULL(GROUP_CONCAT(c.metode_bayar),'') as metode_bayar,d.nama as nama_server,d.host,d.port,d.user,d.password FROM member a INNER JOIN (SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id limit " + limit + ",6";
             var query_data = connection.query(sql_data,[tahun], function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
@@ -206,7 +206,7 @@ module.exports = function(app){
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data_total = "select IFNULL(sum(aa.nominal_pembayaran),0) as total from pembayaran aa left join member a on aa.member_id=a.id inner join ppp_secret b on a.ppp_secret_id=b.id inner join server d on d.id=b.server_id " + filter_query;
+        var sql_data_total = "select IFNULL(sum(aa.nominal_pembayaran),0) as total from pembayaran aa left join member a on aa.member_id=a.id inner join ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id inner join server d on d.id=b.server_id " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -219,7 +219,7 @@ module.exports = function(app){
             if(arr_query.length > 0){
               filter_query = " where " + arr_query.join(" and ");
             }
-            var sql_data_dibayar = "select IFNULL(sum(aa.nominal_pembayaran),0) as total from pembayaran aa left join member a on aa.member_id=a.id inner join ppp_secret b on a.ppp_secret_id=b.id inner join server d on d.id=b.server_id " + filter_query;
+            var sql_data_dibayar = "select IFNULL(sum(aa.nominal_pembayaran),0) as total from pembayaran aa left join member a on aa.member_id=a.id inner join ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id inner join server d on d.id=b.server_id " + filter_query;
             var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
               if(results_dibayar.length == 0){
                 connection.release();
@@ -258,7 +258,7 @@ module.exports = function(app){
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data_total = "select IFNULL(sum(a.nominal_pembayaran),0) as total, a.bulan from pembayaran_khusus a inner join member b on a.member_id=b.id inner join ppp_secret c on b.ppp_secret_id=c.id inner join server d on d.id=c.server_id " + filter_query + " GROUP BY a.bulan";
+        var sql_data_total = "select IFNULL(sum(a.nominal_pembayaran),0) as total, a.bulan from pembayaran_khusus a inner join member b on a.member_id=b.id inner join ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as c ON b.ppp_secret_id = c.ppp_secret_id or b.simple_queue_id = c.simple_queue_id inner join server d on d.id=c.server_id " + filter_query + " GROUP BY a.bulan";
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -270,7 +270,7 @@ module.exports = function(app){
             if(arr_query.length > 0){
               filter_query = " where " + arr_query.join(" and ");
             }
-            var sql_data_dibayar = "select IFNULL(sum(a.nominal_pembayaran),0) as total, a.bulan from pembayaran_khusus a inner join member b on a.member_id=b.id inner join ppp_secret c on b.ppp_secret_id=c.id inner join server d on d.id=c.server_id " + filter_query + " GROUP BY a.bulan";
+            var sql_data_dibayar = "select IFNULL(sum(a.nominal_pembayaran),0) as total, a.bulan from pembayaran_khusus a inner join member b on a.member_id=b.id inner join ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as c ON b.ppp_secret_id = c.ppp_secret_id or b.simple_queue_id = c.simple_queue_id inner join server d on d.id=c.server_id " + filter_query + " GROUP BY a.bulan";
             var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
               if(results_dibayar.length == 0){
                 connection.release();
@@ -373,7 +373,7 @@ module.exports = function(app){
           filter_query = " where " + arr_query.join(" and ");
         }
         var limit = (page * 5) - 5;
-        var sql_data_total = "select count(grouped.id) as total from (SELECT a.id FROM pembayaran_khusus a INNER JOIN member b ON a.member_id = b.id INNER JOIN ppp_secret c on b.ppp_secret_id=c.id INNER JOIN `server` d on c.server_id=d.id INNER JOIN `user` e on d.user_id=e.id  " + filter_query + " GROUP BY member_id) as grouped";
+        var sql_data_total = "select count(grouped.id) as total from (SELECT a.id FROM pembayaran_khusus a INNER JOIN member b ON a.member_id = b.id INNER JOIN ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue ) AS c on b.ppp_secret_id=c.ppp_secret_id or b.simple_queue_id=c.simple_queue_id INNER JOIN `server` d on c.server_id=d.id INNER JOIN `user` e on d.user_id=e.id  " + filter_query + " GROUP BY member_id) as grouped";
         var query_data_total = connection.query(sql_data_total,[tahun], function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -382,7 +382,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT d.nama as nama_router,b.nama as nama_member,c.id as ppp_secret_id,d.id as server_id,GROUP_CONCAT(a.id SEPARATOR '|-|') as id,GROUP_CONCAT(a.nama SEPARATOR '|-|') as nama, GROUP_CONCAT(a.bulan SEPARATOR '|-|') as bulan, GROUP_CONCAT(a.tahun SEPARATOR '|-|') as tahun, GROUP_CONCAT(IFNULL(a.is_bayar,'') SEPARATOR '|-|') as is_bayar, GROUP_CONCAT(IFNULL(a.metode_bayar,'') SEPARATOR '|-|') as metode_bayar, GROUP_CONCAT(IFNULL(a.bank_id,'') SEPARATOR '|-|') as bank_id, GROUP_CONCAT(IFNULL(f.nama,'') SEPARATOR '|-|') as nama_bank, GROUP_CONCAT(IFNULL(a.nominal_pembayaran,'') SEPARATOR '|-|') as nominal_pembayaran, b.nama AS nama_member FROM pembayaran_khusus a INNER JOIN member b ON a.member_id = b.id INNER JOIN ppp_secret c on b.ppp_secret_id=c.id INNER JOIN `server` d on c.server_id=d.id INNER JOIN `user` e on d.user_id=e.id  LEFT JOIN bank f on a.bank_id=f.id  " + filter_query + " GROUP BY member_id limit " + limit + ",6";
+            var sql_data = "SELECT d.nama AS nama_router, b.nama AS nama_member, c.ppp_secret_id AS ppp_secret_id, d.id AS server_id, GROUP_CONCAT(a.id SEPARATOR '|-|')AS id, GROUP_CONCAT(a.nama SEPARATOR '|-|')AS nama, GROUP_CONCAT(a.bulan SEPARATOR '|-|')AS bulan, GROUP_CONCAT(a.tahun SEPARATOR '|-|')AS tahun, GROUP_CONCAT( IFNULL(a.is_bayar, '')SEPARATOR '|-|' )AS is_bayar, GROUP_CONCAT( IFNULL(a.metode_bayar, '')SEPARATOR '|-|' )AS metode_bayar, GROUP_CONCAT( IFNULL(a.bank_id, '')SEPARATOR '|-|' )AS bank_id, GROUP_CONCAT( IFNULL(f.nama, '')SEPARATOR '|-|' )AS nama_bank, GROUP_CONCAT( IFNULL(a.nominal_pembayaran, '')SEPARATOR '|-|' )AS nominal_pembayaran, b.nama AS nama_member FROM pembayaran_khusus a INNER JOIN member b ON a.member_id = b.id INNER JOIN ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue )AS c ON b.ppp_secret_id = c.ppp_secret_id or b.simple_queue_id=c.simple_queue_id INNER JOIN `server` d ON c.server_id = d.id INNER JOIN `user` e ON d.user_id = e.id LEFT JOIN bank f ON a.bank_id = f.id  " + filter_query + " GROUP BY member_id limit " + limit + ",6";
             var query_data = connection.query(sql_data,[tahun], function (err, results, fields) {
               if(results.length == 0){
                 connection.release();
