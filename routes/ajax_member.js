@@ -350,7 +350,7 @@ module.exports = function(app){
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_data_total = "select count(b.id) as total from member a right join ppp_secret b on a.ppp_secret_id=b.id INNER JOIN `server` c ON b.server_id=c.id " + filter_query;
+        var sql_data_total = "SELECT count(b.id) AS total FROM member a RIGHT JOIN ( SELECT id as id,id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT id as id,NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue ) AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN `server` c ON b.server_id = c.id " + filter_query;
         var query_data_total = connection.query(sql_data_total, function (err, results_total, fields) {
           if(results_total.length == 0){
             connection.release();
@@ -359,7 +359,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data_dibayar = "select count(a.id) as total from member a inner join ppp_secret b on a.ppp_secret_id=b.id INNER JOIN `server` c ON b.server_id=c.id " + filter_query + " and a.awal_tagihan_bulan is not null ";
+            var sql_data_dibayar = "SELECT count(a.id) AS total FROM member a INNER JOIN ( SELECT id as id,id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT id as id,NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue ) AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id = b.simple_queue_id INNER JOIN `server` c ON b.server_id = c.id " + filter_query + " and a.awal_tagihan_bulan is not null ";
             var query_data_dibayar = connection.query(sql_data_dibayar, function (err, results_dibayar, fields) {
               if(results_dibayar.length == 0){
                 connection.release();
@@ -565,7 +565,7 @@ module.exports = function(app){
         if(req.body.server_id != undefined){
           server_id = req.body.server_id;
         }
-        var sql_data = "SELECT d.* FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id INNER JOIN member_traffic_data d ON a.id = d.member_id where d.tgl >= ? and d.tgl <= ? and a.id=? and c.user_id=? and c.id=?";
+        var sql_data = "SELECT d.* FROM member a INNER JOIN ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue )AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN `server` c ON b.server_id = c.id INNER JOIN member_traffic_data d ON a.id = d.member_id where d.tgl >= ? and d.tgl <= ? and a.id=? and c.user_id=? and c.id=?";
         var query_data = connection.query(sql_data,[tgl_start,tgl_end,member_id,req.session.user_id,server_id], function (err, results, fields) {
           if(results.length == 0){
             connection.release();
@@ -606,7 +606,7 @@ module.exports = function(app){
           if(results_pengaturan.length > 0){
             var sql_data = "select * from bank where user_id=?";
             var query_data = connection.query(sql_data,[req.session.user_id], function (err, results_bank, fields) {
-              var sql_member = "select a.*,b.nama,b.alamat,b.no_wa,b.nominal_pembayaran,b.id as member_id from ppp_secret a left join member b on a.id=b.ppp_secret_id where a.id=?";
+              var sql_member = "SELECT a.*, b.nama, b.alamat, b.no_wa, b.nominal_pembayaran, b.id AS member_id FROM ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue ) AS a LEFT JOIN member b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id where a.id=?";
               var query_member = connection.query(sql_member,[id], function (err, results_member, fields) {
                 connection.release();
                 if(results_member.length > 0){
@@ -707,18 +707,18 @@ module.exports = function(app){
         var limit = limit_start + ",11";
         var arr_query = [];
         arr_query.push("c.user_id=" + req.session.user_id);
-        arr_query.push("a.ppp_secret_id=" + ppp_secret_id);
+        arr_query.push("(a.ppp_secret_id=" + ppp_secret_id + " or a.simple_queue_id=" + ppp_secret_id + ")");
         var filter_query = "";
         if(arr_query.length > 0){
           filter_query = " where " + arr_query.join(" and ");
         }
-        var sql_count = "SELECT count(a.id) as total from inventaris_alat a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id = c.id " + filter_query + "";
+        var sql_count = "SELECT count(a.id)AS total FROM inventaris_alat a INNER JOIN ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue )AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN SERVER c ON b.server_id = c.id " + filter_query + "";
         var query_count = connection.query(sql_count, function (err, results, fields) {
           var total = 0;
           if(results.length > 0){
             total = results[0]['total'];
           }
-          var sql_data = "SELECT a.* from inventaris_alat a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id = c.id " + filter_query + " limit " + limit;
+          var sql_data = "SELECT a.* FROM inventaris_alat a INNER JOIN ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue )AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN SERVER c ON b.server_id = c.id " + filter_query + " limit " + limit;
           var query_data = connection.query(sql_data, function (err, results, fields) {
             if(results.length == 0){
               connection.release();
@@ -743,6 +743,10 @@ module.exports = function(app){
   app.post(['/ajax/member_inventaris_alat_tambah.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
+        var type = "";
+        if(req.body.type != undefined){
+          type = req.body.type;
+        }
         var ppp_secret_id = "";
         if(req.body.ppp_secret_id != undefined){
           ppp_secret_id = req.body.ppp_secret_id;
@@ -763,10 +767,16 @@ module.exports = function(app){
         if(req.body.tgl_pasang != undefined){
           tgl_pasang = req.body.tgl_pasang;
         }
-        var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var filter_table = "ppp_secret";
+        var filter_field = "ppp_secret_id";
+        if(type == "2"){
+          filter_table = "simple_queue";
+          filter_field = "simple_queue_id";
+        }
+        var sql_cek_akses = "select a.* from " + filter_table + " a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
         var query_cek_akses = connection.query(sql_cek_akses,[ppp_secret_id,req.session.user_id], function (err, results, fields) {
           if(results.length > 0 || req.session.level == 2){
-            var sql_insert = "insert into inventaris_alat(ppp_secret_id,nama,serial_number,merek,tgl_pasang) values(?,?,?,?,?)";
+            var sql_insert = "insert into inventaris_alat(" + filter_field + ",nama,serial_number,merek,tgl_pasang) values(?,?,?,?,?)";
             var query_data = connection.query(sql_insert,[ppp_secret_id,nama,serial_number,merek,tgl_pasang], function (err, results, fields) {
               if(err){
                 connection.release();
@@ -797,6 +807,10 @@ module.exports = function(app){
   app.post(['/ajax/member_inventaris_alat_edit.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
+        var type = "";
+        if(req.body.type != undefined){
+          type = req.body.type;
+        }
         var id = "";
         if(req.body.id != undefined){
           id = req.body.id;
@@ -821,10 +835,16 @@ module.exports = function(app){
         if(req.body.tgl_pasang != undefined){
           tgl_pasang = req.body.tgl_pasang;
         }
-        var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var filter_table = "ppp_secret";
+        var filter_field = "ppp_secret_id";
+        if(type == "2"){
+          filter_table = "simple_queue";
+          filter_field = "simple_queue_id";
+        }
+        var sql_cek_akses = "select a.* from " + filter_table + " a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
         var query_cek_akses = connection.query(sql_cek_akses,[ppp_secret_id,req.session.user_id], function (err, results, fields) {
           if(results.length > 0 || req.session.level == 2){
-            var sql_insert = "update  inventaris_alat set nama=?,serial_number=?,merek=?,tgl_pasang=? where ppp_secret_id=? and id=?";
+            var sql_insert = "update  inventaris_alat set nama=?,serial_number=?,merek=?,tgl_pasang=? where " + filter_field + "=? and id=?";
             var query_data = connection.query(sql_insert,[nama,serial_number,merek,tgl_pasang,ppp_secret_id,id], function (err, results, fields) {
               if(err){
                 connection.release();
@@ -855,6 +875,10 @@ module.exports = function(app){
   app.post(['/ajax/member_inventaris_alat_hapus.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
+        var type = "";
+        if(req.body.type != undefined){
+          type = req.body.type;
+        }
         var id = "";
         if(req.body.id != undefined){
           id = req.body.id;
@@ -863,10 +887,16 @@ module.exports = function(app){
         if(req.body.ppp_secret_id != undefined){
           ppp_secret_id = req.body.ppp_secret_id;
         }
-        var sql_cek_akses = "select a.* from ppp_secret a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
+        var filter_table = "ppp_secret";
+        var filter_field = "ppp_secret_id";
+        if(type == "2"){
+          filter_table = "simple_queue";
+          filter_field = "simple_queue_id";
+        }
+        var sql_cek_akses = "select a.* from " + filter_table + " a inner join server b on a.server_id=b.id where a.id=? and b.user_id=?";
         var query_cek_akses = connection.query(sql_cek_akses,[ppp_secret_id,req.session.user_id], function (err, results, fields) {
           if(results.length > 0 || req.session.level == 2){
-            var sql_insert = "delete from inventaris_alat where ppp_secret_id=? and id=?";
+            var sql_insert = "delete from inventaris_alat where " + filter_field + "=? and id=?";
             var query_data = connection.query(sql_insert,[ppp_secret_id,id], function (err, results, fields) {
               if(err){
                 connection.release();

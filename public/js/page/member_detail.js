@@ -117,6 +117,7 @@ function load_data_inventaris_alat(){
 }
 function tambah_inventaris_alat(){
   $("#form_inventaris_alat").loading();
+  var type = $("#type").val();
   var ppp_secret_id = $("#id").val();
   var nama_alat = $("#nama_alat").val();
   var serial_number = $("#serial_number").val();
@@ -127,7 +128,7 @@ function tambah_inventaris_alat(){
   $.ajax({
     type:'post',
     url:'/ajax/member_inventaris_alat_tambah.html',
-    data:{ppp_secret_id:ppp_secret_id,nama:nama_alat,serial_number:serial_number,merek:merek,tgl_pasang:tgl_pasang},
+    data:{type:type,ppp_secret_id:ppp_secret_id,nama:nama_alat,serial_number:serial_number,merek:merek,tgl_pasang:tgl_pasang},
     success:function(resp){
       $("#form_inventaris_alat").loading("stop");
       var res = JSON.parse(resp);
@@ -151,6 +152,7 @@ function tambah_inventaris_alat(){
 }
 function edit_inventaris_alat(){
   $("#form_inventaris_alat").loading();
+  var type = $("#type").val();
   var ppp_secret_id = $("#id").val();
   var inventaris_alat_id = $("#inventaris_alat_id").val();
   var nama = $("#nama_alat").val();
@@ -162,7 +164,7 @@ function edit_inventaris_alat(){
   $.ajax({
     type:'post',
     url:'/ajax/member_inventaris_alat_edit.html',
-    data:{id:inventaris_alat_id,ppp_secret_id:ppp_secret_id,nama:nama,serial_number:serial_number,merek:merek,tgl_pasang:tgl_pasang},
+    data:{id:inventaris_alat_id,type:type,ppp_secret_id:ppp_secret_id,nama:nama,serial_number:serial_number,merek:merek,tgl_pasang:tgl_pasang},
     success:function(resp){
       $("#form_inventaris_alat").loading("stop");
       var res = JSON.parse(resp);
@@ -185,6 +187,7 @@ function edit_inventaris_alat(){
   });
 }
 function hapus_inventaris_alat(itu){
+  var type = $("#type").val();
   var ppp_secret_id = $("#id").val();
   var id = $(itu).attr("data-id");
   $.confirm({
@@ -206,7 +209,7 @@ function hapus_inventaris_alat(itu){
             $.ajax({
               type:'post',
               url:'/ajax/member_inventaris_alat_hapus.html',
-              data:{id:id,ppp_secret_id:ppp_secret_id},
+              data:{id:id,type:type,ppp_secret_id:ppp_secret_id},
               success:function(resp){
                 $(itu).parent().parent().loading("stop");
                 var res = JSON.parse(resp);
