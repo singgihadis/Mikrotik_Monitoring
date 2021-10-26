@@ -140,7 +140,7 @@ module.exports = {
   },
   Cek_Akses_Member: function(user_id,parent_user_id,callback){
     pool.getConnection(function(err, connection) {
-      var sql_cek = "select a.id from member a inner join ppp_secret b on a.ppp_secret_id=b.id inner join server c on b.server_id=c.id inner join user d on c.user_id=d.id where d.id=? or d.id=?";
+      var sql_cek = "SELECT a.id FROM member a INNER JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, NAME AS NAME, server_id, 1 AS type FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, NAME AS NAME, server_id, 2 FROM simple_queue)AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN SERVER c ON b.server_id = c.id INNER JOIN USER d ON c.user_id = d.id where d.id=? or d.id=?";
       var query_cek = connection.query(sql_cek,[user_id,parent_user_id], function (err, results_cek, fields) {
         if(results_cek.length == 0){
           connection.release();
@@ -154,7 +154,7 @@ module.exports = {
   },
   Traffic: function(){
     pool.getConnection(function(err, connection) {
-      var sql_data = "SELECT a.id, a.nama, b.`name`, c.`host`, c.`password`, c.`port`, c.`user`, d.hasil, d.filled FROM member a INNER JOIN ppp_secret b ON a.ppp_secret_id = b.id INNER JOIN `server` c ON b.server_id = c.id LEFT JOIN member_traffic_data d ON a.id = d.member_id and d.tgl=CURDATE()";
+      var sql_data = "SELECT a.id, a.nama, b.`name`, c.`host`, c.`password`, c.`port`, c.`user`, d.hasil, d.filled FROM member a INNER JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, NAME AS NAME, server_id, 1 AS type FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, NAME AS NAME, server_id, 2 FROM simple_queue)AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN `server` c ON b.server_id = c.id LEFT JOIN member_traffic_data d ON a.id = d.member_id AND d.tgl = CURDATE()";
       var query_data = connection.query(sql_data, function (err, results, fields) {
         if(results.length == 0){
           connection.release();
