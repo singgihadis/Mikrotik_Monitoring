@@ -209,7 +209,7 @@ function load_data(){
             if(v['type'] == "1"){
               //PPP
               html += "<td>" + v['resource_name'] + "</td>";
-              html += "<td></td>";
+              html += "<td>" + v['profile'] + "</td>";
             }else{
               //Simple Queue
               html += "<td></td>";
