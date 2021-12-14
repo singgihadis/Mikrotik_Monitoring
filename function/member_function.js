@@ -8,19 +8,41 @@ var request_function = require("../function/request_function.js");
 module.exports = {
   BuatTagihanBulanan: function(){
     pool.getConnection(function(err, connection) {
-      var select_member = "select * from member";
-      var query_member = connection.query(select_member, function (err, results_member, fields) {
-        connection.release();
-        if(results_member.length == 0){
-          setTimeout(function(){
-            module.exports.BuatTagihanBulanan();
-          },60000);
-        }else{
-          module.exports.BuatTagihanBulanan_ProsesData(0,results_member,function(){
+      var select_indicator_data = "select * from live_indicator_data where id=1";
+      var query_indicator_data = connection.query(select_indicator_data, function (err, results_indicator_data, fields) {
+        if(results_indicator_data.length > 0){
+          var is_update = results_indicator_data[0]['value'];
+          if(is_update == "1"){
+            var sql_update_indicator = "update live_indicator_data set value='0' where id=1";
+            var query_update_indicator = connection.query(sql_update_indicator, function (err, results, fields) {
+              var select_member = "select * from member";
+              var query_member = connection.query(select_member, function (err, results_member, fields) {
+                if(results_member.length == 0){
+                  connection.release();
+                  setTimeout(function(){
+                    module.exports.BuatTagihanBulanan();
+                  },60000);
+                }else{
+                  connection.release();
+                  module.exports.BuatTagihanBulanan_ProsesData(0,results_member,function(){
+                    setTimeout(function(){
+                      module.exports.BuatTagihanBulanan();
+                    },60000);
+                  });
+                }
+              });
+            });
+          }else{
+            connection.release();
             setTimeout(function(){
               module.exports.BuatTagihanBulanan();
             },60000);
-          });
+          }
+        }else{
+          connection.release();
+          setTimeout(function(){
+            module.exports.BuatTagihanBulanan();
+          },60000);
         }
       });
     });
@@ -140,7 +162,7 @@ module.exports = {
   },
   Cek_Akses_Member: function(user_id,parent_user_id,callback){
     pool.getConnection(function(err, connection) {
-      var sql_cek = "SELECT a.id FROM member a INNER JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, NAME AS NAME, server_id, 1 AS type FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, NAME AS NAME, server_id, 2 FROM simple_queue)AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN SERVER c ON b.server_id = c.id INNER JOIN USER d ON c.user_id = d.id where d.id=? or d.id=?";
+      var sql_cek = "SELECT a.id FROM member a INNER JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, NAME AS NAME, server_id, 1 AS type FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, NAME AS NAME, server_id, 2 FROM simple_queue)AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN server c ON b.server_id = c.id INNER JOIN user d ON c.user_id = d.id where d.id=? or d.id=?";
       var query_cek = connection.query(sql_cek,[user_id,parent_user_id], function (err, results_cek, fields) {
         if(results_cek.length == 0){
           connection.release();

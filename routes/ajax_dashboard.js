@@ -89,7 +89,7 @@ module.exports = function(app){
   app.post(['/ajax/member_terbaru.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
-        var sql_data = "SELECT a.* FROM member a INNER JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue)AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN SERVER c ON b.server_id = c.id where c.user_id=? order by a.tgl_insert desc limit 5";
+        var sql_data = "SELECT a.* FROM member a INNER JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue)AS b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id INNER JOIN server c ON b.server_id = c.id where c.user_id=? order by a.tgl_insert desc limit 5";
         var query_data = connection.query(sql_data,[req.session.user_id], function (err, results, fields) {
           if(results.length == 0){
             connection.release();
@@ -113,7 +113,7 @@ module.exports = function(app){
   app.post(['/ajax/kapasitas_total.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {
-        var sql_data = "SELECT a.nama, SUM(IFNULL(e.kapasitas, 0))AS kapasitas FROM SERVER a LEFT JOIN USER b ON a.user_id = b.id LEFT JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) AS c ON a.id = c.server_id LEFT JOIN member d ON d.ppp_secret_id = c.ppp_secret_id or d.simple_queue_id=c.simple_queue_id LEFT JOIN master_paket e ON d.master_paket_id = e.id where a.user_id=? or a.user_id=? or (" + req.session.level + "=2 and (a.user_id=? or a.user_id=?)) GROUP BY a.id";
+        var sql_data = "SELECT a.nama, SUM(IFNULL(e.kapasitas, 0))AS kapasitas FROM server a LEFT JOIN user b ON a.user_id = b.id LEFT JOIN( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) AS c ON a.id = c.server_id LEFT JOIN member d ON d.ppp_secret_id = c.ppp_secret_id or d.simple_queue_id=c.simple_queue_id LEFT JOIN master_paket e ON d.master_paket_id = e.id where a.user_id=? or a.user_id=? or (" + req.session.level + "=2 and (a.user_id=? or a.user_id=?)) GROUP BY a.id";
         var query_data = connection.query(sql_data,[req.session.user_id,req.session.parent_user_id,req.session.user_id,req.session.parent_user_id], function (err, results, fields) {
           if(results.length == 0){
             connection.release();

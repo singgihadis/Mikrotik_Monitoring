@@ -737,7 +737,7 @@ function load_data_tagihan(){
       }else{
         var data = res.data;
         var html = "";
-        var no = (page * 5) - 4;
+        var no = (page2 * 5) - 4;
         var first = no;
         $.each(data,function(k,v){
           if(k < 5){
@@ -869,14 +869,14 @@ function trigger_pagination2(){
   $(".prevpage2").click(function(e){
     e.preventDefault();
     var get_page  = $(this).attr("data-page");
-    page = get_page;
-    load_data(true);
+    page2 = get_page;
+    load_data_tagihan(true);
   });
   $(".nextpage2").click(function(e){
     e.preventDefault();
     var get_page  = $(this).attr("data-page");
-    page = get_page;
-    load_data(true);
+    page2 = get_page;
+    load_data_tagihan(true);
   });
 }
 function modal_bayar(itu){

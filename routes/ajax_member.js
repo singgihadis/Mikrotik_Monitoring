@@ -20,7 +20,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("(concat(a.name,b.name) like '%" + keyword + "%')");
+          arr_query.push("(concat(a.name,b.nama) like '%" + keyword + "%')");
         }
         arr_query.push("(c.user_id=" + req.session.user_id + " or c.user_id=" + req.session.parent_user_id + ")");
         var filter_query = "";
@@ -159,12 +159,15 @@ module.exports = function(app){
                 var query = connection.query(sql,[id,nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id], function (err, results, fields) {
                   if (!err){
                     var member_id = results.insertId;
-                    var sql_log = "insert into member_nominal_pembayaran_log(user_id,member_id,nominal_pembayaran,deskripsi) values(?,?,?,?)";
-                    var query_log = connection.query(sql_log,[req.session.user_id,member_id,nominal_pembayaran,"Set baru nominal pembayaran Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
-                      connection.release();
-                      var data = {is_error:false,msg:"Berhasil menyimpan"};
-                      res.send(JSON.stringify(data));
-                      res.end();
+                    var sql_update_indicator = "update live_indicator_data set value='1' where id=1";
+                    var query_update_indicator = connection.query(sql_update_indicator, function (err, results, fields) {
+                      var sql_log = "insert into member_nominal_pembayaran_log(user_id,member_id,nominal_pembayaran,deskripsi) values(?,?,?,?)";
+                      var query_log = connection.query(sql_log,[req.session.user_id,member_id,nominal_pembayaran,"Set baru nominal pembayaran Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
+                        connection.release();
+                        var data = {is_error:false,msg:"Berhasil menyimpan"};
+                        res.send(JSON.stringify(data));
+                        res.end();
+                      });
                     });
                   }else{
                     connection.release();
@@ -179,20 +182,23 @@ module.exports = function(app){
                 var sql = "update member set nama=?,alamat=?,no_wa=?,email=?,nominal_pembayaran=?,awal_tagihan_bulan=?,awal_tagihan_tahun=?,is_berhenti_langganan=?,bulan_berhenti_langganan=?,tahun_berhenti_langganan=?,master_paket_id=? where ppp_secret_id=?";
                 var query = connection.query(sql,[nama,alamat,no_wa,email,nominal_pembayaran,awal_tagihan_bulan,awal_tagihan_tahun,is_berhenti_langganan,bulan_berhenti_langganan,tahun_berhenti_langganan,master_paket_id,id], function (err, results, fields) {
                   if (!err){
-                    if(nominal_pembayaran == last_nominal_pembayaran){
-                      connection.release();
-                      var data = {is_error:false,msg:"Berhasil menyimpan"};
-                      res.send(JSON.stringify(data));
-                      res.end();
-                    }else{
-                      var sql_log = "insert into member_nominal_pembayaran_log(user_id,member_id,nominal_pembayaran,deskripsi) values(?,?,?,?)";
-                      var query_log = connection.query(sql_log,[req.session.user_id,member_id,nominal_pembayaran,"Update nominal pembayaran Rp. " + public_function.FormatAngka(last_nominal_pembayaran) + " menjadi Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
+                    var sql_update_indicator = "update live_indicator_data set value='1' where id=1";
+                    var query_update_indicator = connection.query(sql_update_indicator, function (err, results, fields) {
+                      if(nominal_pembayaran == last_nominal_pembayaran){
                         connection.release();
                         var data = {is_error:false,msg:"Berhasil menyimpan"};
                         res.send(JSON.stringify(data));
                         res.end();
-                      });
-                    }
+                      }else{
+                        var sql_log = "insert into member_nominal_pembayaran_log(user_id,member_id,nominal_pembayaran,deskripsi) values(?,?,?,?)";
+                        var query_log = connection.query(sql_log,[req.session.user_id,member_id,nominal_pembayaran,"Update nominal pembayaran Rp. " + public_function.FormatAngka(last_nominal_pembayaran) + " menjadi Rp. " + public_function.FormatAngka(nominal_pembayaran)], function (err, results, fields) {
+                          connection.release();
+                          var data = {is_error:false,msg:"Berhasil menyimpan"};
+                          res.send(JSON.stringify(data));
+                          res.end();
+                        });
+                      }
+                    });
                   }else{
                     connection.release();
                     var data = {is_error:true,msg:"Gagal menyimpan"};
