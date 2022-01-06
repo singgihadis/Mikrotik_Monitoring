@@ -251,8 +251,8 @@ function build_tahun(){
     minViewMode: "years",
     autoclose: true
   }).on("changeYear", function(e) {
-    $(".tahun").html("(" + $("#tahun").val() + ")");
     setTimeout(function(){
+      $(".tahun").html("(" + $("#tahun").val() + ")");
       page = 1;
       load_data();
       page2 = 1;
@@ -278,7 +278,7 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='15'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='16'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
@@ -296,8 +296,8 @@ function load_data(){
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
-
+            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-is-simple-queue='" + v['is_simple_queue'] + "' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
+              html += "<td>" +  v['alamat'] + "</td>";
             var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
             var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];
             for(var a=0;a<12;a++){
@@ -368,7 +368,7 @@ function load_data(){
     },error:function(){
       $("#listdata").loading("stop");
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='15'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='16'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }
@@ -596,6 +596,7 @@ function statistik_chart() {
 }
 
 function modal_detail(itu){
+  var is_simple_queue = $(itu).attr("data-is-simple-queue");
   var name = $(itu).attr("data-name");
   var password = $(itu).attr("data-password");
   var profile = $(itu).attr("data-profile");
@@ -612,9 +613,19 @@ function modal_detail(itu){
   var nominal_pembayaran = $(itu).attr("data-nominal-pembayaran");
   var awal_tagihan_bulan = $(itu).attr("data-awal-tagihan-bulan");
   var awal_tagihan_tahun = $(itu).attr("data-awal-tagihan-tahun");
-  $("#name").html(name);
-  $("#password").html(password);
-  $("#profile").html(profile);
+  if(is_simple_queue == "1"){
+    $("#dt_name").html("Name (Simple Queue)");
+    $("#name").html(name);
+    $("#dl_password").hide();
+    $("#dl_profile").hide();
+  }else{
+    $("#dt_name").html("Name");
+    $("#name").html(name);
+    $("#dl_password").show();
+    $("#dl_profile").show();
+    $("#password").html(password);
+    $("#profile").html(profile);
+  }
   $("#nama").html(nama);
   $("#alamat").html(alamat);
   $("#no_wa").html(no_wa);
@@ -731,7 +742,7 @@ function load_data_tagihan(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata2").html("<tr><td colspan='8'>" + res.msg + "</td></tr>");
+          $("#listdata2").html("<tr><td colspan='9'>" + res.msg + "</td></tr>");
           $("#info_page2").html("0 - 0 dari 0");
         }
       }else{
@@ -756,7 +767,19 @@ function load_data_tagihan(){
             html += "<tr>";
             html += "<td rowspan='" + panjang_row + "'>" + no + "</td>";
             html += "<td rowspan='" + panjang_row + "'>" + v['nama_router'] + "</td>";
-            html += "<td rowspan='" + panjang_row + "'><a href='/member/detail/" + v['ppp_secret_id'] + "/" + v['server_id'] + ".html' target='_blank'><b>" + v['nama_member'] + "</b></a></td>";
+            html += "<td rowspan='" + panjang_row + "'>";
+            var type = "";
+            var id_simple_queue_ppp_secret_id = "";
+            if(v['is_simple_queue'] == "1"){
+              type = "2";
+              id_simple_queue_ppp_secret_id = v['simple_queue_id'];
+            }else{
+              type = "1";
+              id_simple_queue_ppp_secret_id = v['ppp_secret_id'];
+            }
+            html += "<a href='/member/detail/" + type + "/" + id_simple_queue_ppp_secret_id + "/" + v['server_id'] + ".html' target='_blank'><b>" + v['nama_member'] + "</b></a>";
+            html += "</td>";
+            html += "<td rowspan='" + panjang_row + "'>" + v['alamat_member'] + "</td>";
             html += "<td>" + nama_arr[k2] + "</td>";
             html += "<td>" + IndexToMonth(parseInt(bulan_arr[k2]) - 1) + "</td>";
             html += "<td>Rp. " + FormatAngka(nominal_pembayaran_arr[k2]) + "</td>";
@@ -820,7 +843,7 @@ function load_data_tagihan(){
     },error:function(){
       $("#listdata2").loading("stop");
       $("#info_page2").html("0 - 0 dari 0");
-      $("#listdata2").html("<tr><td colspan='8'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata2").html("<tr><td colspan='9'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }

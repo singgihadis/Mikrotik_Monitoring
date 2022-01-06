@@ -144,7 +144,7 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='15'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='16'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
@@ -164,7 +164,8 @@ function load_data(){
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-is-simple-queue='" + v['is_simple_queue'] + "' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td>" +  v['alamat'] + "</td>";
             var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
             var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];
             for(var a=0;a<12;a++){
@@ -337,11 +338,12 @@ function load_data(){
     },error:function(){
       $("#listdata").loading("stop");
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='15'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='16'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }
 function modal_detail(itu){
+  var is_simple_queue = $(itu).attr("data-is-simple-queue");
   var name = $(itu).attr("data-name");
   var password = $(itu).attr("data-password");
   var profile = $(itu).attr("data-profile");
@@ -349,9 +351,19 @@ function modal_detail(itu){
   var alamat = $(itu).attr("data-alamat");
   var no_wa = $(itu).attr("data-no-wa");
   var nominal_pembayaran = $(itu).attr("data-nominal-pembayaran");
-  $("#name").html(name);
-  $("#password_detail").html(password);
-  $("#profile").html(profile);
+  if(is_simple_queue == "1"){
+    $("#dt_name").html("Name (Simple Queue)");
+    $("#name").html(name);
+    $("#dl_password").hide();
+    $("#dl_profile").hide();
+  }else{
+    $("#dt_name").html("Name");
+    $("#name").html(name);
+    $("#dl_password").show();
+    $("#dl_profile").show();
+    $("#password_detail").html(password);
+    $("#profile").html(profile);
+  }
   $("#nama").html(nama);
   $("#alamat").html(alamat);
   $("#no_wa").html(no_wa);

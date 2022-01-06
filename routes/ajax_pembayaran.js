@@ -20,7 +20,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("a.nama like '%" + keyword + "%'");
+          arr_query.push("concat(a.nama,' ',a.alamat) like '%" + keyword + "%'");
         }
         arr_query.push("(d.user_id=" + req.session.user_id + " or d.user_id=" + req.session.parent_user_id + ")");
         arr_query.push("a.awal_tagihan_bulan is not null");
@@ -38,8 +38,9 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT a.nominal_pembayaran as nominal_pembayaran_member,b.profile,a.id,a.nama,a.alamat,IFNULL(a.no_wa,'') as no_wa,IFNULL(a.email,'') as email,a.ppp_secret_id,a.is_berhenti_langganan,a.bulan_berhenti_langganan,a.tahun_berhenti_langganan,a.tgl_insert,a.last_update,IFNULL(GROUP_CONCAT(c.nominal_pembayaran),'') as nominal_pembayaran,IFNULL(GROUP_CONCAT(c.is_bayar),'') as is_bayar,a.awal_tagihan_bulan,a.awal_tagihan_tahun,IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun,IFNULL(GROUP_CONCAT(c.metode_bayar),'') as metode_bayar,d.nama as nama_server,d.host,d.port,d.user,d.password FROM member a INNER JOIN (SELECT profile,id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL as profile, NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id limit " + limit + ",6";
+            var sql_data = "SELECT a.nominal_pembayaran as nominal_pembayaran_member,b.is_simple_queue,b.profile,b.name,a.id,a.nama,IFNULL(a.alamat,'') as alamat,IFNULL(a.no_wa,'') as no_wa,IFNULL(a.email,'') as email,a.ppp_secret_id,a.is_berhenti_langganan,a.bulan_berhenti_langganan,a.tahun_berhenti_langganan,a.tgl_insert,a.last_update,IFNULL(GROUP_CONCAT(c.nominal_pembayaran),'') as nominal_pembayaran,IFNULL(GROUP_CONCAT(c.is_bayar),'') as is_bayar,a.awal_tagihan_bulan,a.awal_tagihan_tahun,IFNULL(GROUP_CONCAT(c.bulan), '') AS bulan, IFNULL(c.tahun, '') AS tahun,IFNULL(GROUP_CONCAT(c.metode_bayar),'') as metode_bayar,d.nama as nama_server,d.host,d.port,d.user,d.password FROM member a INNER JOIN (SELECT 0 as is_simple_queue,name,profile,id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT 1 as is_simple_queue,name, NULL as profile, NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue) as b ON a.ppp_secret_id = b.ppp_secret_id or a.simple_queue_id=b.simple_queue_id LEFT JOIN pembayaran c ON a.id = c.member_id and c.tahun=? INNER JOIN server d on d.id=b.server_id " + filter_query + " GROUP BY a.id limit " + limit + ",6";
             var query_data = connection.query(sql_data,[tahun], function (err, results, fields) {
+              console.log(err);
               if(results.length == 0){
                 connection.release();
                 var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
@@ -362,7 +363,7 @@ module.exports = function(app){
         }
         var arr_query = [];
         if(keyword != ""){
-          arr_query.push("a.nama like '%" + keyword + "%'");
+          arr_query.push("concat(b.nama,' ',b.alamat) like '%" + keyword + "%'");
         }
         if(tahun != ""){
           arr_query.push("a.tahun =" + tahun + "");
@@ -382,7 +383,7 @@ module.exports = function(app){
             res.end();
           }else{
             var total = results_total[0]['total'];
-            var sql_data = "SELECT d.nama AS nama_router, b.nama AS nama_member, c.ppp_secret_id AS ppp_secret_id, d.id AS server_id, GROUP_CONCAT(a.id SEPARATOR '|-|')AS id, GROUP_CONCAT(a.nama SEPARATOR '|-|')AS nama, GROUP_CONCAT(a.bulan SEPARATOR '|-|')AS bulan, GROUP_CONCAT(a.tahun SEPARATOR '|-|')AS tahun, GROUP_CONCAT( IFNULL(a.is_bayar, '')SEPARATOR '|-|' )AS is_bayar, GROUP_CONCAT( IFNULL(a.metode_bayar, '')SEPARATOR '|-|' )AS metode_bayar, GROUP_CONCAT( IFNULL(a.bank_id, '')SEPARATOR '|-|' )AS bank_id, GROUP_CONCAT( IFNULL(f.nama, '')SEPARATOR '|-|' )AS nama_bank, GROUP_CONCAT( IFNULL(a.nominal_pembayaran, '')SEPARATOR '|-|' )AS nominal_pembayaran, b.nama AS nama_member FROM pembayaran_khusus a INNER JOIN member b ON a.member_id = b.id INNER JOIN ( SELECT id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue )AS c ON b.ppp_secret_id = c.ppp_secret_id or b.simple_queue_id=c.simple_queue_id INNER JOIN `server` d ON c.server_id = d.id INNER JOIN `user` e ON d.user_id = e.id LEFT JOIN bank f ON a.bank_id = f.id  " + filter_query + " GROUP BY member_id limit " + limit + ",6";
+            var sql_data = "SELECT d.nama AS nama_router, b.nama AS nama_member,IFNULL(b.alamat,'') as alamat_member, c.ppp_secret_id AS ppp_secret_id, d.id AS server_id, GROUP_CONCAT(a.id SEPARATOR '|-|')AS id, GROUP_CONCAT(a.nama SEPARATOR '|-|')AS nama, GROUP_CONCAT(a.bulan SEPARATOR '|-|')AS bulan, GROUP_CONCAT(a.tahun SEPARATOR '|-|')AS tahun, GROUP_CONCAT( IFNULL(a.is_bayar, '')SEPARATOR '|-|' )AS is_bayar, GROUP_CONCAT( IFNULL(a.metode_bayar, '')SEPARATOR '|-|' )AS metode_bayar, GROUP_CONCAT( IFNULL(a.bank_id, '')SEPARATOR '|-|' )AS bank_id, GROUP_CONCAT( IFNULL(f.nama, '')SEPARATOR '|-|' )AS nama_bank, GROUP_CONCAT( IFNULL(a.nominal_pembayaran, '')SEPARATOR '|-|' )AS nominal_pembayaran FROM pembayaran_khusus a INNER JOIN member b ON a.member_id = b.id INNER JOIN ( SELECT 0 as is_simple_queue,id AS ppp_secret_id, NULL AS simple_queue_id, server_id FROM ppp_secret UNION SELECT 1 as is_simple_queue,NULL AS ppp_secret_id, id AS simple_queue_id, server_id FROM simple_queue )AS c ON b.ppp_secret_id = c.ppp_secret_id or b.simple_queue_id=c.simple_queue_id INNER JOIN `server` d ON c.server_id = d.id INNER JOIN `user` e ON d.user_id = e.id LEFT JOIN bank f ON a.bank_id = f.id  " + filter_query + " GROUP BY member_id limit " + limit + ",6";
             var query_data = connection.query(sql_data,[tahun], function (err, results, fields) {
               if(results.length == 0){
                 connection.release();

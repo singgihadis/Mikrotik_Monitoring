@@ -1,7 +1,8 @@
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
-// let RedisStore = require('connect-redis')(session);
+const redis = require('redis');
+const redisStore = require('connect-redis');
 const hbs = require('hbs');
 const fs = require('fs');
 const bodyParser = require('body-parser');
@@ -25,10 +26,11 @@ hbs.registerHelper('eq', function () {
         return args[0] === expression;
     });
 });
-
-// let redisClient = redis.createClient();
-
-
+const sessionClient = redis.createClient({
+  host: '127.0.0.1',
+  port: 6379
+});
+const sessionStore = redisStore(session);
 
 //set views file
 app.set('views',path.join(__dirname,'views'));
@@ -40,7 +42,9 @@ app.use(bodyParser.urlencoded({ extended: false, limit: "5mb" }));
 app.use('/assets',express.static(__dirname + '/public'));
 app.use('/backup',express.static(__dirname + '/backup'));
 app.use(session({
-    // store: new RedisStore({ client: redisClient }),
+    store: new sessionStore({
+        client: sessionClient
+    }),
     secret: 'secret',
     resave: true,
     saveUninitialized: true,
@@ -114,4 +118,5 @@ var server = app.listen(3002, () => {
   var member_function = require("./function/member_function.js");
   member_function.Traffic();
   member_function.BuatTagihanBulanan();
+  member_function.Set_Live_Indicator_Data();
 });

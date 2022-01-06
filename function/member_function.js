@@ -269,5 +269,39 @@ module.exports = {
         module.exports.Traffic();
       },60000);
     }
+  },
+  Set_Live_Indicator_Data: function(){
+    pool.getConnection(function(err, connection) {
+      var select_indicator_data = "select * from live_indicator_data where id=2";
+      var query_indicator_data = connection.query(select_indicator_data, function (err, results_indicator_data, fields) {
+        if(results_indicator_data.length > 0){
+          var bulantahun = results_indicator_data[0]['value'];
+          var d = new Date();
+          var bulan = parseInt(d.getMonth()) + 1;
+          var tahun = d.getFullYear();
+          var bulan_tahun_sekarang = bulan + "_" + tahun;
+          if(bulantahun == bulan_tahun_sekarang){
+            setTimeout(function(){
+              module.exports.Set_Live_Indicator_Data();
+            },3600000);
+          }else{
+            var sql_update_indicator_blnthn = "update live_indicator_data set value='" + bulan_tahun_sekarang + "' where id=2";
+            var query_update_indicator_blnthn = connection.query(sql_update_indicator_blnthn, function (err, results, fields) {
+              var sql_update_indicator = "update live_indicator_data set value='1' where id=1";
+              var query_update_indicator = connection.query(sql_update_indicator, function (err, results, fields) {
+                connection.release();
+                var data = {is_error:false,msg:"Berhasil menyimpan"};
+                res.send(JSON.stringify(data));
+                res.end();
+              });
+            });
+          }
+        }else{
+          setTimeout(function(){
+            module.exports.Set_Live_Indicator_Data();
+          },3600000);
+        }
+      });
+    });
   }
 }
