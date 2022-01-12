@@ -296,7 +296,7 @@ function load_data(){
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-is-simple-queue='" + v['is_simple_queue'] + "' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td><a href='javascript:void(0);' class='text-link font-weight-bold' onclick='modal_detail(this)' data-is-simple-queue='" + v['is_simple_queue'] + "' data-name='" + v['name'] +  "' data-password='" + v['password_ppp'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-email='" + v['email'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "' data-awal-tagihan-bulan='" + v['awal_tagihan_bulan'] + "' data-awal-tagihan-tahun='" + v['awal_tagihan_tahun'] + "'>" + v['nama'] + "</a></td>";
               html += "<td>" +  v['alamat'] + "</td>";
             var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
             var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];

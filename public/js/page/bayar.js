@@ -164,7 +164,7 @@ function load_data(){
             html += "<tr>";
             html += "<td>" +  no + "</td>";
             html += "<td>" +  v['nama_server'] + "</td>";
-            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-is-simple-queue='" + v['is_simple_queue'] + "' data-name='" + v['name'] +  "' data-password='" + v['password'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "'>" + v['nama'] + "</a></td>";
+            html += "<td><a href='javascript:void(0);' class='text-dark' onclick='modal_detail(this)' data-is-simple-queue='" + v['is_simple_queue'] + "' data-name='" + v['name'] +  "' data-password='" + v['password_ppp'] +  "' data-profile='" + v['profile'] +  "' data-nama='" + v['nama'] + "' data-alamat='" + v['alamat'] + "' data-no-wa='" + v['no_wa'] + "' data-nominal-pembayaran='" + v['nominal_pembayaran_member'] + "'>" + v['nama'] + "</a></td>";
             html += "<td>" +  v['alamat'] + "</td>";
             var bulan_berhenti_langganan = v['bulan_berhenti_langganan'];
             var tahun_berhenti_langganan = v['tahun_berhenti_langganan'];
