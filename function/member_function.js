@@ -86,7 +86,7 @@ module.exports = {
             var data = [];
             for(var i=awal_tagihan_tahun;i<=akhir_tagihan_tahun;i++){
               if(awal_tagihan_tahun == akhir_tagihan_tahun){
-                for(var a=awal_tagihan_bulan;a<akhir_tagihan_bulan;a++){
+                for(var a=awal_tagihan_bulan;a<=akhir_tagihan_bulan;a++){
                   data.push({bulan:a,tahun:i});
                 }
               }else{
