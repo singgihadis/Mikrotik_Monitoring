@@ -201,7 +201,7 @@ module.exports = function(app){
         var arr_query = [];
         arr_query.push("(d.user_id=" + req.session.user_id + " or d.user_id=" + req.session.parent_user_id + ")");
         arr_query.push("((a.awal_tagihan_tahun = " + tahun + " and " + bulan + " >= a.awal_tagihan_bulan) or (" + tahun + " > a.awal_tagihan_tahun))");
-        arr_query.push("(a.is_berhenti_langganan != 1 or (a.is_berhenti_langganan = 0 AND (a.tahun_berhenti_langganan = " + tahun + " and " + bulan + " < a.bulan_berhenti_langganan) or (" + tahun + " < a.awal_tagihan_tahun)))");
+        arr_query.push("(a.is_berhenti_langganan != 1 or (a.is_berhenti_langganan = 1 AND ((a.tahun_berhenti_langganan = " + tahun + " and " + bulan + " < a.bulan_berhenti_langganan) or (" + tahun + " < a.tahun_berhenti_langganan))))");
         arr_query.push("(aa.bulan=" + bulan + " and aa.tahun=" + tahun + ")");
         var filter_query = "";
         if(arr_query.length > 0){

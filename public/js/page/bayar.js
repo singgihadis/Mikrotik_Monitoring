@@ -209,7 +209,7 @@ function load_data(){
                 if(tahun > tahun_berhenti_langganan){
                   berhenti_langganan = true;
                 }else if(tahun_berhenti_langganan == tahun){
-                  if((a + 1) > bulan_berhenti_langganan){
+                  if((a + 1) >= bulan_berhenti_langganan){
                     berhenti_langganan = true;
                   }else{
                     berhenti_langganan = false;

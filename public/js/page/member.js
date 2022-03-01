@@ -182,7 +182,7 @@ function load_data(){
         if(res.must_login){
           window.location = "/login.html";
         }else{
-          $("#listdata").html("<tr><td colspan='9'>" + res.msg + "</td></tr>");
+          $("#listdata").html("<tr><td colspan='10'>" + res.msg + "</td></tr>");
           $("#info_page").html("0 - 0 dari 0");
         }
       }else{
@@ -219,6 +219,7 @@ function load_data(){
               html += "<td class='" + color_belum_update + "' colspan='4'>Silahkan update data ini dengan klik tombol edit di samping kanan anda</td>";
             }else{
               html += "<td class='" + color_belum_update + "'>" + v['nama'] + "</td>";
+              html += "<td class='" + color_belum_update + "'>" + v['no_wa'] + "</td>";
               html += "<td class='" + color_belum_update + "'>" + v['alamat'] + "</td>";
               html += "<td class='" + color_belum_update + "'>";
               html += "Rp. " + FormatAngka(v['nominal_pembayaran']) + "";
@@ -250,7 +251,7 @@ function load_data(){
     },error:function(){
       $("#listdata").loading("stop");
       $("#info_page").html("0 - 0 dari 0");
-      $("#listdata").html("<tr><td colspan='9'>Silahkan periksa koneksi internet anda</td></tr>");
+      $("#listdata").html("<tr><td colspan='10'>Silahkan periksa koneksi internet anda</td></tr>");
     }
   });
 }
@@ -381,7 +382,7 @@ function html_pagination(jmldata){
     html_pagination += "    </li>";
   }
   html_pagination += "    <li class='page-item disabled'><a class='page-link text-body' href='javascript:void(0);'>" + page + "</a></li>";
-  if(jmldata > 5){
+  if(jmldata > 10){
     //Isnext true
     html_pagination += "    <li class='page-item'>";
     html_pagination += "      <a class='page-link text-body nextpage' data-page='" + (parseInt(page) + 1) + "' href='javascript:void(0);'>";
