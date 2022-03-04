@@ -216,7 +216,7 @@ function load_data(){
               html += "<td>" + v['resource_name'] + "</td>";
             }
             if(v['awal_tagihan_bulan'] == null){
-              html += "<td class='" + color_belum_update + "' colspan='4'>Silahkan update data ini dengan klik tombol edit di samping kanan anda</td>";
+              html += "<td class='" + color_belum_update + "' colspan='5'>Silahkan update data ini dengan klik tombol edit di samping kanan anda</td>";
             }else{
               html += "<td class='" + color_belum_update + "'>" + v['nama'] + "</td>";
               html += "<td class='" + color_belum_update + "'>" + v['no_wa'] + "</td>";
