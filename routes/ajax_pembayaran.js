@@ -1,3 +1,4 @@
+const RouterOSClient = require('routeros-client').RouterOSClient;
 var ppp_function = require("../function/ppp_function.js");
 var member_function = require("../function/member_function.js");
 const pool = require('../db');
@@ -116,13 +117,75 @@ module.exports = function(app){
                   res.send(JSON.stringify(data));
                   res.end();
                 }else{
+                  var ppp_secret_id = results[0]['ppp_secret_id'];
                   var sql = "update pembayaran set metode_bayar=?,bank_id=?,is_bayar=1 where member_id=? and bulan=? and tahun=?";
                   var query = connection.query(sql,[metode_bayar,bank_id,id,bulan,tahun], function (err, results, fields) {
                     if (!err){
-                      connection.release();
-                      var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
-                      res.send(JSON.stringify(data));
-                      res.end();
+                      var sql_lunas = "select * from pembayaran where is_bayar=0 and member_id=?";
+                      var query_lunas = connection.query(sql_lunas,[id], function (err, results_lunas, fields) {
+                        if (results_lunas.length > 0){
+                          //Tidak lunas
+                          connection.release();
+                          var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                          res.send(JSON.stringify(data));
+                          res.end();
+                        }else{
+                          //Lunas
+                          var sql_ppp_secret = "select * from ppp_secret where id=?";
+                          var query_ppp_secret = connection.query(sql_ppp_secret,[ppp_secret_id], function (err, results_ppp_secret, fields) {
+                            if (results_ppp_secret.length > 0){
+                              var profile_name = results_ppp_secret[0]['profile_isolir'];
+                              var sql_update_isolir = "update ppp_secret set profile=?,profile_isolir='' where id=?";
+                              var query = connection.query(sql_update_isolir,[profile_name,ppp_secret_id], function (err, results, fields) {
+                                var server_id = results_ppp_secret[0]['server_id'];
+                                var sql_router = "select * from server where id=?";
+                                var query_router = connection.query(sql_router,[server_id], function (err, results_router, fields) {
+                                    connection.release();
+                                    if(results_router.length > 0){
+                                      var host = results_router[0]['host'];
+                                      var port = results_router[0]['port'];
+                                      var user = results_router[0]['user'];
+                                      var password = results_router[0]['password'];
+                                      const api = new RouterOSClient({
+                                          host: host,
+                                          port: port,
+                                          user: user,
+                                          password: password,
+                                          keepalive: true
+                                      });
+                                      api.connect().then((client) => {
+                                        client.menu("/ppp active").remove({"name":profile_name}).then((result) => {
+                                          api.close();
+                                          var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                                          res.send(JSON.stringify(data));
+                                          res.end();
+                                        }).catch((err) => {
+                                          api.close();
+                                          var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                                          res.send(JSON.stringify(data));
+                                          res.end();
+                                        });
+                                      }).catch((err) => {
+                                        var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                                        res.send(JSON.stringify(data));
+                                        res.end();
+                                      });
+                                    }else{
+                                      var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                                      res.send(JSON.stringify(data));
+                                      res.end();
+                                    }
+                                });
+                              });
+                            }else{
+                              connection.release();
+                              var data = {is_error:false,msg:"Berhasil melakukan pembayaran"};
+                              res.send(JSON.stringify(data));
+                              res.end();
+                            }
+                          });
+                        }
+                      });
                     }else{
                       console.log(err);
                       connection.release();

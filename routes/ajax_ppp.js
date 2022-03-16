@@ -157,6 +157,78 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/ppp_secret_isolir.html'],(req, res) => {
+    if(req.session.is_login){
+      try{
+        var id = "";
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+        var server_id = req.session.server_id;
+        pool.getConnection(function(err, connection) {
+          var sql_data = "select * from ppp_secret where id=? and server_id=?";
+          var query_data = connection.query(sql_data, [id,server_id],function (err, results, fields) {
+            if(results.length > 0){
+              var nama_profile = results[0]['profile'];
+              var sql_update = "update ppp_secret set profile='',profile_isolir=? where id=? and server_id=?";
+              var query_update = connection.query(sql_update, [nama_profile,id,server_id], function (err, results_update, fields) {
+                if(err){
+                  connection.release();
+                  var data = {is_error:true,data:[],msg:"Gagal mengisolir"};
+                  res.send(JSON.stringify(data));
+                  res.end();
+                }else{
+                  connection.release();
+                  var host = req.session.host;
+                  var port = req.session.port;
+                  var user = req.session.user;
+                  var password = req.session.password;
+                  const api = new RouterOSClient({
+                      host: host,
+                      port: port,
+                      user: user,
+                      password: password,
+                      keepalive: true
+                  });
+                  api.connect().then((client) => {
+                    client.menu("/ppp active").remove({"name":"sds"}).then((result) => {
+                      api.close();
+                      var data = {is_error:false,data:[],msg:"Berhasil mengisolir"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    }).catch((err) => {
+                      api.close();
+                      console.log(err);
+                      var data = {is_error:false,data:[],msg:"Berhasil mengisolir"};
+                      res.send(JSON.stringify(data));
+                      res.end();
+                    });
+                  }).catch((err) => {
+                    var data = {is_error:true,msg:err.message};
+                    res.send(JSON.stringify(data));
+                    res.end();
+                  });
+                }
+              });
+            }else{
+              connection.release();
+              var data = {is_error:true,data:[],msg:"Gagal mengisolir ppp secret"};
+              res.send(JSON.stringify(data));
+              res.end();
+            }
+          });
+        });
+      }catch(err){
+        var data = {is_error:true,data:[],msg:"Koneksi timeout, silahkan refresh"};
+        res.send(JSON.stringify(data));
+        res.end();
+      }
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
   app.post(['/ajax/ppp_secret_simpan.html'],(req, res) => {
     if(req.session.is_login){
       try{
@@ -188,7 +260,6 @@ module.exports = function(app){
                     api.close();
                     ppp_function.Simpan_Secret(0,server_id,result.length,result,function(){
                       var data = {is_error:false,data:[],msg:"Berhasil"};
-
                       res.send(JSON.stringify(data));
                       res.end();
                     });
@@ -196,6 +267,7 @@ module.exports = function(app){
                 });
               });
           }).catch((err) => {
+            api.close();
             var data = {is_error:true,msg:err.message};
             res.send(JSON.stringify(data));
             res.end();
@@ -255,6 +327,7 @@ module.exports = function(app){
                 });
               });
           }).catch((err) => {
+            api.close();
             var data = {is_error:true,msg:err.message};
             res.send(JSON.stringify(data));
             res.end();

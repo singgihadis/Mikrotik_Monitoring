@@ -120,7 +120,7 @@
 
     </div>
     <div class="modal" id="modal_update">
-      <div class="modal-dialog">
+      <div id="modal_update_dialog" class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Data Member (PPP)</h5>
@@ -129,7 +129,52 @@
             </button>
           </div>
           <div class="modal-body">
+            <div id="member_lost" style="display:none;">
+              <a onclick="search_member_lost(0);" class="btn btn-primary" href="javascript:void(0);">Kembali</a>
+              <br /><br />
+              <div class="d-inline-block">
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text bg-primary text-white" id="basic-addon1"><i class="fa fa-search"></i></span>
+                  </div>
+                  <input id="keyword_member_lost" name="keyword_member_lost" type="text" class="form-control" placeholder="Keyword">
+                </div>
+              </div>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>No WA</th>
+                    <th>Email</th>
+                    <th>Nama Paket</th>
+                    <th>Nominal Pembayaran</th>
+                    <th>Awal Tagihan</th>
+                    <th class="text-center">Berhenti Berlangganan <br /> (Mulai dari)</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="listdatamemberlost">
+
+                </tbody>
+              </table>
+              <div class="row">
+                <div class="col-md-6">
+                  <div id="info_page_member_lost"></div>
+                </div>
+                <div class="col-md-6 text-right">
+                  <div class="btn-group" role="group" aria-label="Basic example">
+                    <button id="btn_prev_member_lost" type="button" class="btn btn-light">Sebelumnya</button>
+                    <a class="btn btn-dark text-white" id="page_member_lost_preview">1</a>
+                    <button id="btn_next_member_lost" type="button" class="btn btn-light">Selanjutnya</button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <form id="form_member">
+              <div id="ask_member_lost" style="display:none;" class="alert alert-warning">
+                Jika anda telah mengupdate data member namun hilang, silahkan pilih <a onclick="search_member_lost(1);" href="javascript:void(0);">disini</a>
+              </div>
               <input type="hidden" id="id" name="id" />
               <div class="form-group">
                 <label class="control-label">Nama</label>
@@ -356,6 +401,6 @@
     </div>
     <!-- /#wrapper -->
     {{> foot}}
-    <script type="text/javascript" src="/assets/js/page/member.js?v=1.4"></script>
+    <script type="text/javascript" src="/assets/js/page/member.js?v=1.9"></script>
   </body>
 </html>

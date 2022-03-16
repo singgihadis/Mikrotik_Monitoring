@@ -98,6 +98,67 @@ module.exports = function(app){
       res.end();
     }
   });
+  app.post(['/ajax/member_lost_get.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var arr_query = [];
+        var filter_query = "";
+        if(arr_query.length > 0){
+          filter_query = " where " + arr_query.join(" and ");
+        }
+        var sql_data = "select a.*,c.nama as nama_paket from member a left join ppp_secret b on a.ppp_secret_id=b.id left join master_paket c on a.master_paket_id=c.id where b.id is null";
+        var query_data = connection.query(sql_data, function (err, results, fields) {
+          if(results.length == 0){
+            connection.release();
+            var data = {is_error:true,data:[],msg:"Data tidak ditemukan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,data:results};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
+  app.post(['/ajax/member_lost_recovery.html'],(req, res) => {
+    if(req.session.is_login){
+      pool.getConnection(function(err, connection) {
+        var id = "";
+        if(req.body.id != undefined){
+          id = req.body.id;
+        }
+        var ppp_secret_id = "";
+        if(req.body.ppp_secret_id != undefined){
+          ppp_secret_id = req.body.ppp_secret_id;
+        }
+        var sql_update = "update member set ppp_secret_id=? where id=?";
+        var query_update = connection.query(sql_update,[ppp_secret_id,id], function (err, results, fields) {
+          if(err){
+            connection.release();
+            var data = {is_error:false,msg:"Berhasil menyimpan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }else{
+            connection.release();
+            var data = {is_error:false,msg:"Berhasil menyimpan"};
+            res.send(JSON.stringify(data));
+            res.end();
+          }
+        });
+      });
+    }else{
+      var data = {is_error:true,msg:"Anda belum terlogin",must_login:true};
+      res.send(JSON.stringify(data));
+      res.end();
+    }
+  });
   app.post(['/ajax/member_simpan.html'],(req, res) => {
     if(req.session.is_login){
       pool.getConnection(function(err, connection) {

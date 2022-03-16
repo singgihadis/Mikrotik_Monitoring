@@ -155,6 +155,13 @@ function load_data(with_loading){
               html += "</div>";
             }
             html += "</td>";
+            html += "<td class='align-middle'>";
+            if(v['profile_isolir'] == ""){
+              html += "<a href='javascript:void(0);' data-id='" + v['id'] + "' onclick='isolir(this)' class='btn btn-sm btn-danger'><span class='fa fa-circle-o'></span> Isolir</a>";
+            }else{
+              html += "<span class='badge badge-danger'>Diisolir</span>";
+            }
+            html += "</td>";
             html += "</tr>";
             no++;
           }
@@ -233,6 +240,37 @@ function total_aktif(){
 
     }
   });
+}
+
+function isolir(itu){
+  var r = confirm("Apa anda yakin ingin mengisolir");
+  if(r){
+    var id = $(itu).attr("data-id");
+    $(itu).parent().parent().loading();
+    $.ajax({
+      type:'post',
+      url:'/ajax/ppp_secret_isolir.html',
+      data:{id:id},
+      success:function(resp){
+        var res = JSON.parse(resp);
+        var html = "";
+        if(res.is_error){
+          if(res.must_login){
+            window.location = "/login.html";
+          }else{
+            $(itu).parent().parent().loading("stop");
+            toastr["error"](res.msg);
+          }
+        }else{
+          $(itu).parent().parent().loading("stop");
+          load_data(true);
+        }
+      },error:function(){
+        $(itu).parent().parent().loading("stop");
+        toastr["error"]("Silahkan periksa koneksi internet anda");
+      }
+    });
+  }
 }
 function insert_data(){
   var load_loop = setInterval(function(){
